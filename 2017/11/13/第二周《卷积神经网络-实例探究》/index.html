@@ -79,16 +79,40 @@
 
 
 
-<meta name="description" content="http://www.jianshu.com/u/a08f88f9ed9d">
-<meta property="og:type" content="website">
-<meta property="og:title" content="zlxoas">
-<meta property="og:url" content="http://yoursite.com/index.html">
+<meta name="description" content="P2.1为什么要进行实例探究就是列了一下提纲，告诉我们我会讲这些内容，可能尽管你不是搞图像方向的，但是你可以借鉴里面的一些重要思想啊！ P2.2经典网络 第一个是1980年的LeNet-5，其中有几个注意点：  当时是没有用ReLU的，用的是sigmod跟tanh作为非线性激活函数； 网络的模式沿用至今：也就是（卷积+池化）+····+（卷积+池化）+全连接1+···+全连接n+输出； 可以发现随">
+<meta property="og:type" content="article">
+<meta property="og:title" content="第二周《卷积神经网络-实例探究》">
+<meta property="og:url" content="http://yoursite.com/2017/11/13/第二周《卷积神经网络-实例探究》/index.html">
 <meta property="og:site_name" content="zlxoas">
-<meta property="og:description" content="http://www.jianshu.com/u/a08f88f9ed9d">
+<meta property="og:description" content="P2.1为什么要进行实例探究就是列了一下提纲，告诉我们我会讲这些内容，可能尽管你不是搞图像方向的，但是你可以借鉴里面的一些重要思想啊！ P2.2经典网络 第一个是1980年的LeNet-5，其中有几个注意点：  当时是没有用ReLU的，用的是sigmod跟tanh作为非线性激活函数； 网络的模式沿用至今：也就是（卷积+池化）+····+（卷积+池化）+全连接1+···+全连接n+输出； 可以发现随">
 <meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3c3f92bcd8c9e2e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-184f4fceec15b4e2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-0b4a1a4a30e915b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8fc9e0ee5cd07cec.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-704da48be77aff6e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-dd0c8ab8fc21f045.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c2ae8512f464e974.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-671a0ab2c9fcfbea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e6167a87fe336934.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ea443b64db1bfce1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e0579b810b900c3c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c263b95b0b152f47.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f1df77b751685a2f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1c9f418607d42c60.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-34fbe966e7886674.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-2554ddb7d401174f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-36da57e2cf41c980.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3673a6705b7aece9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-16dd923528c8c8f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f53cd229e74458d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-9a0b2f6e0ae74371.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-6d18299a6545b8af.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+<meta property="og:updated_time" content="2017-11-15T11:19:57.821Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="zlxoas">
-<meta name="twitter:description" content="http://www.jianshu.com/u/a08f88f9ed9d">
+<meta name="twitter:title" content="第二周《卷积神经网络-实例探究》">
+<meta name="twitter:description" content="P2.1为什么要进行实例探究就是列了一下提纲，告诉我们我会讲这些内容，可能尽管你不是搞图像方向的，但是你可以借鉴里面的一些重要思想啊！ P2.2经典网络 第一个是1980年的LeNet-5，其中有几个注意点：  当时是没有用ReLU的，用的是sigmod跟tanh作为非线性激活函数； 网络的模式沿用至今：也就是（卷积+池化）+····+（卷积+池化）+全连接1+···+全连接n+输出； 可以发现随">
+<meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-3c3f92bcd8c9e2e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
 
 
 
@@ -118,13 +142,13 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/"/>
+  <link rel="canonical" href="http://yoursite.com/2017/11/13/第二周《卷积神经网络-实例探究》/"/>
 
 
 
 
 
-  <title>zlxoas</title>
+  <title>第二周《卷积神经网络-实例探究》 | zlxoas</title>
   
 
 
@@ -183,8 +207,7 @@
     
   
 
-  <div class="container sidebar-position-left 
-  page-home">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -267,9 +290,9 @@
         <div class="content-wrap">
           <div id="content" class="content">
             
-  <section id="posts" class="posts-expand">
+
+  <div id="posts" class="posts-expand">
     
-      
 
   
 
@@ -299,9 +322,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/13/第二周《卷积神经网络-实例探究》/" itemprop="url">第二周《卷积神经网络-实例探究》</a></h1>
+          <h1 class="post-title" itemprop="name headline">第二周《卷积神经网络-实例探究》</h1>
         
 
         <div class="post-meta">
@@ -373,9 +394,7 @@
       
 
       
-        
-          
-            <h4 id="P2-1为什么要进行实例探究"><a href="#P2-1为什么要进行实例探究" class="headerlink" title="P2.1为什么要进行实例探究"></a>P2.1为什么要进行实例探究</h4><p>就是列了一下提纲，告诉我们我会讲这些内容，可能尽管你不是搞图像方向的，但是你可以借鉴里面的一些重要思想啊！<br><img src="http://upload-images.jianshu.io/upload_images/4749583-3c3f92bcd8c9e2e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
+        <h4 id="P2-1为什么要进行实例探究"><a href="#P2-1为什么要进行实例探究" class="headerlink" title="P2.1为什么要进行实例探究"></a>P2.1为什么要进行实例探究</h4><p>就是列了一下提纲，告诉我们我会讲这些内容，可能尽管你不是搞图像方向的，但是你可以借鉴里面的一些重要思想啊！<br><img src="http://upload-images.jianshu.io/upload_images/4749583-3c3f92bcd8c9e2e1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" alt=""></p>
 <h4 id="P2-2经典网络"><a href="#P2-2经典网络" class="headerlink" title="P2.2经典网络"></a>P2.2经典网络</h4><p> 第一个是1980年的LeNet-5，其中有几个注意点：</p>
 <ul>
 <li>当时是没有用ReLU的，用的是sigmod跟tanh作为非线性激活函数；</li>
@@ -514,8 +533,6 @@
 <p>总结：图像颜色失真大小、分布等这些是超参数，随机剪切大小、模式也是超参数，这些是需要我们人为根据实际场景来设计的，因此，具体场景具体分析吧！童鞋们！</p>
 <h4 id="P2-11"><a href="#P2-11" class="headerlink" title="P2.11"></a>P2.11</h4><h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4></blockquote>
 
-          
-        
       
     </div>
     
@@ -532,140 +549,28 @@
       
 
       
-
-      
-
       
       
-        <div class="post-eof"></div>
+
       
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2017/11/10/hello-world/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="465419321@qq.com">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="zlxoas">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2017/11/10/hello-world/" itemprop="url">Hello World</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
             
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">Posted on</span>
-              
-              <time title="Post created" itemprop="dateCreated datePublished" datetime="2017-11-10T14:52:45+08:00">
-                2017-11-10
-              </time>
+              <a href="/2017/11/10/hello-world/" rel="next" title="Hello World">
+                <i class="fa fa-chevron-left"></i> Hello World
+              </a>
             
+          </div>
 
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
             
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
+          </div>
         </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
       
 
       
-        
-          
-            <p>Welcome to <a href="https://hexo.io/" target="_blank" rel="external">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="external">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="external">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="external">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="external">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="external">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="external">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="external">Deployment</a></p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
       
     </footer>
   </div>
@@ -675,10 +580,11 @@
   </article>
 
 
-    
-  </section>
 
-  
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -686,6 +592,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -706,8 +616,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -760,6 +679,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-1为什么要进行实例探究"><span class="nav-number">1.</span> <span class="nav-text">P2.1为什么要进行实例探究</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-2经典网络"><span class="nav-number">2.</span> <span class="nav-text">P2.2经典网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-3-残差网络"><span class="nav-number">3.</span> <span class="nav-text">P2.3 残差网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-4-为什么残缺网络表现如此之好？"><span class="nav-number">4.</span> <span class="nav-text">P2.4 为什么残缺网络表现如此之好？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-5-1-1卷积核的作用？（网络中的网络）"><span class="nav-number">5.</span> <span class="nav-text">P2.5 1*1卷积核的作用？（网络中的网络）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-6-inception-network（谷歌）-motivation"><span class="nav-number">6.</span> <span class="nav-text">P2.6 inception network（谷歌） motivation</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-7-inception网络"><span class="nav-number">7.</span> <span class="nav-text">P2.7 inception网络</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-8-我们不要自己重复造轮子！"><span class="nav-number">8.</span> <span class="nav-text">P2.8 我们不要自己重复造轮子！</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#P2-11"><span class="nav-number">9.</span> <span class="nav-text">P2.11</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#总结"><span class="nav-number">10.</span> <span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -907,6 +842,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+
 
   
 
