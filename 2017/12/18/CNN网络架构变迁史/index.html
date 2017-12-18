@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="《AN ANALYSIS OF DEEP NEURAL NETWORK MODELSFOR PRACTICAL APPLICATIONS》论文来源                       转载出处          深度学习算法最近变得越来越流行和越来越有用的算法，然而深度学习或者深度神经网络的成功得益于层出不穷的神经网络模型架构。这篇文章当中作者回顾了从1998">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="CNN网络架构变迁史">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN网络架构变迁史/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="《AN ANALYSIS OF DEEP NEURAL NETWORK MODELSFOR PRACTICAL APPLICATIONS》论文来源                       转载出处          深度学习算法最近变得越来越流行和越来越有用的算法，然而深度学习或者深度神经网络的成功得益于层出不穷的神经网络模型架构。这篇文章当中作者回顾了从1998">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5179ad748965d918.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8ebea41879250e64.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-255b8148b2533706.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-739951b93bbf0bea.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8035cd26df60f970.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-19417159ee882cf8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-940828e42b1d3728.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-2c2199f82c290b7d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-97e6407ba625abcc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c03b835b98a7c9ab.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-0a64dd8d668ee56c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-df5bde894944b516.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2017-12-18T07:55:10.913Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="CNN网络架构变迁史">
+  <meta name="twitter:description" content="《AN ANALYSIS OF DEEP NEURAL NETWORK MODELSFOR PRACTICAL APPLICATIONS》论文来源                       转载出处          深度学习算法最近变得越来越流行和越来越有用的算法，然而深度学习或者深度神经网络的成功得益于层出不穷的神经网络模型架构。这篇文章当中作者回顾了从1998">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-5179ad748965d918.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN网络架构变迁史/"
+  />
+
+  <title>CNN网络架构变迁史 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas", "/live2d/assets/haruto.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN网络架构变迁史/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">CNN网络架构变迁史</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:54:23+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/CNN/" itemprop="url" rel="index">
+                            <span itemprop="name">CNN</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          4,011
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          14
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <ul>
+                      <li>
+                        <a href="https://arxiv.org/abs/1605.07678" target="_blank" rel="external">
+                          <strong>《AN ANALYSIS OF DEEP NEURAL NETWORK MODELSFOR PRACTICAL
+                            APPLICATIONS》论文来源</strong>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/" target="_blank"
+                                                                                                        rel="external">
+                          <strong>转载出处</strong>
+                        </a>
+                      </li>
+                    </ul>
+                    <p>深度学习算法最近变得越来越流行和越来越有用的算法，然而深度学习或者深度神经网络的成功得益于层出不穷的神经网络模型架构。这篇文章当中作者回顾了从1998年开始，近18年来深度神经网络的架构发展情况。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/acc_vs_net_vs_ops.png"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-5179ad748965d918.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>图中的坐标轴我们可以看出横坐标是操作的复杂度，纵坐标是精度。模型设计一开始的时候模型权重越多模型越大，其精度越高，后来出现了resNet、GoogleNet、Inception等网络架构之后，在取得相同或者更高精度之下，其权重参数不断下降。值得注意的是，并不是意味着横坐标越往右，它的运算时间越大。在这里并没有对时间进行统计，而是对模型参数和网络的精度进行了纵横对比。</p>
+                    <p>其中有几个网络作者觉得是必学非常值得学习和经典的：AlexNet、LeNet、GoogLeNet、VGG-16、NiN。
+                      <br>如果你想了解更多关于深度神经网络的架构及其对应的应用，不妨看一下这篇综述
+                      <a href="https://arxiv.org/abs/1605.07678" target="_blank" rel="external">An Analysis of Deep Neural Network Models for Practical Applications</a>。</p>
+                    <blockquote>
+                      <p>转载自ZOMI的博客 [chenzomi12.github.io]</p>
+                    </blockquote>
+                    <h2 id="LeNet5（1998）">
+                      <a href="#LeNet5（1998）" class="headerlink" title="LeNet5（1998）"></a>LeNet5（1998）</h2>
+                    <p>作者Yann LeCun经过了很多次反复的试验之后发现5个卷积层效果最好，因此以lenet5命名！</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8ebea41879250e64.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="LeNet5（1998）">
+                    </p>
+                    <p>
+                      <strong>LeNet5小结：</strong>
+                    </p>
+                    <ul>
+                      <li>卷积神经网络使用3层架构：卷积、下采样、非线性激活函数</li>
+                      <li>使用卷积提取图像空间特征</li>
+                      <li>下采样使用了图像平均稀疏性</li>
+                      <li>激活函数采用了tanh或者sigmoid函数</li>
+                      <li>多层神经网络（MLP）作为最后的分类器</li>
+                      <li>层之间使用稀疏连接矩阵，以避免大的计算成本</li>
+                    </ul>
+                    <p>总的来说LeNet5架构把人们带入深度学习领域，值得致敬。从2010年开始近几年的神经网络架构大多数都是基于LeNet的三大特性。</p>
+                    <hr>
+                    <p>然后就是十几年的空白期啊！直到10年Dan Claudiu Ciresan和Jurgen Schmidhuber发表了一个
+                      <a href="http://arxiv.org/abs/1003.0358" target="_blank" rel="external">GPU神经网络</a>，能处理9层了，同时由于使用的是GPU训练的，因此Nvidia成为宠儿。</p>
+                    <hr>
+                    <h2 id="AlexNet（2012）">
+                      <a href="#AlexNet（2012）" class="headerlink" title="AlexNet（2012）"></a>AlexNet（2012）</h2>
+                    <p>2012年，Alex Krizhevsky发表了
+                      <a href="https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf"
+                                                                                                      target="_blank" rel="external">AlexNet</a>，相对比LeNet它的网络层次更加深，从LeNet的5层到AlexNet的7层，更重要的是AlexNet还赢得了2012年的ImageNet竞赛的第一。AlexNet不仅比LeNet的神经网络层数更多更深，并且可以学习更复杂的图像高维特征。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-255b8148b2533706.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt=" AlexNet（2012）">
+                    </p>
+                    <p>经过10多年的冷冻期之后，突然取得很好的出镜效果（获奖了啊），重回大众视野！这应归功于研究人员的不断坚持和付出以及硬件的快速发展。</p>
+                    <p>
+                      <strong>AlexNet小结：</strong>
+                    </p>
+                    <ul>
+                      <li>使用ReLU函数作为激活函数，降低了Sigmoid类函数的计算量</li>
+                      <li>利用dropout技术在训练期间选择性地剪掉某些神经元，避免模型过度拟合</li>
+                      <li>引入max-pooling技术</li>
+                      <li>利用双GPU NVIDIA GTX 580显著减少训练时间</li>
+                    </ul>
+                    <h2 id="Network-in-network（2013年底）">
+                      <a href="#Network-in-network（2013年底）" class="headerlink" title="Network-in-network（2013年底）"></a>Network-in-network（2013年底）</h2>
+                    <p>2013年年尾，Min Lin提出了在卷积后面再跟一个1x1的卷积核对图像进行卷积，这就是
+                      <a href="https://arxiv.org/abs/1312.4400" target="_blank" rel="external">Network-in-network</a>的核心思想了。</p>
+                    <p>NiN在每次卷积完之后使用，目的是为了在进入下一层的时候合并更多的特征参数。同样NiN层也是违背LeNet的设计原则（浅层网络使用大的卷积核），但却有效地合并卷积特征，减少网络参数、同样的内存可以存储更大的网络。</p>
+                    <p>根据Min Lin的NiN论文，他们说这个“网络的网络”（NIN）能够提高CNN的局部感知区域。
+                      <br>例如没有NiN的当前卷积是这样的：3x3 256 [conv] -&gt; [maxpooling]；
+                      <br>当增加了NiN之后的卷积是这样的：3x3 256 [conv] -&gt; 1x1 256 [conv] -&gt;
+                      [maxpooling]。</p>
+                    <p>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/nin.jpg" target="_blank"
+                                                                                                      rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-739951b93bbf0bea.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="Network-in-network（2013）">
+                      </a>
+                    </p>
+                    <p>MLP多层感知的厉害之处就在于它把卷积特征结合起来成为一个更复杂的组合，这个思想将会在后面ResNet和Inception中用到。</p>
+                    <h2 id="VGG（2014）">
+                      <a href="#VGG（2014）" class="headerlink" title="VGG（2014）"></a>VGG（2014）</h2>
+                    <p>2014年是个绽放年，出了两篇重要的论文：VGG、GoogLeNet。</p>
+                    <p>来自牛津大学的
+                      <a href="http://arxiv.org/abs/1409.1556" target="_blank" rel="external">VGG</a>网络是第一个在每个卷积层使用更小的3×3卷积核对图像进行卷积，并把这些小的卷积核排列起来作为一个卷积序列。通俗点来讲就是对原始图像进行3×3卷积，然后再进行3×3卷积，
+                      <strong>连续使用小的卷积核对图像进行多次卷积</strong>。</p>
+                    <p>或许很多人看到这里也很困惑为什么使用那么小的卷积核对图像进行卷积，并且还是使用连续的小卷积核？</p>
+                    <p>VGG一开始提出的时候刚好与LeNet的设计原则相违背，因为LeNet相信大的卷积核能够捕获图像当中相似的特征（权值共享）。AlexNet在浅层网络开始的时候也是使用9×9、11×11卷积核，并且尽量在浅层网络的时候避免使用1×1的卷积核。但是VGG的神奇之处就是在于使用多个3×3卷积核可以模仿较大卷积核那样对图像进行局部感知。</p>
+                    <p>后来多个小的卷积核串联这一思想被GoogleNet和ResNet等吸收。</p>
+                    <p>从下图我们可以看出来，VGG使用多个3x3卷积来对高维特征进行提取。因为如果使用较大的卷积核，参数就会大量地增加、运算时间也会成倍的提升。例如3x3的卷积核只有9个权值参数，使用7*7的卷积核权值参数就会增加到49个。因为缺乏一个模型去对大量的参数进行归一化、约减，或者说是限制大规模的参数出现，因此训练核数更大的卷积网络就变得非常困难了。</p>
+                    <p>VGG相信如果使用大的卷积核将会造成很大的时间浪费，减少的卷积核能够减少参数，节省运算开销。虽然训练的时间变长了，但是总体来说预测的时间和参数都是减少的了。</p>
+                    <p>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/vgg.jpg" target="_blank"
+                                                                                                      rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-8035cd26df60f970.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                    </p>
+                    <h2 id="GoogLeNet（2014）">
+                      <a href="#GoogLeNet（2014）" class="headerlink" title="GoogLeNet（2014）"></a>GoogLeNet（2014）</h2>
+                    <p>2014年，在google工作的Christian Szegedy为了找到一个深度神经网络结构能够有效地减少计算资源，于是有了这个
+                      <a href="https://arxiv.org/abs/1409.4842" target="_blank" rel="external">GoogleNet</a>了（也叫做Inception V1）。</p>
+                    <p>从2014年尾到现在，深度学习模型在图像内容分类方面和视频分类方面有了极大的应用。在这之前，很多一开始对深度学习和神经网络都保持怀疑态度的人，现在都涌入深度学习的这个领域，理由很简单，因为深度学习不再是海市蜃楼，而是变得越来越接地气。就连google等互联网巨头都已经在深度学习领域布局，成立了各种各样的额人工智能实验室。</p>
+                    <p>Christian在思考如何才能够减少深度神经网络的计算量，同时获得比较好的性能的框架。即使不能两全其美，退而求其次能够保持在相同的计算成本下，能够有更好的性能提升这样的框架也行。于是后面Christian和他的team在google想出了这个模型：</p>
+                    <p>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/inceptionv1.jpg"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-19417159ee882cf8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                    </p>
+                    <p>其乍一看基本上是1×1,3×3和5×5卷积核的并行合并。但是，最重要的是使用了1×1卷积核（NiN）来减少后续并行操作的特征数量。这个思想现在叫做“bottleneck
+                      layer”。
+                    </p>
+                    <p>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#Bottleneck-layer"
+                                                                                                      target="_blank" rel="external"></a>
+                    </p>
+                    <h2 id="Bottleneck-layer">
+                      <a href="#Bottleneck-layer" class="headerlink" title="Bottleneck layer"></a>Bottleneck layer</h2>
+                    <p>受NiN的启发，googleNet的Bottleneck layer减少了特征的数量，从而减少了每一层的操作复杂度，因此可以加快推理时间。在将数据传递到下一层卷积之前，特征的数量减少了4左右。因此这种设计架构因为大量节省计算成本而名声大噪。</p>
+                    <p>让我们详细研究一下这个Bottleneck layer。假设输入时256个feature map进来，256个feature
+                      map输出，假设Inception层只执行3x3的卷积，那么这就需要这行 (256x256) x (3x3) 次卷积左右（大约589,000次计算操作）。再假设这次589,000次计算操作在google的服务器上面用了0.5ms的时间，计算开销还是很大的。现在Bottleneck
+                      layer的思想是先来减少特征的数量，我们首先执行256 -&gt; 64 1×1卷积，然后在所有Bottleneck
+                      layer的分支上对64大小的feature map进行卷积，最后再64 -&gt; 256 1x1卷积。 操作量是：
+                      <br>256×64 × 1×1 = 16,000s
+                      <br>64×64 × 3×3 = 36,000s
+                      <br>64×256 × 1×1 = 16,000s</p>
+                    <p>总共约70,000，而我们以前有近600,000。几乎减少10倍的操作！
+                      <br>虽然我们做的操作较少，但我们并没有失去这一层特征。实际上，Bottleneck layer已经在ImageNet数据集上表现非常出色，并且也将在稍后的架构例如ResNet中使用到。</p>
+                    <p>
+                      <strong>成功的原因是输入特征是相关的，因此可以通过适当地与1x1卷积组合来去除冗余</strong>。然后，在卷积具有较少数目的特征之后，它们可以再次扩展并作用于下一层输入。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#Inception-V3"
+                                                                                                      target="_blank" rel="external"></a>
+                    </p>
+                    <h2 id="Inception-V3（2015-12）">
+                      <a href="#Inception-V3（2015-12）" class="headerlink" title="Inception V3（2015.12）"></a>Inception V3（2015.12）</h2>
+                    <p>Christian的团队确实很厉害，2015年2月他们又发表了新的文章关于在googleNet中加入一个
+                      <a href="http://arxiv.org/abs/1502.03167" target="_blank" rel="external">Batch-normalized</a>层。</p>
+                    <p>Batch-normalized层归一化计算图层输出处所有特征图的平均值和标准差，并使用这些值对其响应进行归一化。这对应于“白化”数据非常有效，并且使得所有神经层具有相同范围并且具有零均值的响应。这有助于训练，因为下一层不必学习输入数据中的偏移，并且可以专注于如何最好地组合特征。</p>
+                    <p>2015年12月，他们发布了一个新版本的GoogLeNet(
+                      <a href="http://arxiv.org/abs/1512.00567" target="_blank" rel="external">Inception V3</a>)模块和相应的架构，并且更好地解释了原来的GoogLeNet架构，GoogLeNet原始思想：</p>
+                    <ul>
+                      <li>通过构建平衡深度和宽度的网络，最大化网络的信息流。在进入pooling层之前增加feature maps</li>
+                      <li>当网络层数深度增加时，特征的数量或层的宽度也相对应地增加</li>
+                      <li>在每一层使用宽度增加以增加下一层之前的特征的组合</li>
+                      <li>只使用3x3卷积</li>
+                    </ul>
+                    <p>因此最后的模型就变成这样了：
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/inceptionv3.jpg"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-940828e42b1d3728.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>网络架构最后还是跟GoogleNet一样使用pooling层+softmax层作为最后的分类器。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#ResNet" target="_blank"
+                                                                                                      rel="external"></a>
+                    </p>
+                    <h2 id="ResNet（2015-12）">
+                      <a href="#ResNet（2015-12）" class="headerlink" title="ResNet（2015.12）"></a>ResNet（2015.12）</h2>
+                    <p>2015年12月
+                      <a href="https://arxiv.org/pdf/1512.03385v1.pdf" target="_blank" rel="external">ResNet</a>发表了，时间上大概与Inception v3网络一起发表的。其中ResNet的一个重要的思想是：输出的是两个连续的卷积层，并且输入时绕到下一层去。这句话不太好理解可以看下图。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/resnetb.jpg" target="_blank"
+                                                                                                      rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-2c2199f82c290b7d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>但在这里，他们绕过两层，并且大规模地在网络中应用这中模型。在2层之后绕过是一个关键，因为绕过单层的话实践上表明并没有太多的帮助，然而绕过2层可以看做是在网络中的一个小分类器！看上去好像没什么感觉，但这是很致命的一种架构，因为通过这种架构最后实现了神经网络超过1000层。傻了吧，之前我们使用LeNet只是5层，AlexNet也最多不过7层。</p>
+                    <p>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/resnetbottleneck.jpg"
+                                                                                                      target="_blank" rel="external"></a>
+                    </p>
+                    <p>该层首先使用1x1卷积然后输出原来特征数的1/4，然后使用3×3的卷积核，然后再次使用1x1的卷积核但是这次输出的特征数为原来输入的大小。如果原来输入的是256个特征，输出的也是256个特征，但是这样就像Bottleneck
+                      Layer那样说的大量地减少了计算量，但是却保留了丰富的高维特征信息。
+                    </p>
+                    <p>ResNet一开始的时候是使用一个7x7大小的卷积核，然后跟一个pooling层。当然啦，最后的分类器跟GoogleNet一样是一个pooling层加上一个softmax作为分类器。下图左边是VGG19拥有190万个参数，右图是34层的ResNet只需要36万个参数：
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/ResNet.jpg" target="_blank"
+                                                                                                      rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-97e6407ba625abcc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>
+                      <strong>ResNet网络特征</strong>
+                    </p>
+                    <ul>
+                      <li>ResNet可以被看作并行和串行多个模块的结合</li>
+                      <li>ResNet上部分的输入和输出一样，所以看上去有点像RNN，因此可以看做是一个更好的生物神经网络的模型</li>
+                    </ul>
+                    <h2 id="SqueezeNet（2016-11）">
+                      <a href="#SqueezeNet（2016-11）" class="headerlink" title="SqueezeNet（2016.11）"></a>SqueezeNet（2016.11）</h2>
+                    <p>2016年11月才发表的文章，一看论文的标题可以被镇住：
+                      <a href="https://arxiv.org/pdf/1602.07360v4.pdf" target="_blank" rel="external">SqueezeNet: AlexNet-level accuracy with 50x fewer parameters
+                        and &lt; 0.5MB model size
+                      </a>。文章直接说SqueezeNet有着跟AlexNet一样的精度，但是参数却比Alex少了接近50倍并且参数只需要占用很小的内存空间。这里的设计就没有SegNet或者GoogleNet那样的设计架构惊艳了，但SqueezeNet却是能够保证同样的精度下使用更少的参数。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/SqueezeNet.jpg"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-c03b835b98a7c9ab.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#Xception" target="_blank"
+                                                                                                      rel="external"></a>
+                    </p>
+                    <h2 id="Xception">
+                      <a href="#Xception" class="headerlink" title="Xception"></a>Xception</h2>
+                    <p>
+                      <a href="https://arxiv.org/abs/1610.02357" target="_blank" rel="external">Xception</a>模型使用与ResNet和Inception V4一样简单且优雅的架构，并且改进了Inception模型。
+                      <br>从Xception模型我们可以看出来Xception模型的架构具有36个卷积层，与ResNet-34非常相似。但是模型的代码与ResNet一样简单，并且比Inception
+                      V4更容易理解。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/xception-net.jpg"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-0a64dd8d668ee56c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>从
+                      <a href="https://gist.github.com/culurciello/554c8e56d3bbaf7c66bf66c6089dc221" target="_blank"
+                                                                                                      rel="external">here</a> 或者
+                      <a href="https://keras.io/applications/#xception" target="_blank" rel="external">here</a> 可以找到Xception的实现代码。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#总结" target="_blank"
+                                                                                                      rel="external"></a>
+                    </p>
+                    <h2 id="总结">
+                      <a href="#总结" class="headerlink" title="总结"></a>总结</h2>
+                    <p>我们再来回顾开篇的对比图。从图中我们可以看出来，AlexNet一类的模型没有考虑太多权重参数的问题，因此圆圈比较大。一开始AlexNet只是希望用深度网络能够找到更多图像当中的高维特征，后来发现当网络越深的时候需要的参数越多，硬件总是跟不上软件的发展，这个时候如果加深网络的话GPU的显存塞不下更多的参数，因此硬件限制了深度网络的发展。为了能够提高网络的深度和精度，于是大神们不断地研究，尝试使用小的卷积核代替大的卷积核能够带来精度上的提升，并且大面积地减少参数，于是网络的深度不再受硬件而制约。
+                      <br>可是另外一方面，随着网络的深度越深，运算的时间就越慢，这也是个很蛋疼的事情，不能两全其美。作者相信在未来2-3年我们能够亲眼目睹比现有网络更深、精度更高、运算时间更少的网络出现。因为硬件也在快速地发展，特斯拉使用的NVIDIA
+                      Driver PX 2的运算速率已经比现在Titan X要快7倍。
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/acc_vs_net_vs_ops.png"
+                                                                                                      target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-df5bde894944b516.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>
+                      <a href="https://chenzomi12.github.io/2016/12/13/CNN-Architectures/#后话" target="_blank"
+                                                                                                      rel="external"></a>
+                    </p>
+                    <p>##后话
+                      <br>其实作者觉得神经网络的架构体系对于了解“深度学习”和对于了解深度学习的发展是非常重要的，因此强烈推荐大家去深入研读一下上面提到的网络架构对应的文章。
+                      <br>总是有一些人会问为什么我们需要那么多时间去了解这些深度网络的架构体系呢，而不是去研究数据然后了解数据背后的意义和如何对数据进行预处理呢？对于如何研究数据可以搜一下另外一篇文章《人工智能的特征工程问题》。对，数据很重要，同时模型也很重要。简单的举一个例子，如果你对某种图像数据很了解，但是不懂CNN如何对这些图像进行提取高维特征，那么最后可能还是会使用HOG或者传统的SIFT特征检测算法。
+                      <br>还要注意的是，在这里我们主要谈论计算机视觉的深度学习架构。类似的神经网络架构在其他领域还在不断地发展，如果你有精力和时间，那么可以去研究更多不一样的架构进化历。</p>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN网络架构变迁史/" title="CNN网络架构变迁史">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN网络架构变迁史/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/CNN TensorFlow实现/" rel="next" title="CNN TensorFlow实现">
+                          <i class="fa fa-chevron-left"></i> CNN TensorFlow实现
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/线性回归实践/" rel="prev" title="���Իع�ʵ��">
+                          ���Իع�ʵ��
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">13</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">3</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#LeNet5（1998）">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          LeNet5（1998）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#AlexNet（2012）">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          AlexNet（2012）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#Network-in-network（2013年底）">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          Network-in-network（2013年底）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#VGG（2014）">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          VGG（2014）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#GoogLeNet（2014）">
+                        <span class="nav-number">5.</span>
+                        <span class="nav-text">
+                          GoogLeNet（2014）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#Bottleneck-layer">
+                        <span class="nav-number">6.</span>
+                        <span class="nav-text">
+                          Bottleneck layer</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#Inception-V3（2015-12）">
+                        <span class="nav-number">7.</span>
+                        <span class="nav-text">
+                          Inception V3（2015.12）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#ResNet（2015-12）">
+                        <span class="nav-number">8.</span>
+                        <span class="nav-text">
+                          ResNet（2015.12）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#SqueezeNet（2016-11）">
+                        <span class="nav-number">9.</span>
+                        <span class="nav-text">
+                          SqueezeNet（2016.11）</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#Xception">
+                        <span class="nav-number">10.</span>
+                        <span class="nav-text">
+                          Xception</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#总结">
+                        <span class="nav-number">11.</span>
+                        <span class="nav-text">
+                          总结</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2017</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">43.1k</span>
+
+        </div>
+
+        <div class="powered-by">footer.powered</div>
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

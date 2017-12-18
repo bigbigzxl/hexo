@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="#理论部分 对于最基本的线性回归问题，公式如下：         X是自变量，也就是我们实际场景中的   特征变量，比如我项目中每个时刻芯片的电压，温度，串口状态、串口数据、电流值、功耗、电流波形等等参数；      θ是权重参数，也就是我们需要去梯度下降求解的具体值，   (我们拿一堆的数据来拟合出最佳的θ[误])用数据拟合h(x)，通过最佳的θ，得到最佳拟合曲线hθ（x），然后在预测的时候就只">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="逻辑回归实践">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/逻辑回归实践/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="#理论部分 对于最基本的线性回归问题，公式如下：         X是自变量，也就是我们实际场景中的   特征变量，比如我项目中每个时刻芯片的电压，温度，串口状态、串口数据、电流值、功耗、电流波形等等参数；      θ是权重参数，也就是我们需要去梯度下降求解的具体值，   (我们拿一堆的数据来拟合出最佳的θ[误])用数据拟合h(x)，通过最佳的θ，得到最佳拟合曲线hθ（x），然后在预测的时候就只">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8f8362ca47e6c8fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e852208e76351be3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b80960078df5a73d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-d59749e5d623e570.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-467a94055d12ed97.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-95b07d60bab2fd49.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-d0817b7fd517113f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-a5a7d09f19300847.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-4bd127d66985502d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-94438bc92e1c64cf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-82a05240ae151982.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-7e15b5f69462d816.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ed5d87faa8e83b9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-cacfaee34223ae31.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-2d6de9be29d5bd7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-05d7f99133de67ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-4691e85e0b4aa979.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5ac41ddd1af6bce8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2017-12-18T08:01:03.796Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="逻辑回归实践">
+  <meta name="twitter:description" content="#理论部分 对于最基本的线性回归问题，公式如下：         X是自变量，也就是我们实际场景中的   特征变量，比如我项目中每个时刻芯片的电压，温度，串口状态、串口数据、电流值、功耗、电流波形等等参数；      θ是权重参数，也就是我们需要去梯度下降求解的具体值，   (我们拿一堆的数据来拟合出最佳的θ[误])用数据拟合h(x)，通过最佳的θ，得到最佳拟合曲线hθ（x），然后在预测的时候就只">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/逻辑回归实践/"
+  />
+
+  <title>逻辑回归实践 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas", "/live2d/assets/haruto.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/逻辑回归实践/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">逻辑回归实践</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:57:28+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/MachineLearning/" itemprop="url" rel="index">
+                            <span itemprop="name">MachineLearning</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          2,934
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          11
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <p>#理论部分</p>
+                    <p>对于最基本的线性回归问题，公式如下：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <strong>X是自变量</strong>，也就是我们实际场景中的
+                      <strong>特征</strong>变量，比如我项目中每个时刻芯片的电压，温度，串口状态、串口数据、电流值、功耗、电流波形等等参数；
+                      <br>
+                      <strong>θ是权重参数</strong>，也就是我们需要去梯度下降求解的具体值，
+                      <code>(我们拿一堆的数据来拟合出最佳的θ[误])</code>用数据拟合h(x)，通过最佳的θ，得到最佳拟合曲线hθ（x），然后在预测的时候就只要直接用这个公式就好了。
+                      <br>梯度下降时，你如何评估你最新的参数是向着正确的方向进行修正的呢？我们引入损失函数，直观上理解就是我更新一组参数后，你效果必须是越来越好的，误差也是越来越少的。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8f8362ca47e6c8fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <strong>注意</strong>：是最小二乘误差的
+                      <strong>和</strong>哟，也就是m个样本每个都要计算一次样本（在当前的θ参数下）；前面的1/2是为了求偏导时消除系数的。</p>
+                    <blockquote>
+                      <p>ps. 为什么用最小二乘作为误差函数呢？
+                        <a href="https://www.zhihu.com/question/24095027" target="_blank" rel="external">答案在这！知乎上解释的很透彻了。</a>
+                        <br>简单来说就是前提假设是高斯分布，因此化简（见上述链接）后就是最小二乘，而高斯分布是大自然里很自然的一个属性，遵天道。</p>
+                    </blockquote>
+                    <p>这是直观化的梯度下降图示：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-e852208e76351be3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="图片来源百度">
+                    </p>
+                    <p>梯度下降更新权重参数的过程中我们需要对损失函数求偏导数：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="梯度下降标准数学推导">
+                      <br>求完偏导数以后就可以进行参数更新了：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b80960078df5a73d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>上面公式中的alpha就是下面图中的步长lamda：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-d59749e5d623e570.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="学习率参数">
+                    </p>
+                    <p>
+                      <strong>总结</strong>：理论上是先求得误差函数，然后误差函数对参数θ求偏导，求得后再更新参数就好了</p>
+                    <hr>
+                    <p>#实践部分
+                      <br>
+                      <strong>深度学习的核心理念：输入，然后设定期望的输出，找到二者的相关性。</strong>
+                    </p>
+                    <hr>
+                    <h3 id="最小二乘：">
+                      <a href="#最小二乘：" class="headerlink" title="最小二乘："></a>最小二乘：</h3>
+                    <p>我们先猜测函数的位置，然后平方其误差，重新做出猜测，以减少平方误差的和。这是线性回归的种子。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-467a94055d12ed97.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">#最小二乘法least squares</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#在当前给定的参数a,b下计算所有误差值的平方和并取均值</span></span><br><span class="line"><span class="comment"># ################################################################################</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_error_for_line_given_points</span><span class="params">(b,a,datas)</span>:</span></span><br><span class="line">	totalError = <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(datas)):</span><br><span class="line">		x = datas[i][<span class="number">0</span>]</span><br><span class="line">		y = datas[i][<span class="number">1</span>]</span><br><span class="line">		totalError += (y-(a*x+b))**<span class="number">2</span></span><br><span class="line">	<span class="keyword">return</span> totalError/float(len(datas))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> compute_error_for_line_given_points(<span class="number">1</span>,<span class="number">2</span>,[[<span class="number">3</span>,<span class="number">6</span>],[<span class="number">6</span>,<span class="number">9</span>],[<span class="number">12</span>,<span class="number">18</span>]])</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>总结</strong>：这里讲了如何求误差函数，当然这里求的是最简单的一元变量。
+                        <strong>在一个给定参数情况下计算整体的平均误差值。</strong>
+                      </p>
+                    </blockquote>
+                    <hr>
+                    <h3 id="梯度下降：">
+                      <a href="#梯度下降：" class="headerlink" title="梯度下降："></a>梯度下降：</h3>
+                    <p>比如下面这个函数，我们知道在极小值左边导数是小于0的，右边是大于0 的，同时越靠近极值点导数绝对值越小（可理解为梯度很小）。</p>
+                    <ul>
+                      <li>
+                        <strong>那么我们可以这样思考</strong>：首先我随机选择一个x点，然后计算其导致，假如小于0我就往右挪动一点，大于0我就往左移动一点，最终总会挪动到极值点处的；</li>
+                      <li>
+                        <strong>这其中需要思考的是</strong>：移动步长多少为好呢？太大了不收敛，太小了时间花销大；既然无法确定，那么我们就定一个超参数嘛，让这个值（就是上面参数更新公式中的alpha，也就是下面代码中的学习率）手动来调，多调几次就知道了嘛（目前阶段这样做无可厚非嘛）~
+                        <figure class="highlight python">
+                          <table>
+                            <tr>
+                              <td class="gutter">
+                                <pre><span class="line">1</span><br></pre>
+                              </td>
+                              <td class="code">
+                                <pre><span class="line">current_x += -learning_rate*slope_at_given_x_value(previous_x)</span><br></pre>
+                              </td>
+                            </tr>
+                          </table>
+                        </figure>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-95b07d60bab2fd49.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#http://mp.weixin.qq.com/s/8as8ai5W0RlLOhHT6sswjA</span></span><br><span class="line"><span class="comment">#梯度下降</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line">current_x = <span class="number">0.5</span> <span class="comment">#启动点</span></span><br><span class="line">learning_rate = <span class="number">0.01</span><span class="comment">#学习率</span></span><br><span class="line">num_iterations = <span class="number">10</span> <span class="comment">#迭代次数</span></span><br><span class="line"><span class="comment">#这个是斜率</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">slope_at_given_x_value</span><span class="params">(x)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">5</span>*x**<span class="number">4</span> - <span class="number">6</span>*x**<span class="number">2</span></span><br><span class="line"><span class="comment">#整体表达的是一个移动的概念，往“城市”中心移动（基于斜率）。</span></span><br><span class="line"><span class="comment">#也就是我选定一个初始点，然后看这一点的斜率值，在极小值点左边是斜率小于零，右边是斜率大于零，</span></span><br><span class="line"><span class="comment">#因此我们随机选择一个点后，把当前点加上一个趋势，在极值点左边就加，右边就减去，这样不断迭代就好了。</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num_iterations):</span><br><span class="line">	previous_x = current_x</span><br><span class="line">	current_x += -learning_rate*slope_at_given_x_value(previous_x)</span><br><span class="line">	print(previous_x)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"the local minimum occurs at %f"</span> % current_x</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>这里可以把x看作是梯度下降里面的参数，假设只有一个参数时的情况，属一元变量。</p>
+                    <blockquote>
+                      <p>
+                        <strong>总结</strong>：可以将上述的
+                        <code>slope_at_given_x_value(x)</code>函数看作误差函数，然后这里讲了如何求导误差函数的极小值，当然也是在一元变量的情况下做的。</p>
+                    </blockquote>
+                    <hr>
+                    <h3 id="线性回归：">
+                      <a href="#线性回归：" class="headerlink" title="线性回归："></a>线性回归：</h3>
+                    <p>通过组合最小二乘法和梯度下降法，就可以得到线性回归。
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#最小二乘法 + 梯度下降 == 线性回归</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#price of wheat/Kg and the average price of bread</span></span><br><span class="line">wheat_and_bread = [[<span class="number">0.5</span>,<span class="number">5</span>],[<span class="number">0.6</span>,<span class="number">5.5</span>],[<span class="number">0.8</span>,<span class="number">6</span>],[<span class="number">1.1</span>,<span class="number">6.8</span>],[<span class="number">1.4</span>,<span class="number">7</span>]]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">step_gradient</span><span class="params">(b_current,a_current,datas,learningRate)</span>:</span></span><br><span class="line">	b_gradient = <span class="number">0</span></span><br><span class="line">	a_gradient = <span class="number">0</span></span><br><span class="line">	N = float(len(datas))</span><br><span class="line">	<span class="comment">#这里是把所有的数据集的误差值求出来，然后</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(datas)):</span><br><span class="line">		x = datas[i][<span class="number">0</span>]</span><br><span class="line">		y = datas[i][<span class="number">1</span>]</span><br><span class="line">		b_gradient += -(<span class="number">2</span>/N) * (y - ((a_current*x + b_current)))</span><br><span class="line">		a_gradient += -(<span class="number">2</span>/N) * x * (y - ((a_current*x + b_current)))</span><br><span class="line">	</span><br><span class="line">	new_b = b_current - (learningRate * b_gradient)</span><br><span class="line">	new_a = a_current - (learningRate * a_gradient)</span><br><span class="line">	<span class="keyword">return</span> [new_b,new_a]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradient_descent_runner</span><span class="params">(datas,starting_b,starting_a,learning_rate,num_iterations)</span>:</span></span><br><span class="line">	b = starting_b</span><br><span class="line">	a = starting_a</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(num_iterations):</span><br><span class="line">		b,a = step_gradient(b,a,datas,learning_rate)</span><br><span class="line">	<span class="keyword">return</span> [b,a]</span><br><span class="line"><span class="keyword">print</span> gradient_descent_runner(wheat_and_bread,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0.01</span>,<span class="number">100</span>)</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>因为是一元变量的线性拟合，所以拟合函数是y=ax+b，需要求的参数是a,b；</p>
+                    <blockquote>
+                      <p>自变量（特征）=｛x｝;只有x一个。
+                        <br>参数θ=｛a,b｝;两个参数需求解。</p>
+                    </blockquote>
+                    <p>因此我的梯度下降是这样做的：首先把a,b参数初始化为0，然后由于已知拟合函数形式了，因此直接代入偏导函数求参数：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="梯度下降标准数学推导">
+                      <br>对应代码为：
+                      <br>
+                      <code>b_gradient += -(2/N) * (y - ((a_current*x + b_current)))</code>
+                      <br>
+                      <strong>上面的2是因为我们定义误差函数的时候是没有加1/2的，因此这里求偏导后有个2（2次方），同时求得是整体的平均误差，因此每个误差前面乘以个1/N。</strong>
+                      <br>
+                      <code>a_gradient += -(2/N) * x * (y - ((a_current*x + b_current)))</code>
+                      <br>分析同上，但是这里多乘了个
+                      <code>x</code>，为啥？因为梯度公式本来就是这样的啊！那个b_gradient因为是常数项，即x的0次方（特征1）所以直接是1了，省略；而这个是x的1次方（特征2），因此直接按公式将这个特征乘以就好了。</p>
+                    <blockquote>
+                      <p>
+                        <strong>总结</strong>：对比之前的那个一元变量的导数（斜率）可知，这里的偏导思路跟那是一样的啊，目标就是更新参数，而参数的更新就是偏导嘛（导数咯），偏导就是上面一元函数里面的斜率嘛，这么对照着直接理解的话就可以知道过程是一样的，都是围绕某一个参数变量求导数（当然数据量多的时候求导数的平均值），然后不断修改之就好啦~</p>
+                    </blockquote>
+                    <hr>
+                    <p>#三种梯度下降方法
+                      <br>
+                      <a href="http://www.sohu.com/a/132440449_164987" target="_blank" rel="external">
+                        <strong>【资料引用来源】</strong>
+                      </a>
+                      <br>一般线性回归函数的假设函数为（x是一些特诊变量）：
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-d0817b7fd517113f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">对应的损失函数为（这里的1/2是为了后面求梯度计算方便）：
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-a5a7d09f19300847.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <h3 id="批量梯度下降法（BGD）">
+                      <a href="#批量梯度下降法（BGD）" class="headerlink" title="批量梯度下降法（BGD）"></a>批量梯度下降法（BGD）</h3>
+                    <p>我们的目的是要误差函数尽可能的小，即求解weights使误差函数尽可能小。
+                      <br>
+                      <strong>首先</strong>，我们随机初始化weigths，
+                      <strong>然后</strong>不断反复的更新weights使得误差函数减小，
+                      <strong>直到</strong>满足要求时停止。
+                      <br>这里更新算法我们选择梯度下降算法，利用初始化的weights并且反复更新weights：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-4bd127d66985502d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">这里代表学习率，表示每次向着J最陡峭的方向迈步的大小。为了更新weights，我们需要求出函数J的偏导数。
+                      <strong>首先当我们只有一个数据点（x,y）的时候</strong>，J的偏导数是：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-94438bc92e1c64cf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>则对
+                      <strong>所有数据点，</strong>上述损失函数的偏导（
+                      <strong>累和</strong>）为：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-82a05240ae151982.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>再最小化损失函数的过程中，
+                      <strong>需要不断反复的更新weights使得误差函数减小</strong>，更新过程如下：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-7e15b5f69462d816.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>那么好了，
+                      <strong>每次参数更新的伪代码</strong>如下：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ed5d87faa8e83b9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>由上图更新公式我们就可以看到，
+                      <strong>我们每一次的参数更新都用到了所有的训练数据</strong>（比如有m个，就用到了m个），如果训练数据非常多的话，
+                      <strong>是非常耗时的。</strong>
+                      <br>
+                      <strong>下面给出批梯度下降的收敛图：</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-cacfaee34223ae31.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <p>###随机梯度下降法(SGD)
+                      <br>由于批梯度下降每跟新一个参数的时候，要用到所有的样本数，所以训练速度会随着样本数量的增加而变得非常缓慢。随机梯度下降正是为了解决这个办法而提出的。它是利用每个样本的损失函数对θ求偏导得到对应的梯度，来更新θ：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-2d6de9be29d5bd7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>更新过程如下：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-05d7f99133de67ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>随机梯度下降是通过每个样本来迭代更新一次，对比上面的批量梯度下降，迭代一次需要用到所有训练样本（
+                      <strong>往往如今真实问题训练数据都是非常巨大</strong>），一次迭代不可能最优，如果迭代10次的话就需要遍历训练样本10次。
+                      <br>
+                      <strong>但是，SGD伴随的一个问题是噪音较BGD要多，使得SGD并不是每次迭代都向着整体最优化方向。</strong>
+                      <br>
+                      <strong>随机梯度下降收敛图如下：</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-4691e85e0b4aa979.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>我们可以从图中看出SGD迭代的次数较多，在解空间的搜索过程看起来很盲目。
+                      <strong>但是大体上是往着最优值方向移动。</strong>
+                    </p>
+                    <hr>
+                    <p>###小批量梯度下降法(MBGD)</p>
+                    <p>我们从上面两种梯度下降法可以看出，其各自均有优缺点，那么能不能在两种方法的性能之间取得一个折衷呢？既
+                      <strong>算法的训练过程比较快，而且也要保证最终参数训练的准确率</strong>，而这正是小批量梯度下降法（Mini-batch
+                      Gradient Descent，简称MBGD）的初衷。
+                      <br>我们假设每次更新参数的时候用到的样本数为10个（
+                      <strong>不同的任务完全不同，这里举一个例子而已</strong>）
+                      <br>更新伪代码如下：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-5ac41ddd1af6bce8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <p>###三种梯度下降方法的总结</p>
+                    <ol>
+                      <li>
+                        <p>批梯度下降每次更新使用了
+                          <strong>所有的训练数据</strong>，最小化损失函数，如果只有一个极小值，那么批梯度下降是考虑了训练集所有数据，是朝着最小值迭代运动的，但是
+                          <strong>缺点是如果样本值很大的话，更新速度会很慢。</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>随机梯度下降在每次更新的时候，只考虑了一个样本点，这样会大大加快训练数据，也恰好是批梯度下降的缺点，但是有可能由于训练数据的噪声点较多，
+                          <strong>那么每一次利用噪声点进行更新的过程中，就不一定是朝着极小值方向更新，但是由于更新多轮，整体方向还是大致朝着极小值方向更新，又提高了速度。</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>小批量梯度下降法是为
+                          <strong>了解决批梯度下降法的训练速度慢，以及随机梯度下降法的准确性综合而来，但是这里注意，不同问题的batch是不一样的，根据实验结果来迭代调整。</strong>
+                        </p>
+                      </li>
+                    </ol>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/逻辑回归实践/" title="逻辑回归实践">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/逻辑回归实践/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/线性回归实践/" rel="next" title="���Իع�ʵ��">
+                          <i class="fa fa-chevron-left"></i> ���Իع�ʵ��
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/机器学习实战-项目（努力写着呢~）/" rel="prev" title="机器学习实战-项目（努力写着呢~）">
+                          机器学习实战-项目（努力写着呢~）
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">13</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">3</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#最小二乘：">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          最小二乘：</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#梯度下降：">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          梯度下降：</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#线性回归：">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          线性回归：</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#批量梯度下降法（BGD）">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          批量梯度下降法（BGD）</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2017</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">43.1k</span>
+
+        </div>
+
+        <div class="powered-by">footer.powered</div>
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

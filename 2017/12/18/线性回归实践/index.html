@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="#���۲��� ��������������Իع����⣬��ʽ���£�         X���Ա�����Ҳ��������ʵ�ʳ����е�   ������������������Ŀ��ÿ��ʱ��оƬ�ĵ�ѹ���¶ȣ�����״̬���������ݡ�����ֵ�����ġ��������εȵȲ�����      ����Ȩ�ز�����Ҳ����������Ҫȥ�ݶ��½���">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="���Իع�ʵ��">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/线性回归实践/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="#���۲��� ��������������Իع����⣬��ʽ���£�         X���Ա�����Ҳ��������ʵ�ʳ����е�   ������������������Ŀ��ÿ��ʱ��оƬ�ĵ�ѹ���¶ȣ�����״̬���������ݡ�����ֵ�����ġ��������εȵȲ�����      ����Ȩ�ز�����Ҳ����������Ҫȥ�ݶ��½���">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8f8362ca47e6c8fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e852208e76351be3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b80960078df5a73d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-d59749e5d623e570.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-467a94055d12ed97.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-95b07d60bab2fd49.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-d0817b7fd517113f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-a5a7d09f19300847.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-4bd127d66985502d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-94438bc92e1c64cf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-82a05240ae151982.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-7e15b5f69462d816.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ed5d87faa8e83b9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-cacfaee34223ae31.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-2d6de9be29d5bd7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-05d7f99133de67ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-4691e85e0b4aa979.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5ac41ddd1af6bce8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2017-12-18T08:00:19.326Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="���Իع�ʵ��">
+  <meta name="twitter:description" content="#���۲��� ��������������Իع����⣬��ʽ���£�         X���Ա�����Ҳ��������ʵ�ʳ����е�   ������������������Ŀ��ÿ��ʱ��оƬ�ĵ�ѹ���¶ȣ�����״̬���������ݡ�����ֵ�����ġ��������εȵȲ�����      ����Ȩ�ز�����Ҳ����������Ҫȥ�ݶ��½���">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/线性回归实践/"
+  />
+
+  <title>���Իع�ʵ�� | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas", "/live2d/assets/haruto.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/线性回归实践/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">���Իع�ʵ��</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:57:05+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/MachineLearning/" itemprop="url" rel="index">
+                            <span itemprop="name">MachineLearning</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          607
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          4
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <p>#���۲���</p>
+                    <p>��������������Իع����⣬��ʽ���£�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-53d5979165ccec15.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <strong>X���Ա���</strong>��Ҳ��������ʵ�ʳ����е�
+                      <strong>����</strong>��������������Ŀ��ÿ��ʱ��оƬ�ĵ�ѹ���¶ȣ�����״̬���������ݡ�����ֵ�����ġ��������εȵȲ�����
+                      <br>
+                      <strong>����Ȩ�ز���</strong>��Ҳ����������Ҫȥ�ݶ��½����ľ���ֵ��
+                      <code>(������һ�ѵ���������ϳ���ѵĦ�[��])</code>���������h(x)��ͨ����ѵĦȣ��õ�����������h�ȣ�x����Ȼ����Ԥ���ʱ���ֻҪֱ���������ʽ�ͺ��ˡ�
+                      <br>�ݶ��½�ʱ����������������µĲ�����������ȷ�ķ�������������أ�����������ʧ������ֱ�����������Ҹ���һ���������Ч��������Խ��Խ�õģ����Ҳ��Խ��Խ�ٵġ�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8f8362ca47e6c8fe.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <strong>ע��</strong>������С��������
+                      <strong>��</strong>Ӵ��Ҳ����m������ÿ����Ҫ����һ���������ڵ�ǰ�ĦȲ����£���ǰ���1/2��Ϊ����ƫ��ʱ����ϵ���ġ�</p>
+                    <blockquote>
+                      <p>ps. Ϊʲô����С������Ϊ�����أ�
+                        <a href="https://www.zhihu.com/question/24095027" target="_blank" rel="external">�����⣡֪���Ͻ��͵ĺ�͸���ˡ�</a>
+                        <br>����˵����ǰ������Ǹ�˹�ֲ�����˻��򣨼��������ӣ��������С���ˣ�����˹�ֲ��Ǵ���Ȼ�����Ȼ��һ�����ԣ��������</p>
+                    </blockquote>
+                    <p>����ֱ�ۻ����ݶ��½�ͼʾ��</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-e852208e76351be3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="ͼƬ��Դ�ٶ�">
+                    </p>
+                    <p>�ݶ��½�����Ȩ�ز����Ĺ�����������Ҫ����ʧ������ƫ������
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="�ݶ��½���׼��ѧ�Ƶ�">
+                      <br>����ƫ�����Ժ�Ϳ��Խ��в��������ˣ�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b80960078df5a73d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>���湫ʽ�е�alpha��������ͼ�еĲ���lamda��
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-d59749e5d623e570.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="ѧϰ�ʲ���">
+                    </p>
+                    <p>
+                      <strong>�ܽ�</strong>���������������������Ȼ�������Բ�������ƫ������ú��ٸ��²����ͺ���</p>
+                    <hr>
+                    <p>#ʵ������
+                      <br>
+                      <strong>���ѧϰ�ĺ���������룬Ȼ���趨������������ҵ����ߵ�����ԡ�</strong>
+                    </p>
+                    <hr>
+                    <h3 id="��С���ˣ�">
+                      <a href="#��С���ˣ�" class="headerlink" title="��С���ˣ�"></a>��С���ˣ�</h3>
+                    <p>�����Ȳ²⺯����λ�ã�Ȼ��ƽ���������������²⣬�Լ���ƽ�����ĺ͡��������Իع�����ӡ�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-467a94055d12ed97.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">#��С���˷�least squares</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#�ڵ�ǰ�����Ĳ���a,b�¼����������ֵ��ƽ���Ͳ�ȡ��ֵ</span></span><br><span class="line"><span class="comment"># ################################################################################</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">compute_error_for_line_given_points</span><span class="params">(b,a,datas)</span>:</span></span><br><span class="line">	totalError = <span class="number">0</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(datas)):</span><br><span class="line">		x = datas[i][<span class="number">0</span>]</span><br><span class="line">		y = datas[i][<span class="number">1</span>]</span><br><span class="line">		totalError += (y-(a*x+b))**<span class="number">2</span></span><br><span class="line">	<span class="keyword">return</span> totalError/float(len(datas))</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> compute_error_for_line_given_points(<span class="number">1</span>,<span class="number">2</span>,[[<span class="number">3</span>,<span class="number">6</span>],[<span class="number">6</span>,<span class="number">9</span>],[<span class="number">12</span>,<span class="number">18</span>]])</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>�ܽ�</strong>�����ｲ���������������Ȼ�����������򵥵�һԪ������
+                        <strong>��һ��������������¼��������ƽ�����ֵ��</strong>
+                      </p>
+                    </blockquote>
+                    <hr>
+                    <h3 id="�ݶ��½���">
+                      <a href="#�ݶ��½���" class="headerlink" title="�ݶ��½���"></a>�ݶ��½���</h3>
+                    <p>���������������������֪���ڼ�Сֵ��ߵ�����С��0�ģ��ұ��Ǵ���0 �ģ�ͬʱԽ������ֵ�㵼������ֵԽС�������Ϊ�ݶȺ�С����</p>
+                    <ul>
+                      <li>
+                        <strong>��ô���ǿ�������˼��</strong>�����������ѡ��һ��x�㣬Ȼ������䵼�£�����С��0�Ҿ�����Ų��һ�㣬����0�Ҿ������ƶ�һ�㣬�����ܻ�Ų������ֵ�㴦�ģ�</li>
+                      <li>
+                        <strong>��������Ҫ˼������</strong>���ƶ���������Ϊ���أ�̫���˲�������̫С��ʱ�仨���󣻼�Ȼ�޷�ȷ������ô���ǾͶ�һ��������������ֵ����������������¹�ʽ�е�alpha��Ҳ������������е�ѧϰ�ʣ��ֶ�������������ξ�֪�����Ŀǰ�׶��������޿ɺ���~
+                        <figure class="highlight python">
+                          <table>
+                            <tr>
+                              <td class="gutter">
+                                <pre><span class="line">1</span><br></pre>
+                              </td>
+                              <td class="code">
+                                <pre><span class="line">current_x += -learning_rate*slope_at_given_x_value(previous_x)</span><br></pre>
+                              </td>
+                            </tr>
+                          </table>
+                        </figure>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-95b07d60bab2fd49.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#http://mp.weixin.qq.com/s/8as8ai5W0RlLOhHT6sswjA</span></span><br><span class="line"><span class="comment">#�ݶ��½�</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line">current_x = <span class="number">0.5</span> <span class="comment">#���</span></span><br><span class="line">learning_rate = <span class="number">0.01</span><span class="comment">#ѧϰ��</span></span><br><span class="line">num_iterations = <span class="number">10</span> <span class="comment">#��������</span></span><br><span class="line"><span class="comment">#�����б��</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">slope_at_given_x_value</span><span class="params">(x)</span>:</span></span><br><span class="line">	<span class="keyword">return</span> <span class="number">5</span>*x**<span class="number">4</span> - <span class="number">6</span>*x**<span class="number">2</span></span><br><span class="line"><span class="comment">#���������һ���ƶ��ĸ���������С������ƶ�������б�ʣ���</span></span><br><span class="line"><span class="comment">#Ҳ������ѡ��һ����ʼ�㣬Ȼ����һ���б��ֵ���ڼ�Сֵ�������б��С���㣬�ұ���б�ʴ����㣬</span></span><br><span class="line"><span class="comment">#����������ѡ��һ����󣬰ѵ�ǰ�����һ�����ƣ��ڼ�ֵ����߾ͼӣ��ұ߾ͼ�ȥ���������ϵ����ͺ��ˡ�</span></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(num_iterations):</span><br><span class="line">	previous_x = current_x</span><br><span class="line">	current_x += -learning_rate*slope_at_given_x_value(previous_x)</span><br><span class="line">	print(previous_x)</span><br><span class="line"><span class="keyword">print</span> <span class="string">"the local minimum occurs at %f"</span> % current_x</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>������԰�x�������ݶ��½�����Ĳ���������ֻ��һ������ʱ���������һԪ������</p>
+                    <blockquote>
+                      <p>
+                        <strong>�ܽ�</strong>�����Խ�������
+                        <code>slope_at_given_x_value(x)</code>��������������Ȼ�����ｲ������������ļ�Сֵ����ȻҲ����һԪ��������������ġ�</p>
+                    </blockquote>
+                    <hr>
+                    <h3 id="���Իع飺">
+                      <a href="#���Իع飺" class="headerlink" title="���Իع飺"></a>���Իع飺</h3>
+                    <p>ͨ�������С���˷����ݶ��½������Ϳ��Եõ����Իع顣
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#��С���˷� + �ݶ��½� == ���Իع�</span></span><br><span class="line"><span class="comment">################################################################################</span></span><br><span class="line"><span class="comment">#price of wheat/Kg and the average price of bread</span></span><br><span class="line">wheat_and_bread = [[<span class="number">0.5</span>,<span class="number">5</span>],[<span class="number">0.6</span>,<span class="number">5.5</span>],[<span class="number">0.8</span>,<span class="number">6</span>],[<span class="number">1.1</span>,<span class="number">6.8</span>],[<span class="number">1.4</span>,<span class="number">7</span>]]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">step_gradient</span><span class="params">(b_current,a_current,datas,learningRate)</span>:</span></span><br><span class="line">	b_gradient = <span class="number">0</span></span><br><span class="line">	a_gradient = <span class="number">0</span></span><br><span class="line">	N = float(len(datas))</span><br><span class="line">	<span class="comment">#�����ǰ����е����ݼ������ֵ�������Ȼ��</span></span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">0</span>,len(datas)):</span><br><span class="line">		x = datas[i][<span class="number">0</span>]</span><br><span class="line">		y = datas[i][<span class="number">1</span>]</span><br><span class="line">		b_gradient += -(<span class="number">2</span>/N) * (y - ((a_current*x + b_current)))</span><br><span class="line">		a_gradient += -(<span class="number">2</span>/N) * x * (y - ((a_current*x + b_current)))</span><br><span class="line">	</span><br><span class="line">	new_b = b_current - (learningRate * b_gradient)</span><br><span class="line">	new_a = a_current - (learningRate * a_gradient)</span><br><span class="line">	<span class="keyword">return</span> [new_b,new_a]</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gradient_descent_runner</span><span class="params">(datas,starting_b,starting_a,learning_rate,num_iterations)</span>:</span></span><br><span class="line">	b = starting_b</span><br><span class="line">	a = starting_a</span><br><span class="line">	<span class="keyword">for</span> i <span class="keyword">in</span> range(num_iterations):</span><br><span class="line">		b,a = step_gradient(b,a,datas,learning_rate)</span><br><span class="line">	<span class="keyword">return</span> [b,a]</span><br><span class="line"><span class="keyword">print</span> gradient_descent_runner(wheat_and_bread,<span class="number">1</span>,<span class="number">1</span>,<span class="number">0.01</span>,<span class="number">100</span>)</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>��Ϊ��һԪ������������ϣ�������Ϻ�����y=ax+b����Ҫ��Ĳ�����a,b��</p>
+                    <blockquote>
+                      <p>�Ա�����������=��x��;ֻ��xһ����
+                        <br>������=��a,b��;������������⡣</p>
+                    </blockquote>
+                    <p>����ҵ��ݶ��½����������ģ����Ȱ�a,b������ʼ��Ϊ0��Ȼ��������֪��Ϻ�����ʽ�ˣ����ֱ�Ӵ���ƫ�������������
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-1cb4968f3194697c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="�ݶ��½���׼��ѧ�Ƶ�">
+                      <br>��Ӧ����Ϊ��
+                      <br>
+                      <code>b_gradient += -(2/N) * (y - ((a_current*x + b_current)))</code>
+                      <br>
+                      <strong>�����2����Ϊ���Ƕ���������ʱ����û�м�1/2�ģ����������ƫ�����и�2��2�η�����ͬʱ����������ƽ�������ÿ�����ǰ����Ը�1/N��</strong>
+                      <br>
+                      <code>a_gradient += -(2/N) * x * (y - ((a_current*x + b_current)))</code>
+                      <br>����ͬ�ϣ������������˸�
+                      <code>x</code>��Ϊɶ����Ϊ�ݶȹ�ʽ�������������İ����Ǹ�b_gradient��Ϊ�ǳ������x��0�η�������1������ֱ����1�ˣ�ʡ�ԣ��������x��1�η�������2�������ֱ�Ӱ���ʽ������������Ծͺ��ˡ�</p>
+                    <blockquote>
+                      <p>
+                        <strong>�ܽ�</strong>���Ա�֮ǰ���Ǹ�һԪ�����ĵ�����б�ʣ���֪�������ƫ��˼·������һ���İ���Ŀ����Ǹ��²������������ĸ��¾���ƫ�������������ƫ����������һԪ���������б�����ô������ֱ�����Ļ��Ϳ���֪��������һ���ģ�����Χ��ĳһ������������������Ȼ���������ʱ��������ƽ��ֵ����Ȼ�󲻶��޸�֮�ͺ���~</p>
+                    </blockquote>
+                    <hr>
+                    <p>#�����ݶ��½�����
+                      <br>
+                      <a href="http://www.sohu.com/a/132440449_164987" target="_blank" rel="external">
+                        <strong>������������Դ��</strong>
+                      </a>
+                      <br>һ�����Իع麯���ļ��躯��Ϊ��x��һЩ�����������
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-d0817b7fd517113f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">��Ӧ����ʧ����Ϊ�������1/2��Ϊ�˺������ݶȼ��㷽�㣩��
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-a5a7d09f19300847.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <h3 id="�����ݶ��½�����BGD��">
+                      <a href="#�����ݶ��½�����BGD��" class="headerlink" title="�����ݶ��½�����BGD��"></a>�����ݶ��½�����BGD��</h3>
+                    <p>���ǵ�Ŀ����Ҫ���������ܵ�С�������weightsʹ����������С��
+                      <br>
+                      <strong>����</strong>�����������ʼ��weigths��
+                      <strong>Ȼ��</strong>���Ϸ����ĸ���weightsʹ��������С��
+                      <strong>ֱ��</strong>����Ҫ��ʱֹͣ��
+                      <br>��������㷨����ѡ���ݶ��½��㷨�����ó�ʼ����weights���ҷ�������weights��</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-4bd127d66985502d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">�������ѧϰ�ʣ���ʾÿ������J��͵ķ��������Ĵ�С��Ϊ�˸���weights��������Ҫ�������J��ƫ������
+                      <strong>���ȵ�����ֻ��һ�����ݵ㣨x,y����ʱ��</strong>��J��ƫ�����ǣ�</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-94438bc92e1c64cf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>���
+                      <strong>�������ݵ㣬</strong>������ʧ������ƫ����
+                      <strong>�ۺ�</strong>��Ϊ��
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-82a05240ae151982.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>����С����ʧ�����Ĺ����У�
+                      <strong>��Ҫ���Ϸ����ĸ���weightsʹ��������С</strong>�����¹������£�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-7e15b5f69462d816.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>��ô���ˣ�
+                      <strong>ÿ�β������µ�α����</strong>���£�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ed5d87faa8e83b9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>����ͼ���¹�ʽ���ǾͿ��Կ�����
+                      <strong>����ÿһ�εĲ������¶��õ������е�ѵ������</strong>��������m�������õ���m���������ѵ�����ݷǳ���Ļ���
+                      <strong>�Ƿǳ���ʱ�ġ�</strong>
+                      <br>
+                      <strong>����������ݶ��½�������ͼ��</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-cacfaee34223ae31.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <p>###����ݶ��½���(SGD)
+                      <br>�������ݶ��½�ÿ����һ��������ʱ��Ҫ�õ����е�������������ѵ���ٶȻ������������������Ӷ���÷ǳ�����������ݶ��½�����Ϊ�˽������취������ġ���������ÿ����������ʧ�����Ԧ���ƫ���õ���Ӧ���ݶȣ������¦ȣ�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-2d6de9be29d5bd7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>���¹������£�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-05d7f99133de67ad.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>����ݶ��½���ͨ��ÿ����������������һ�Σ��Ա�����������ݶ��½�������һ����Ҫ�õ�����ѵ��������
+                      <strong>���������ʵ����ѵ�����ݶ��Ƿǳ��޴�</strong>����һ�ε������������ţ��������10�εĻ�����Ҫ����ѵ������10�Ρ�
+                      <br>
+                      <strong>���ǣ�SGD�����һ�������������BGDҪ�࣬ʹ��SGD������ÿ�ε����������������Ż�����</strong>
+                      <br>
+                      <strong>����ݶ��½�����ͼ���£�</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-4691e85e0b4aa979.jpeg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>���ǿ��Դ�ͼ�п���SGD�����Ĵ����϶࣬�ڽ�ռ���������̿�������äĿ��
+                      <strong>���Ǵ���������������ֵ�����ƶ���</strong>
+                    </p>
+                    <hr>
+                    <p>###С�����ݶ��½���(MBGD)</p>
+                    <p>���Ǵ����������ݶ��½������Կ���������Ծ�����ȱ�㣬��ô�ܲ��������ַ���������֮��ȡ��һ�������أ���
+                      <strong>�㷨��ѵ�����̱ȽϿ죬����ҲҪ��֤���ղ���ѵ����׼ȷ��</strong>����������С�����ݶ��½�����Mini-batch
+                      Gradient Descent�����MBGD���ĳ��ԡ�
+                      <br>���Ǽ���ÿ�θ��²�����ʱ���õ���������Ϊ10����
+                      <strong>��ͬ��������ȫ��ͬ�������һ�����Ӷ���</strong>��
+                      <br>����α�������£�
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-5ac41ddd1af6bce8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <p>###�����ݶ��½��������ܽ�</p>
+                    <ol>
+                      <li>
+                        <p>���ݶ��½�ÿ�θ���ʹ����
+                          <strong>���е�ѵ������</strong>����С����ʧ���������ֻ��һ����Сֵ����ô���ݶ��½��ǿ�����ѵ�����������ݣ��ǳ�����Сֵ�����˶��ģ�����
+                          <strong>ȱ�����������ֵ�ܴ�Ļ��������ٶȻ������</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>����ݶ��½���ÿ�θ��µ�ʱ��ֻ������һ�������㣬��������ӿ�ѵ�����ݣ�Ҳǡ�������ݶ��½���ȱ�㣬�����п�������ѵ�����ݵ�������϶࣬
+                          <strong>��ôÿһ��������������и��µĹ����У��Ͳ�һ���ǳ��ż�Сֵ������£��������ڸ��¶��֣����巽���Ǵ��³��ż�Сֵ������£���������ٶȡ�</strong>
+                        </p>
+                      </li>
+                      <li>
+                        <p>С�����ݶ��½�����Ϊ
+                          <strong>�˽�����ݶ��½�����ѵ���ٶ������Լ�����ݶ��½�����׼ȷ���ۺ϶�������������ע�⣬��ͬ�����batch�ǲ�һ���ģ�����ʵ����������������</strong>
+                        </p>
+                      </li>
+                    </ol>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/线性回归实践/" title="���Իع�ʵ��">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/线性回归实践/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/CNN网络架构变迁史/" rel="next" title="CNN网络架构变迁史">
+                          <i class="fa fa-chevron-left"></i> CNN网络架构变迁史
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/逻辑回归实践/" rel="prev" title="逻辑回归实践">
+                          逻辑回归实践
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">13</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">3</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#��С���ˣ�">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          ��С���ˣ�</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#�ݶ��½���">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          �ݶ��½���</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#���Իع飺">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          ���Իع飺</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#�����ݶ��½�����BGD��">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          �����ݶ��½�����BGD��</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2017</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">43.1k</span>
+
+        </div>
+
+        <div class="powered-by">footer.powered</div>
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>
