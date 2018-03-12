@@ -1,0 +1,1290 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="分为三个层次：   底层物理缺陷层，中间功能层，以及性能层；     FaultModel：这是有一系列的论文、背景支持的，我们最终采用的是精简的失效模型来设计算法；   功能层就是测一下每个cell功能是否正常，常规做法就是直接memtester，但是跟底层貌似有些重合，需确认；   性能层就是我们在改变电压、时序等参数的时候，你跑pattern能跑到多高的频率。     3.1 缺陷测试Fau">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="0x03 测试算法">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memtester-LPDDR3--master/0x03 测试算法/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="分为三个层次：   底层物理缺陷层，中间功能层，以及性能层；     FaultModel：这是有一系列的论文、背景支持的，我们最终采用的是精简的失效模型来设计算法；   功能层就是测一下每个cell功能是否正常，常规做法就是直接memtester，但是跟底层貌似有些重合，需确认；   性能层就是我们在改变电压、时序等参数的时候，你跑pattern能跑到多高的频率。     3.1 缺陷测试Fau">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b3dcc0107ac6057f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-28e05775c4c05a68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5130fd393fc980b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-bbd9006cc09926b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-95ca74f198f6e281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f58407c24dff38ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3008cfc466918bd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-83d60cf868594610.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-53aee6c1b919d549.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-70dead67566fcc83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-12T12:03:09.616Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0x03 测试算法">
+  <meta name="twitter:description" content="分为三个层次：   底层物理缺陷层，中间功能层，以及性能层；     FaultModel：这是有一系列的论文、背景支持的，我们最终采用的是精简的失效模型来设计算法；   功能层就是测一下每个cell功能是否正常，常规做法就是直接memtester，但是跟底层貌似有些重合，需确认；   性能层就是我们在改变电压、时序等参数的时候，你跑pattern能跑到多高的频率。     3.1 缺陷测试Fau">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-b3dcc0107ac6057f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memtester-LPDDR3--master/0x03 测试算法/"
+  />
+
+  <title>0x03 测试算法 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memtester-LPDDR3--master/0x03 测试算法/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">0x03 测试算法</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T10:56:56+08:00">
+                          2018-03-12
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/DDR内存颗粒验证算法专题/" itemprop="url" rel="index">
+                            <span itemprop="name">DDR内存颗粒验证算法专题</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          4,097
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          17
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <p>分为三个层次：
+                      <strong>底层物理缺陷层，中间功能层，以及性能层；</strong>
+                    </p>
+                    <ul>
+                      <li>FaultModel：这是有一系列的论文、背景支持的，我们最终采用的是精简的失效模型来设计算法；</li>
+                      <li>功能层就是测一下每个cell功能是否正常，常规做法就是直接memtester，但是跟底层貌似有些重合，需确认；</li>
+                      <li>性能层就是我们在改变电压、时序等参数的时候，你跑pattern能跑到多高的频率。</li>
+                    </ul>
+                    <h1 id="3-1-缺陷测试FaultModel">
+                      <a href="#3-1-缺陷测试FaultModel" class="headerlink" title="3.1 缺陷测试FaultModel"></a>3.1 缺陷测试FaultModel</h1>
+                    <h2 id="3-1-1-背景">
+                      <a href="#3-1-1-背景" class="headerlink" title="3.1.1 背景"></a>3.1.1 背景</h2>
+                    <p>
+                      <strong>基于FaultMOdel来进行测试，而这个缺陷模型又是怎么来的呢？</strong>
+                      <br>这是由于以前出现过具体的某个物理缺陷，然后工程师们就抽象出了这个error，然后建立一个模型用来验证这样缺陷，这就是缺陷模型的由来；</p>
+                    <p>内存模型从底层物理层至行为层如下图所示，每一个环节都有可能出问题，因此每个部分均须建模来进行测试。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b3dcc0107ac6057f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>
+                      <strong>四层模型</strong>分别是：</p>
+                    <ul>
+                      <li>
+                        <strong>Behavioral</strong> model （memtester、跑系统及应用）</li>
+                      <li>
+                        <strong>Functional</strong> model（Fault Model）</li>
+                      <li>
+                        <strong>Electrical</strong> model</li>
+                      <li>
+                        <strong>Layout model</strong> (rarely reported)</li>
+                    </ul>
+                    <h2 id="3-1-2-Fault-Model分析">
+                      <a href="#3-1-2-Fault-Model分析" class="headerlink" title="3.1.2 Fault Model分析"></a>3.1.2 Fault Model分析</h2>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-28e05775c4c05a68.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>DRAM架构如上图所示，分地址解码器、内存单元阵列和读写逻辑三大部分。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-5130fd393fc980b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>因此缺陷模型也对应分为
+                      <strong>地址解码</strong>缺陷、
+                      <strong>内存单元</strong>缺陷、
+                      <strong>动态</strong>缺陷三个部分。</p>
+                    <p>三个部分的缺陷概览及分类如下：（来自历年论文）</p>
+                    <h3 id="（一）Memory-cell-faults">
+                      <a href="#（一）Memory-cell-faults" class="headerlink" title="（一）Memory cell faults"></a>（一）Memory cell faults</h3>
+                    <p>
+                      <strong>1. Stuck-at fault (SAF):</strong> cell or line s-a-0 or s-a-1
+                      [1].</p>
+                    <p>
+                      <strong>2. Stuck-open fault (SOF):</strong> open cell or broken line
+                      .</p>
+                    <p>
+                      <strong>3. Transition fault (TF):</strong> cell fails to transit [1].</p>
+                    <p>
+                      <strong>4. Data retention fault (DRF):</strong> cell fails to retain
+                      its logic value after some specified time due to, e.g., leakage,
+                      resistor opens, or feedback path opens [2].
+                    </p>
+                    <p>
+                      <strong>5. Coupling fault (CF):</strong> Coupling faults are of three
+                      types [1].</p>
+                    <ul>
+                      <li>
+                        <strong>Inversion coupling fault (CFin):</strong> a transition in
+                        one cell (aggressor) inverts the content of another cell
+                        (victim). [1,3]</li>
+                      <li>
+                        <strong>Idempotent coupling fault (CFid):</strong> a transition in
+                        one cell forces a fixed logic value into another cell. [1,3]</li>
+                      <li>
+                        <strong>State coupling fault (CFst):</strong> a cell/line is forced
+                        to a fixed state only if the coupling cell/line is in a given
+                        state (a.k.a. pattern sensitivity fault (PSF)). [1,3]</li>
+                    </ul>
+                    <p>
+                      <strong>6. Bridging fault (BF):</strong> short between cells (can be
+                      AND type or OR type) [1]
+                    </p>
+                    <p>
+                      <strong>7. Neighborhood Pattern Sensitive Fault (NPSF)</strong> [1]</p>
+                    <p>
+                      <strong>8. Active (Dynamic) NPSF</strong> [1]</p>
+                    <p>
+                      <strong>9. Passive NPSF</strong> [1]</p>
+                    <p>
+                      <strong>10. Static NPSF</strong> [1]</p>
+                    <h3 id="（二）Address-decoder-faults-AFs">
+                      <a href="#（二）Address-decoder-faults-AFs" class="headerlink" title="（二）Address decoder faults (AFs)"></a>（二）Address decoder faults (AFs)</h3>
+                    <p>
+                      <strong>1. No cell accessed by certain address</strong> [1,3].
+                      <br>
+                      <strong>2. Multiple cells accessed by certain address</strong> [1,3].
+                      <br>
+                      <strong>3. Certain cell not accessed by any address</strong> [1,3].
+                      <br>
+                      <strong>4. Certain cell accessed by multiple addresses</strong> [1].</p>
+                    <h3 id="（三）Dynamic-Faults">
+                      <a href="#（三）Dynamic-Faults" class="headerlink" title="（三）Dynamic Faults"></a>（三）Dynamic Faults</h3>
+                    <p>
+                      <strong>1. Recovery faults:</strong> when some part of the memory cannot
+                      recover fast enough from a previous state [2].</p>
+                    <ul>
+                      <li>
+                        <strong>Sense amplifier recovery:</strong> sense amplifier saturation
+                        after reading/writing a long string of 0s or 1s.</li>
+                      <li>
+                        <strong>Write recovery:</strong> a write followed by a read or write
+                        at a different location resulting in reading or writing at
+                        the same location due to slow address decoder.</li>
+                    </ul>
+                    <p>
+                      <strong>2. Disturb faults:</strong> victim cell forced to 0 or 1 if
+                      we read or write aggressor cell (may be the same cell) [2].</p>
+                    <p>
+                      <strong>3. Data Retention faults:</strong> memory loses its content
+                      spontaneously, not caused by read or write [2].</p>
+                    <ul>
+                      <li>
+                        <strong>DRAM refresh fault:</strong> Refresh-line stuck-at fault</li>
+                      <li>
+                        <strong>DRAM leakage fault:</strong>
+                        <ul>
+                          <li>
+                            <strong>Sleeping sickness</strong>—loose data in less than specified
+                            hold time (typically hundreds of micro sec to tens of
+                            ms); caused by charge leakage or environment sensitivity;
+                            usually affects a row or a column.</li>
+                          <li>
+                            <strong>Static data losses</strong>—defective pull-up device
+                            <br>Inducing excessive leakage currents which can change
+                            the state of a cell Checkerboard pattern triggers max
+                            leakage.</li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <h3 id="Fault-Models-精简版如下：">
+                      <a href="#Fault-Models-精简版如下：" class="headerlink" title="Fault Models 精简版如下："></a>Fault Models 精简版如下：</h3>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-bbd9006cc09926b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002">
+                    </p>
+                    <p>
+                      <strong>SAF:Stuck-At Fault</strong>
+                    </p>
+                    <ul>
+                      <li>The logic value of a cell or a line is always 0 or 1.
+                        <blockquote>
+                          <p>覆盖的功能缺陷有：Cell stuck、Driver stuck、Read/Write line stuck、chip-select
+                            line stck、Data line stuck、open sircuit in data line.
+                            <br>
+                            <code>《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002</code>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>TF: Transition Fault</strong>
+                    </p>
+                    <ul>
+                      <li>A cell or a line that fails to undergo a 0-&gt;1 or a 1-&gt;0
+                        transition.
+                        <blockquote>
+                          <p>覆盖缺陷有： cell
+                            <strong>can</strong> be set to 0 but
+                            <strong>not</strong> to 1 (or vice versa 反之亦然).
+                            <br>
+                            <code>《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002</code>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>CF: Coupling Fault</strong>
+                    </p>
+                    <ul>
+                      <li>A write operation to one cell changes the content of a second
+                        cell.
+                        <blockquote>
+                          <p>覆盖功能缺陷有： short circuit between data lines、 crosstalk between
+                            data lines.
+                            <br>
+                            <code>《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002</code>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>NPSF: Neighborhood Pattern Sensitive Fault</strong>
+                    </p>
+                    <ul>
+                      <li>The content of a cell, or the ability to change its content,
+                        is influenced by the contents of some other cells in the
+                        memory.
+                        <blockquote>
+                          <p>覆盖功能缺陷有： pattern sensitive cell interaction.
+                            <br>
+                            <code>《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002</code>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>AF: Address decoding fault</strong>
+                    </p>
+                    <ul>
+                      <li>With a certain address, no cell will be accessed.</li>
+                      <li>A certain cell is never accessed.</li>
+                      <li>With a certain address, multiple cells are accessed simultaneously.</li>
+                      <li>A certain cell can be accessed by multiple addresses.
+                        <blockquote>
+                          <p>覆盖功能缺陷有：address line stuck, open circuit in address line,
+                            shorts between address lines, open circuit in decoder,
+                            wrong address access, multiple simutaneous address access(多地址同时访问),
+                            <br>
+                            <code>《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002</code>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <h3 id="物理缺陷对应关系">
+                      <a href="#物理缺陷对应关系" class="headerlink" title="物理缺陷对应关系"></a>物理缺陷对应关系</h3>
+                    <p>aa： 是电容短路，从而导致SA0（stuck at 0）缺陷；
+                      <br>bb： 是capacitor-WL短路，导致SA1缺陷；
+                      <br>cc： 两根WLs线短路，同一列的这两个cell出现AND bridging缺陷，就是与操作了嘛！；
+                      <br>dd：临近状态耦合缺陷；
+                      <br>ee：这个cell与旁边这一整列的cell都AND bridging fault了；
+                      <br>ff： 两个
+                      <strong>bit lines</strong>短路，这样子的话每个word line里面都有两个cell是AND bridging
+                      fault了。</p>
+                    <p>WL 和 BL短路会使得交点处的cell出现SA1缺陷：</p>
+                    <ul>
+                      <li>比如下图中，当读交点处的cell时，WL被拉高，然后对应BL也被拉高了，因此锁死在1状态；</li>
+                      <li>同时对应写1到交叉cell处是看不出来问题的，但是0就无论如何也写不进去了，因为总是被锁死在1啊！</li>
+                      <li>显然同列的都被锁死在1了，同样的同一行也被锁死在1（存疑！！？）
+                        <br>
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-95ca74f198f6e281.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="《essentials-of-electronic-testing-for-digital-memory-and-mixed-signal-vlsi-circuits》@2002">
+                      </li>
+                    </ul>
+                    <p>在底层缺陷其实是有如下这样的许多种类，在memtester里面的test_stuck_address()是能覆盖测试的，
+                      <strong>但是只能知道哪个地址出异常了，却不能定位出是下图中的哪种异常！</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-f58407c24dff38ea.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="地址缺陷 AFs">
+                    </p>
+                    <h3 id="某测试厂测试项">
+                      <a href="#某测试厂测试项" class="headerlink" title="某测试厂测试项"></a>某测试厂测试项</h3>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3008cfc466918bd1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="taiwan">
+                    </p>
+                    <h2 id="3-1-3-测试算法">
+                      <a href="#3-1-3-测试算法" class="headerlink" title="3.1.3 测试算法"></a>3.1.3 测试算法</h2>
+                    <h3 id="Ad-hoc-tests">
+                      <a href="#Ad-hoc-tests" class="headerlink" title="Ad-hoc tests"></a>Ad-hoc tests</h3>
+                    <p>早期的Functional model (Ad-hoc tests)算法：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-83d60cf868594610.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>
+                      <strong>Scan = Zero-One Test</strong>：O(4n)
+                      <br>Data background：0xffffffff，0x0
+                      <br>In short notation: {⇑(w0); ⇑(r0); ⇑(w1); ⇑(r1)}
+                      <br>缺陷：Low Fault coverage</p>
+                    <p>
+                      <strong>Checkerboard</strong>：O(4n)
+                      <br>Data background：0xAAAAAAAA,0x55555555
+                      <br>Short Notation: {⇑(w1i , w0i+1); ⇑(r1i, r0i+1);⇑(w0i , w1i+1);
+                      ⇑(r0i, r1i+1)}
+                      <br>缺陷：Low fault coverage (similar to Scan)i+1);</p>
+                    <p>
+                      <strong>Galpat，walking 1/0</strong>： O(n2)</p>
+                    <blockquote>
+                      <p>
+                        <strong>总结：</strong>覆盖率低且时间花销大，因此工业中很难接受，因此覆盖率较高且时间复杂度较低的March系列算法发展起来。</p>
+                    </blockquote>
+                    <p>Zero-One跟check board算法缺陷覆盖率不够，其他的一些常规算法又太耗时间，因此March测试算法横空出世。</p>
+                    <h3 id="March-tests：">
+                      <a href="#March-tests：" class="headerlink" title="March tests："></a>March tests：</h3>
+                    <ul>
+                      <li>基于fault models设计</li>
+                      <li>线性时间花销</li>
+                      <li>较好的缺陷覆盖率</li>
+                      <li>持续改进…</li>
+                    </ul>
+                    <p>下图所示为时间复杂度以及测试覆盖率，
+                      <strong>目前测试场采用较多的算法是March C-，它是折中了时间复杂度跟缺陷覆盖率后的最优选择。</strong>
+                    </p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-53aee6c1b919d549.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h3 id="3-1-4-March算法概述">
+                      <a href="#3-1-4-March算法概述" class="headerlink" title="3.1.4 March算法概述"></a>3.1.4 March算法概述</h3>
+                    <p>在针对缺陷模型开发的各类算法中，March类算法是性价比最高的，因此较为常用。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-70dead67566fcc83.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>不同算法检测不同类型的缺陷，同时必须清楚的是缺陷绝对是无法100%覆盖的，因此我们要组合选用测试算法来进行测试。</p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">SAF: 固定位故障</span><br><span class="line">AF：寻址故障</span><br><span class="line">TF：转换故障</span><br><span class="line">CF：耦合故障</span><br><span class="line">  CFin：翻转耦合故障</span><br><span class="line">  CFid：幂耦合故障</span><br><span class="line">  CFdyn：动态耦合故障</span><br><span class="line">  CFst（SCF）：状态耦合故障</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>March算法演变</strong>
+                    </p>
+                    <blockquote>
+                      <p>ps. 步骤中很多操作步骤是为了区分不同的缺陷的，因此我们只需要检测缺陷而不识别缺陷的话，可以进一步减少测试步骤。</p>
+                    </blockquote>
+                    <ul>
+                      <li>MATS 能以最少时间检测SAF，由Nair在1979年提出，后由Abadir改进为MATS+。</li>
+                      <li>March A和March B能覆盖一些耦合缺陷，(等幂耦合+转换故障)组合故障，倒置耦合+等幂耦合，等。</li>
+                      <li>March C于1982年提出，
+                        <strong>沿用至今三十多年，何其壮哉！！！</strong>
+                      </li>
+                      <li>March C-修正了March C，去掉了第四步的读“0”操作，缺陷覆盖率并未降低，还是能测AF、SAF、TF、CF等缺陷，
+                        <strong>但是并没有DRF缺陷检测能力。</strong>
+                      </li>
+                      <li>March-TB因此它增加了（M2,M4,M6,M10）、两个delay操作和一个写操作M9，其中M2,M4,M6是为了区别出已能检测出的故障类型，而M9，M10和delay是为了探测和诊断DRF缺陷的，这是March
+                        C-所没有的。
+                      </li>
+                      <li>March-TB+算法在TB的基础上增加了三个操作，都是为了区别出已能检测出的缺陷类型；</li>
+                      <li>March-TBA增加了操作，但是都是为了区别出已能检测出的故障类型，并未增加故障覆盖率；</li>
+                    </ul>
+                    <p>(…, w0, r 0,…) to detect SA1 faults and TFd
+                      <br>(…, w1, r1,…) to detect SA0 faults and TFu</p>
+                    <h1 id="3-2-功能测试memtester-MemTest86">
+                      <a href="#3-2-功能测试memtester-MemTest86" class="headerlink" title="3.2 功能测试memtester/MemTest86"></a>3.2 功能测试memtester/MemTest86</h1>
+                    <p>主要就memtester的一些测试函数进行学习，这里用的是
+                      <a href="http://pyropus.ca/software/memtester/" target="_blank" rel="external">官网</a>上的代码，我们在ARM平台上跑的都是从这里移植过去的。</p>
+                    <h2 id="3-2-1-History">
+                      <a href="#3-2-1-History" class="headerlink" title="3.2.1 History"></a>3.2.1 History</h2>
+                    <p>
+                      <strong>memtester和 MemTest86的区别？</strong>
+                    </p>
+                    <p>
+                      <strong>memtester</strong> run on OS, so use api of OS for allocate
+                      ram and test it.
+                      <br>
+                      <strong>Memtest86</strong> run without OS and is very small and access
+                      to RAM directly.</p>
+                    <p>
+                      <strong>Memtest</strong> and
+                      <strong>Memtest86</strong> are
+                      <a href="https://www.computerhope.com/jargon/o/opensour.htm" target="_blank" rel="external">open source</a> software utilities that scan and test computer
+                      memory chips (
+                      <a href="https://www.computerhope.com/jargon/r/ram.htm" target="_blank" rel="external">RAM</a>) for any defects or errors. </p>
+                    <blockquote>
+                      <p>系统级使用的均是，也就是说根本不是专门测内存颗粒的。</p>
+                    </blockquote>
+                    <h1 id="3-2-2-板级测试">
+                      <a href="#3-2-2-板级测试" class="headerlink" title="3.2.2 板级测试"></a>3.2.2 板级测试</h1>
+                    <p>
+                      <a href="http://www.esacademy.com/en/library/technical-articles-and-documents/miscellaneous/software-based-memory-testing.html"
+                                                                                                      target="_blank" rel="external">这篇文章讲了算法部分</a>
+                    </p>
+                    <ul>
+                      <li>物理或者电性不良会使对RAM造成毁灭性的问题，这样常规算法都能检测出来的；</li>
+                      <li>典型问题是电路板的问题，会导致cpu读不了memory、检查不到内存芯片、插入型号不对的内存等
+                        <br>作者的思路是，假如是内存颗粒的问题，那么常规的算法都可以检测出来，但是假如上述的三种板级问题常规的是无法检测出来的，因此我们设计了这些算法.</li>
+                    </ul>
+                    <h2 id="3-2-3-memtester-MemTest86-测试算法及其测试目的">
+                      <a href="#3-2-3-memtester-MemTest86-测试算法及其测试目的" class="headerlink" title="3.2.3 memtester/MemTest86  测试算法及其测试目的"></a>3.2.3 memtester/MemTest86 测试算法及其测试目的</h2>
+                    <h3 id="memtester4-3-0">
+                      <a href="#memtester4-3-0" class="headerlink" title="[ memtester4.3.0 ]"></a>[ memtester4.3.0 ]</h3>
+                    <p>我们先看一下测试项（上层功能级函数，底层实现汇编级稍后分析）：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>memtester-4.3.0</th>
+                          <th>memtester-ARM </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>int test_stuck_address(bufa, count);</td>
+                          <td>（√ ） 先全部把地址值交替取反放入对应存储位置，然后再读出比较，重复2次（官网的重复了16次）：测试address
+                            bus</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_random_value(bufa, bufb, count);</td>
+                          <td>（√ ）等效test_random_comparison(bufa, bufb, count)：数据敏感型测试用例</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td> int test_xor_comparison(bufa, bufb, count);</td>
+                          <td>（-） 与test_random_value比多了个异或操作，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_sub_comparison(bufa, bufb, count);</td>
+                          <td>（-）与test_random_value比多了个减法操作，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_mul_comparison(bufa, bufb, count);</td>
+                          <td>（-）与test_random_value比多了个乘法操作，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_div_comparison(bufa, bufb, count);</td>
+                          <td>（-）与test_random_value比多了个除法操作，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_or_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）在test_random_comparison()里面合并了，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_and_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）在test_random_comparison()里面合并了，用户场景之一，用例覆盖。数据敏感/指令功能验证，同时可验证SAF；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_seqinc_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）这是 test_blockseq_comparison的一个子集；模拟客户压力测试场景。</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_solidbits_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）固定全1后写入两个buffer，然后读出比较，然后全0写入读出比较；这就是Zero-One算法，Breuer
+                            &amp; Friedman 1976 ，检测SAF的，算法是{w0,r0,w1,r1}时间复杂度是4N，又叫做MSCAN，验证每个cell能读写，间接测试了stuck
+                            at fault</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_checkerboard_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）把设定好的几组Data BackGround，依次写入，然后读出比较 （注：论文里说设计良好的Data
+                            background可以检测出state coupling faults时间复杂度是4N，这是验证相邻位置是否互相影响从而设计的用例。</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_blockseq_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）一次写一个count大小的块，写的值是拿byte级的数填充32bit，然后取出对比，接着重复256次；也是压力用例，只是次数变多了；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_walkbits0_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）就是bit=1的位置在32bit里面移动，每移动一次就全部填满buffer，先是从低位往高位移，再是从高位往低位移动，(这么做的目的是啥？其中的一个目的是检测NPSF其次是CFs，其次是数据敏感型异常检测，注这里是32bit的，还有8bit的粒度更细了)</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_walkbits1_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）与上同理，另注：早memtester86中这个算法叫做moving inversions algorithm</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_bitspread_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）还是在32bit里面移动，只是这次移动的不是单单的一个0或者1，而是两个1，这两个1之间隔着两个空位，（是临近耦合异常的一种data
+                            pattern变体：两个1之间间隔1个位置，然后同步移动）</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_bitflip_comparison(bufa, bufb, count);</td>
+                          <td>（√ ）也是32bit里面的一个bit=1不断移动生成data pattern然后，每个pattern均执行：｛取反交替写入a、b缓冲区，写完之后检查一遍，然后不断重复以下步骤八次｛用八个DMA从a缓冲区搬数据到b缓冲区，并行搬，模拟短时间内反复读写同一位置看是否有数据丢失异常｝｝核心思想：短时间内反复读写同一位置。</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_8bit_wide_random(bufa, bufb, count）;</td>
+                          <td>（√ ）以char指针存值，也就是每次存8bit，粒度更细；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>int test_16bit_wide_random(bufa, bufb, count);</td>
+                          <td>（√ ）以unsigned short指针存值，也就是每次存16bit，不同粒度检测；</td>
+                          <td></td>
+                        </tr>
+                        <tr>
+                          <td>×</td>
+                          <td>int test_crosstalk_comparison(bufa, bufb, count)：[32个0,接着32bit里面1个0移动]以这样的模型叠加写入内存；（只有上行，没像有moving
+                            inversions algorithm一样进行反转）</td>
+                          <td></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>
+                      <strong>总结：</strong>整个memtester测试的视角就是从用户的角度来看的，从用户角度设立不同的测试场景即测试用例，然后针对性地进行
+                      <strong>功能</strong>测试，注意是从系统级来测试，也就是说关注的不单单是内存颗粒了，还有系统板级的连线、IO性能、PCB等等相关的因素，在这些因素的影响下，你的memory是否还能
+                      <strong>正常工作</strong>；</p>
+                    <blockquote>
+                      <p>注2： checkboard这里虽然有点类似于底层的NPSF（neighborhood pattern sensitive
+                        fault），但是这里的锚点却不是这个，而是:比如说我的客户在把内存插入电脑后，使用过程中有这种pattern的数据写入内存，会不会存在数据互相影响从而丢失的问题呢？这搞不好就是蓝屏了啊！也就是说我们关注的是表层的状态而不是底层的缺陷。</p>
+                    </blockquote>
+                    <h3 id="MemTest86">
+                      <a href="#MemTest86" class="headerlink" title="[ MemTest86 ]"></a>[ MemTest86 ]</h3>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>测试类型</th>
+                          <th>测试内容描述</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>Test 0 [Address test, walking ones, no cache]</td>
+                          <td>walking ones address pattern测试所有的地址位</td>
+                        </tr>
+                        <tr>
+                          <td>Test 1 [Moving Inv, ones&amp;zeros, cached]</td>
+                          <td>moving inversions algorithm with patterns of only ones
+                            and zeros.</td>
+                        </tr>
+                        <tr>
+                          <td>Test 2 [Address test, own address, no cache]</td>
+                          <td>地址写入，检查其连续性，是test0的补充</td>
+                        </tr>
+                        <tr>
+                          <td>Test 3 [Moving inv, 8 bit pat, cached]</td>
+                          <td>重点在8bit，检查粒度更细了</td>
+                        </tr>
+                        <tr>
+                          <td>Test 4 [Moving inv, 32 bit pat, cached]</td>
+                          <td>检测数据敏感性异常；</td>
+                        </tr>
+                        <tr>
+                          <td>Test 5 [Block move, 64 moves, cached]</td>
+                          <td>检测压力下内存是否会出现问题；</td>
+                        </tr>
+                        <tr>
+                          <td>Test 6 [Modulo 20, ones&amp;zeros, cached]</td>
+                          <td>去除cache的影响，还是moving inversions</td>
+                        </tr>
+                        <tr>
+                          <td>Test 7 [Moving inv, ones&amp;zeros, no cache]</td>
+                          <td>补充测试未chche情况下是否ok，时间花销显著变大哟！（解决用例覆盖度问题）</td>
+                        </tr>
+                        <tr>
+                          <td>Test 8 [Block move, 512 moves, cached]</td>
+                          <td>既然加压了，那就试试不同压力下的情况吧！</td>
+                        </tr>
+                        <tr>
+                          <td>Test 9 [Moving inv, 8 bit pat, no cache]</td>
+                          <td>理论上检测所有缺陷，因为粒度都到8bit了，但是时间花销上也是呵呵哒！</td>
+                        </tr>
+                        <tr>
+                          <td>Test 10 [Modulo 20, 8 bit, cached]</td>
+                          <td>将data pattern（之前的就是0啊1啊的pattern而已）跟去除cache影响的Modulo-X算法组合技能确实效率更高，但是执行时间也是长长的~</td>
+                        </tr>
+                        <tr>
+                          <td>Test 11 [Moving inv, 32 bit pat, no cache]</td>
+                          <td>我们用的是32bit的数据pattern，因此在找出数据敏感型的异常情况中最有效，但是由于没有cache这个速度也是很感人。</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <blockquote>
+                      <p>
+                        <strong>总结</strong>：就是从用户的角度来看，设立不同的测试场景即测试用例，然后针对性地进行
+                        <strong>功能</strong>测试，注意是从系统级来测试，也就是说关注的不仅仅是内存颗粒了，而是在系统板级的连线、IO性能、PCB等等相关的因素一同考虑进去后，你的memory是否还能
+                        <strong>功能</strong>正常；</p>
+                      <h1 id="3-3-性能测试DS5-code">
+                        <a href="#3-3-性能测试DS5-code" class="headerlink" title="3.3 性能测试DS5 code"></a>3.3 性能测试DS5 code</h1>
+                    </blockquote>
+                    <p>这就不展示了，毕竟平台相关了，说到底也就是一些单片机代码而已。</p>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memtester-LPDDR3--master/0x03 测试算法/"
+                                                                                                        title="0x03 测试算法">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memtester-LPDDR3--master/0x03
+                          测试算法/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2018/03/12/memtester-LPDDR3--master/0x00B 测试流程及内容/" rel="next" title="0x00B 验证流程及其内容">
+                          <i class="fa fa-chevron-left"></i> 0x00B 验证流程及其内容
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/12/memtester-LPDDR3--master/0x02 DRAM颗粒测试算法综述/" rel="prev" title="0x02 DRAM颗粒测试算法综述">
+                          0x02 DRAM颗粒测试算法综述
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">22</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">4</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#3-1-缺陷测试FaultModel">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          3.1 缺陷测试FaultModel</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-1-1-背景">
+                            <span class="nav-number">1.1.</span>
+                            <span class="nav-text">
+                              3.1.1 背景</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-1-2-Fault-Model分析">
+                            <span class="nav-number">1.2.</span>
+                            <span class="nav-text">
+                              3.1.2 Fault Model分析</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#（一）Memory-cell-faults">
+                                <span class="nav-number">1.2.1.</span>
+                                <span class="nav-text">
+                                  （一）Memory cell faults</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#（二）Address-decoder-faults-AFs">
+                                <span class="nav-number">1.2.2.</span>
+                                <span class="nav-text">
+                                  （二）Address decoder faults (AFs)</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#（三）Dynamic-Faults">
+                                <span class="nav-number">1.2.3.</span>
+                                <span class="nav-text">
+                                  （三）Dynamic Faults</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#Fault-Models-精简版如下：">
+                                <span class="nav-number">1.2.4.</span>
+                                <span class="nav-text">
+                                  Fault Models 精简版如下：</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#物理缺陷对应关系">
+                                <span class="nav-number">1.2.5.</span>
+                                <span class="nav-text">
+                                  物理缺陷对应关系</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#某测试厂测试项">
+                                <span class="nav-number">1.2.6.</span>
+                                <span class="nav-text">
+                                  某测试厂测试项</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-1-3-测试算法">
+                            <span class="nav-number">1.3.</span>
+                            <span class="nav-text">
+                              3.1.3 测试算法</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#Ad-hoc-tests">
+                                <span class="nav-number">1.3.1.</span>
+                                <span class="nav-text">
+                                  Ad-hoc tests</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#March-tests：">
+                                <span class="nav-number">1.3.2.</span>
+                                <span class="nav-text">
+                                  March tests：</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#3-1-4-March算法概述">
+                                <span class="nav-number">1.3.3.</span>
+                                <span class="nav-text">
+                                  3.1.4 March算法概述</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#3-2-功能测试memtester-MemTest86">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          3.2 功能测试memtester/MemTest86</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-2-1-History">
+                            <span class="nav-number">2.1.</span>
+                            <span class="nav-text">
+                              3.2.1 History</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#3-2-2-板级测试">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          3.2.2 板级测试</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-2-3-memtester-MemTest86-测试算法及其测试目的">
+                            <span class="nav-number">3.1.</span>
+                            <span class="nav-text">
+                              3.2.3 memtester/MemTest86 测试算法及其测试目的</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#memtester4-3-0">
+                                <span class="nav-number">3.1.1.</span>
+                                <span class="nav-text">
+                                  [ memtester4.3.0 ]</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#MemTest86">
+                                <span class="nav-number">3.1.2.</span>
+                                <span class="nav-text">
+                                  [ MemTest86 ]</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#3-3-性能测试DS5-code">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          3.3 性能测试DS5 code</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">72.5k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>
