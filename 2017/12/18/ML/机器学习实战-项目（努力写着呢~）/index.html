@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="0x01. 背景 公司背景是IC原厂，在芯片进行出货前会经过一系列的测试，包括cp、FT、HTOL等等，在着一系列的过程中会产生大量的数据，我们是不是可以将这些数据利用起来呢？ 这次我就其中的一个项目进行简要描述。    0x02. 需求描述及分析    HTOL是什么？   芯片测试的一道流程，用来评估你制造的芯片在客户最极端的场景下能正常工作多长时间，产品的寿命是基于你IC的寿命的，可以">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="机器学习实战-项目（努力写着呢~）">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="0x01. 背景 公司背景是IC原厂，在芯片进行出货前会经过一系列的测试，包括cp、FT、HTOL等等，在着一系列的过程中会产生大量的数据，我们是不是可以将这些数据利用起来呢？ 这次我就其中的一个项目进行简要描述。    0x02. 需求描述及分析    HTOL是什么？   芯片测试的一道流程，用来评估你制造的芯片在客户最极端的场景下能正常工作多长时间，产品的寿命是基于你IC的寿命的，可以">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c889f8aaf0d648a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ef1631c81a20402a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-dae19941a09ff74a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8e72e816fecf88c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-81e86fe46c5eb124.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-46f83a220ee83ff7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b68963b08afca650.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b7bd4ad22d676454.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5247b7a0157d1e1e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-13fce33e6dcac15c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-22ceaff631d724aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-af2184dc8f1a518f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-453fc9a785670b3e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=A_1%3D%5Csigma_1+u_1v_1%5E%7B%5Crm+T%7D">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ced1b0a7102f2a0d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3dbb94162745dcce.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ed1f7f2d294a9472.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3d38d8acddd415da.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3e4b7d56ce76493a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-45dc505d558fe4bc.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-44f40d85098e9c52.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f5b4764c889f3474.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3d06a87ba1601d40.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-5733273940dc2c2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-55c1ace8490ef7a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e6f59b5e7f73ac59.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-4c8721e22a2e1506.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3a0ccf37b3762067.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-dfcf4b1dfb3652b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-7a0f19097120782d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-0da6353b85095ada.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-28T06:31:10.635Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="机器学习实战-项目（努力写着呢~）">
+  <meta name="twitter:description" content="0x01. 背景 公司背景是IC原厂，在芯片进行出货前会经过一系列的测试，包括cp、FT、HTOL等等，在着一系列的过程中会产生大量的数据，我们是不是可以将这些数据利用起来呢？ 这次我就其中的一个项目进行简要描述。    0x02. 需求描述及分析    HTOL是什么？   芯片测试的一道流程，用来评估你制造的芯片在客户最极端的场景下能正常工作多长时间，产品的寿命是基于你IC的寿命的，可以">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-c889f8aaf0d648a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/"
+  />
+
+  <title>机器学习实战-项目（努力写着呢~） | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">机器学习实战-项目（努力写着呢~）</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:57:33+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/ML/" itemprop="url" rel="index">
+                            <span itemprop="name">ML</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          7,394
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          25
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h3 id="0x01-背景">
+                      <a href="#0x01-背景" class="headerlink" title="0x01. 背景"></a>0x01. 背景</h3>
+                    <p>公司背景是IC原厂，在芯片进行出货前会经过一系列的测试，包括cp、FT、HTOL等等，在着一系列的过程中会产生大量的数据，我们是不是可以将这些数据利用起来呢？</p>
+                    <p>这次我就其中的一个项目进行简要描述。</p>
+                    <h3 id="0x02-需求描述及分析">
+                      <a href="#0x02-需求描述及分析" class="headerlink" title="0x02. 需求描述及分析"></a>0x02. 需求描述及分析</h3>
+                    <p>
+                      <strong>HTOL是什么？</strong>
+                      <br>芯片测试的一道流程，用来评估你制造的芯片在客户最极端的场景下能正常工作多长时间，产品的寿命是基于你IC的寿命的，可以说是客户很关注的一个指标。</p>
+                    <p>
+                      <strong>HTOL怎么做？</strong>
+                      <br>这个实验一般是可靠性工程师根据国际、行业、公司的标准以及客户的需求来设计实验方案，定好实验环境参数，场景，数量等信息，然后执行实验获取结果。</p>
+                    <p>
+                      <strong>HTOL如何监控？</strong>
+                      <br>其中实验板数量很多，一般是45ea（根据产品以及需求来的），实验时长1000h，工作结温125℃以上，那么问题就来了，你怎么保证在这1000h里面他的工作状态的？换句话说就是当它实验过程中出现问题了，你是怎么及时发现并解决的？
+                      <br>常规的做法就是过一段时间去人工看一下，看下实验板是否串口打印正常，工作电流是否异常，运行参数是否异常等等，但是假如你前脚刚走后脚就异常了呢？是不是就漏看了！！！
+                      <br>好，为了解决这个问题，可以假设一个IP摄像头查看，嗯···看似可以实则···呵呵···，你想啊，你不可能一直盯着摄像头看吧，而且你仅看到了表象，仅仅是看上去正常，真实的呢？这并不知道！
+                      <br>同时还有个问题是，假如异常发生在半夜，这个时候是不是我们不仅不知道，而且当时的一些状态信息也可能就丢失了？！特别是那些出现异常后过段时间又自恢复了的，这种情况抓不到，那做实验的意义何在那？</p>
+                    <p>
+                      <strong>我是如何做的？</strong>
+                      <br>为了解决这个问题，我做了一套
+                      <strong>系统</strong>，用来监测实验状态的，最终实现的效果是：</p>
+                    <blockquote>
+                      <p>一旦试验期间出现任何异常，就立马被识别到，并且存储当前的及前1h的所有信息，并把异常信息以邮件和微信的方式发送到实验人员处，实验人员接收到信息后可以选择远程登录查看每块实验板的实时信息、或者直接去实验房利用我们自己开发的工具排查异常信息。</p>
+                    </blockquote>
+                    <p>我的系统方案是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-c889f8aaf0d648a4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="系统方案">
+                    </p>
+                    <p>技术方案：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ef1631c81a20402a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="技术框架">
+                    </p>
+                    <p>web端是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-dae19941a09ff74a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="web部分界面">
+                    </p>
+                    <p>终端界面是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8e72e816fecf88c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="终端界面">
+                    </p>
+                    <p>设备机箱CAD三维图是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-81e86fe46c5eb124.PNG?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="侧视图.PNG">
+                    </p>
+                    <p>硬件设备成品是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-46f83a220ee83ff7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="这个就是我整的机箱了~">
+                    </p>
+                    <blockquote>
+                      <p>通过这个过程我快速掌握了：
+                        <br>
+                        <strong>candence</strong>工具（模电、数电、嵌入式当年学的还是杠杠的！以前用的是protel和altum
+                        designer）；
+                        <br>
+                        <strong>python语言</strong>（极速使用，果然是文科生的程序语言，当然顺便JAVA也用了一点点）；
+                        <br>
+                        <strong>上位机界面</strong>（Tkinter，想学习如何一步一步撸界面所以弃pyQt了~）；
+                        <br>
+                        <strong>flask,bootstrap,jquery</strong>（实践证明，用的到的东西学得老快了！web 的前后台以及websocket长连接很好玩）；
+                        <br>
+                        <strong>FreeCAD</strong>（哇，做了硬件肯定要做机箱的啊！没办法，下班时间学！一周时间（每天下班花1h）从零到淘宝交付图纸，炒鸡有成就感啊有木有！！！后来一次组装成功啊！我这脑电路神经元是严谨的不要不要的啊！）；
+                        <br>
+                        <strong>······</strong>
+                      </p>
+                    </blockquote>
+                    <p>
+                      <strong>当然最重要的是，我用机器学习将问题里面的一个核心点得到了极好的解决（哈哈~主观上的，毕竟没有做客观数据对比）。</strong>
+                    </p>
+                    <h3 id="0x03-精彩的，现在才开始！">
+                      <a href="#0x03-精彩的，现在才开始！" class="headerlink" title="0x03. 精彩的，现在才开始！"></a>0x03. 精彩的，现在才开始！</h3>
+                    <p>前面说到了，我花了一些时间解决了一些技术问题，但是其中的一个核心点“异常检测”我并没有过多描述，这可是整个系统的基石啊！异常识别不准的话，你功能再多也没暖用哇！</p>
+                    <p>好了我们开始解决问题了！</p>
+                    <p>
+                      <strong>首先问题是什么？</strong>
+                    </p>
+                    <ul>
+                      <li>异常识别！
+                        <br>异常检测（Anomaly Detection）是机器学习里面的一个常见应用，机器通过训练，将知道什么样的样本是正常样本，从而具备识别异常样本的能力。</li>
+                    </ul>
+                    <p>
+                      <strong>常规是怎么识别的？</strong>
+                    </p>
+                    <ul>
+                      <li>原始时代是人工查看系统参数是否异常，串口是否打印，看log是否异常，看工作电流状态是否正常······想一想这些需要不断过来轮训查看，同时手上还有大把的工作要做，就········哇的哭出声来！
+                        <ul>
+                          <li>后来做了这套系统来监控异常，那这又是怎么识别的呢？其实就仅仅是每次实验前获取正常的平均电流，然后估计一个阀值就这么来判断电流参数了，log部分就是实时分析日志是否有关键字出现！
+                            <strong>很粗糙是吧！？很容易误判对吧！？每次都要配置很繁琐对吧！？</strong>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>我是怎么想的及做的？</strong>
+                    </p>
+                    <ul>
+                      <li>主观感受就是要抓住问题的本质，误判少准确度高，最好还能自适应，对吧！</li>
+                      <li>然后就开始脑洞风暴，查资料，看论文呗！</li>
+                    </ul>
+                    <h3 id="0x04-方案一之多元高斯分布">
+                      <a href="#0x04-方案一之多元高斯分布" class="headerlink" title="0x04. 方案一之多元高斯分布"></a>0x04. 方案一之多元高斯分布</h3>
+                    <p>我们正常的工作电流是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b68963b08afca650.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="撸的一个上位机实时显示界面 ">
+                      <br>我们观察一下就发现工作电流是在一个平均值附近波动的，因此很正常的想到了自然界最自然的高斯分布了啊！</p>
+                    <p>
+                      <strong>高斯分布也称为正态分布</strong>。
+                      <br>高斯分布有两个参数，一个是平均值 ，另外一个是方差σ^2(σ 称为标准差)，给定一个数值 X 作为横轴，它出现在不同位置的概率作为
+                      Y 轴，在二维坐标上画出的图形是一个“钟形”的图形。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b7bd4ad22d676454.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="高斯分布图（来源百科）">
+                    </p>
+                    <p>其概率密度函数为</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-5247b7a0157d1e1e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>则这个随机变量就称为
+                      <strong>正态随机变量</strong>，正态随机变量服从的分布就称为
+                      <strong>正态分布，记作</strong>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-13fce33e6dcac15c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>我们只考虑电流的话就是
+                      <strong>基于正态分布的一元离群点检测方法（这里的一元指的是参数之间是独立的，比如我这里有很多的参数，但是参数之间是独立的，此时的特征向量也是一元的，一旦特诊之间是相关的，也就是协相关矩阵出来了的话，那么就是多元的了，见下面的公式。）</strong>了，我们可以连续采集有限个数据，然后根据这有限个样本进行
+                      <strong>参数估计</strong>，这里对参数 σ 和参数 µ 的估计就是二者的极大似然估计。</p>
+                    <p>这里随参数由于在正负3个sigma内，包含了99.7Z%的数据，但是这里需要说明的是，由于采用的是正样本进行的统计，理论上应该是100%的数据都是正常的，因此我们在卡u范围的时候最好是卡宽一点，比如正负6个sigma，因此我们将初步以这个为评判标准之一。</p>
+                    <p>
+                      <strong>同时还有电压啊、功耗啊、芯片die温啊、log日志是否存在啊、日志是否出现某关键字啊这些都是特诊啊</strong>，这些特征数值化处理之后，也可以按照这种方式进行处理了！</p>
+                    <p>具体测一些信息请参考我之前的文章
+                      <a href="http://www.jianshu.com/p/04cc140e1127">《机器学习实践项目之高斯分布》</a>
+                    </p>
+                    <blockquote>
+                      <p>这种方式是从出现概率的角度着手的，基本思想就是，那里出现的”人”多，我就认为你正常点就在这个区域；
+                        <strong>很明显存在的问题是，假如我数据量不够的话，那么极有可能将正常样本误判。</strong>如下图所示：可以发现有线性的规律，因此重点应该是离线性区间远的为异常点，而不是根据出现的概率来判断啊！
+                        <strong>当然我也不是说根据概率来判断就一定不对，只是说按照概率来定的话模型比较粗糙，还没有真正抓住该业务场景的本质，因此准确率偏低也是意料之内。</strong>
+                      </p>
+                    </blockquote>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-22ceaff631d724aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="高斯分布弊端">
+                    </p>
+                    <h3 id="0x05-方案二之主成份分析法（PCA）">
+                      <a href="#0x05-方案二之主成份分析法（PCA）" class="headerlink" title="0x05. 方案二之主成份分析法（PCA）"></a>0x05. 方案二之主成份分析法（PCA）</h3>
+                    <p>主成份分析法，也就是抓住事物的主要矛盾，其基本思想跟电路里面滤波是一样的，我取信号的中低频部分，也就是占主要能量的部分，高频忽略掉，这样也不影响信号大体的样子；</p>
+                    <h4 id="先补充一点理论知识跟直观感受：">
+                      <a href="#先补充一点理论知识跟直观感受：" class="headerlink" title="先补充一点理论知识跟直观感受："></a>先补充一点理论知识跟直观感受：</h4>
+                    <p>
+                      <a href="https://www.zhihu.com/question/21874816/answer/85155697" target="_blank"
+                                                                                                      rel="external">学习资料1</a>
+                    </p>
+                    <blockquote>
+                      <p>特征值是速度大小，特征向量就是速度方向，其他场景依此类推，比如3brown1blue里面就说了在三维，特征值表示体积大小，特征向量表示轴向量方向，二维则面积跟旋转方向。</p>
+                      <p>首先我们得知道奇异值分解跟特征值分解的区别：
+                        <br>1、奇异值分解是对线性变化里面
+                        <strong>旋转、缩放和投影</strong>三种效应的一个析构；
+                        <br>2、特征值分解是对旋转缩放两种效应的归并。</p>
+                    </blockquote>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-af2184dc8f1a518f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>####奇异值的物理意义（
+                      <a href="https://www.zhihu.com/question/22237507/answer/53804902" target="_blank"
+                                                                                                      rel="external">图片来源</a>）
+                      <br>物理意义是需要结合具体场景来说的，比如在图像领域，图片是一个像素矩阵吧！是矩阵的话就可以特征值分解的吧！分解之后就是这样子的，σ是奇异值，假设已按从大到小排列：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-453fc9a785670b3e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>令</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=A_1%3D%5Csigma_1+u_1v_1%5E%7B%5Crm+T%7D"
+                                                                                                      alt="">
+                    </p>
+                    <p>这只保留(1)中等式右边第一项，然后作图：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ced1b0a7102f2a0d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>结果就是完全看不清是啥(
+                      <strong>是不是就是傅立叶分解里面的低频部分！完全是一毛一样呀！！！</strong>)我们试着多增加几项进来（取20项的时候，基本可见了）：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3dbb94162745dcce.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>矩阵A表示一个450*333的矩阵，需要保存450* 333=149850个元素的值。等式右边u和v分别是450*1和333*1的向量，每一项有1+450+333=784个元素。如果我们要存储很多高清的图片，而又受限于存储空间的限制，在尽可能保证图像可被识别的精度的前提下，我们可以保留奇异值较大的若干项，舍去奇异值较小的项即可。例如在上面的例子中，如果我们只保留奇异值分解的前50项，则需要存储的元素为784*50=39200，和存储原始矩阵A相比，
+                      <strong>存储量仅为后者的26%。</strong>
+                    </p>
+                    <p>下面可以回答题主的问题：
+                      <strong>奇异值往往对应着矩阵中隐含的重要信息，且重要性和奇异值大小正相关。每个矩阵A都可以表示为一系列秩为1的“小矩阵”之和，而奇异值则衡量了这些“小矩阵”对于A的权重。</strong>
+                    </p>
+                    <p>好了到这里我们知道了，奇异值其实就类似于傅立叶里面的谐波系数，代表的是信号的强度；那么我们想想信号处理里面是如何滤波的？先把一个原始信号转成傅立叶形式，然后把需要去掉的频率系数去掉，然后逆变换回来时域波形,我们这里图像的操作是不是也一样的！！！先奇异值分解，然后按大到小排列奇异值，然后把小的去掉，然后再返回来重构图片，完全一样嘛！</p>
+                    <p>我们看个实例：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ed1f7f2d294a9472.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>这是一张含有噪声的图片，除了黑色那圈其余的都是白色的，也就是说那些灰色的方块就是噪声，通过奇异值分解，我们发现矩阵的奇异值从大到小分别为：14.15，4.67，3.00，0.21，……，0.05。除了前3个奇异值较大以外，其余奇异值相比之下都很小。强行令这些小奇异值为0，然后只用前3个奇异值构造新的矩阵，得到：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3d38d8acddd415da.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>可以明显看出噪声减少了（白格子上灰白相间的图案
+                      <strong>减少</strong>了）。</p>
+                    <blockquote>
+                      <p>
+                        <strong>小结：</strong>好了我们知道在图像领域是如何通过奇异值来进行去噪了，那么我们反过来想一下，假如我知道了主成份，然后新的测试样本来的时候发现其主成份很少，而次要成分的奇异值很大，那么就可以判断他是异常值了，从这点看是不是跟上面的高斯分布是有点像呢？
+                        <strong>高斯分布单单就出现的概率做估计，主成份分析是以主成份出现的概率做估计的，比高斯多了个主成份，也就是更进一步地抓住了问题的本质。</strong>
+                      </p>
+                    </blockquote>
+                    <hr>
+                    <p>####参考出处：</p>
+                    <ul>
+                      <li>
+                        <a href="https://www.zhihu.com/question/22237507" target="_blank" rel="external">参考文章1：图像领域奇异值的物理意义</a>
+                      </li>
+                      <li>
+                        <a href="https://zr9558.com/2016/06/23/outlierdetectiontwo/" target="_blank" rel="external">参考文章2：异常点检测算法</a>
+                      </li>
+                      <li>
+                        <a href="http://blog.csdn.net/zk_j1994/article/details/76796616" target="_blank"
+                                                                                                        rel="external">参考文章3：代码</a>
+                      </li>
+                    </ul>
+                    <hr>
+                    <p>#####（1）PCA描述
+                      <br>对高维数据集合的简化有各种各样的原因，例如：</p>
+                    <p>（1）使得数据集合更容易使用；
+                      <br>（2）降低很多算法的计算开销；
+                      <br>（3）去除噪声；
+                      <br>（4）更加容易的描述结果。</p>
+                    <p>在主成分分析（PCA）这种降维方法中，数据从原来的坐标系转换到新的坐标系，新坐标系的选择是由数据集本身所决定的。第一个新坐标轴的方向选择的是原始数据集中方差最大的方向，第二个新坐标轴的选择是和第一个坐标轴正交并且具有最大方差的方向。该过程一直重复，重复的次数就是原始数据中特征的数目。如此操作下去，将会发现，大部分方差都包含在最前面的几个新坐标轴之中。因此，我们可以忽略余下的坐标轴，也就是对数据进行了降维的处理。</p>
+                    <p>为了提取到第一个主成分（数据差异性最大）的方向，进而提取到第二个主成分（数据差异性次大）的方向，并且该方向需要和第一个主成分方向正交，那么我们就需要对数据集的协方差矩阵进行特征值的分析，从而获得这些主成分的方向。一旦我们计算出了协方差矩阵的特征向量，我们就可以保留最大的
+                      N 个值。正是这 N 个值反映了 N 个最重要特征的真实信息，可以把原始数据集合映射到 N 维的低维空间。</p>
+                    <p>提取 N 个主成分的伪代码如下：
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">1、去除平均值</span><br><span class="line">2、计算协方差矩阵</span><br><span class="line">3、计算协方差矩阵的特征值和特征向量</span><br><span class="line">4、将特征值从大到小排序保留最大的N个特征值以及它们的特征向量</span><br><span class="line">5、将数据映射到上述N个特征向量构造的新空间中</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>通过 Python 的 numpy 库和 matplotlib 库可以计算出某个
+                      <strong>二维数据集合</strong>的第一主成分如下：原始数据集使用蓝色的三角形表示，第一主成分使用黄色的圆点表示，是不是首先就就抓住了趋势！也即基线！！！</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3e4b7d56ce76493a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="PCA">
+                    </p>
+                    <p>####（二）基于矩阵分解的异常点检测方法
+                      <br>基于矩阵分解的异常点检测方法的关键思想是
+                      <strong>利用主成分分析去寻找那些违背了数据之间相关性的异常点</strong>。</p>
+                    <p>为了发现这些异常点，基于主成分分析（PCA）的算法会
+                      <strong>把原始数据从原始的空间投影到主成分空间，然后再把投影拉回到原始的空间(就是矩阵的一些变换啦！)</strong>。</p>
+                    <p>如果只使用第一主成分来进行投影和重构，对于大多数的数据而言，重构之后的误差是小的（是不是跟高斯有点类似）；但是对于异常点而言，重构之后的误差依然相对大。这是因为
+                      <strong>第一主成分反映了正常值的方差，最后一个主成分反映了异常点的方差。</strong>
+                    </p>
+                    <p>假设 dataMat 是一个 p 维的数据集合，有 N 个样本，它的协方差矩阵是 X。那么协方差矩阵就通过奇异值分解写成：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-45dc505d558fe4bc.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>
+                      <strong>其中 P 是一个 (p,p) 维的正交矩阵，它的每一列都是 X 的特征向量。D 是一个 (p,p) 维的对角矩阵，包含了特征值λ1···λp。</strong>
+                    </p>
+                    <p>从图像上看，一个特征向量可以看成 2 维平面上面的一条线，或者高维空间里面的一个超平面。特征向量所对应的特征值反映了这批数据在这个方向上的拉伸程度。通常情况下，可以把对角矩阵
+                      D 中的特征值进行从大到小的排序，矩阵 P 的每一列也进行相应的调整，保证 P 的第 i 列对应的是 D 的第 i 个对角值。</p>
+                    <p>这个数据集 dataMat 在主成分空间的投影可以写成</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-44f40d85098e9c52.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>当然我们也可以只在部分维度上进行映射：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-f5b4764c889f3474.php?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>其中Pj是矩阵P的前j列，也就是取前j列的特征向量，也即Pj是一个(p,j)维的矩阵，Yj是一个(N,j)维的矩阵。当我们逆变换的时候，也即从主成份空间映射到原始空间，我们按如下公式做得到一个重构后的数据集合：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3d06a87ba1601d40.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>其中Rj是使用 top-j 的主成分进行重构之后形成的数据集，是一个 (N,p) 维的矩阵。</p>
+                    <p>我们的打分函数是这样的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-5733273940dc2c2b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-55c1ace8490ef7a9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>注意到|dataMat
+                      <em>{i}-R</em>{i}^{j}|表示的是 top-j 的主成分在所有主成分中所占的比例，并且特征值是按照从大到小的顺序排列的。因此，ev(j)
+                      是递增的序列，这就表示 j 越高，越多的方差就会被考虑在 ev(j) 中，因为是从 1 到 j 的求和。在这个定义下，偏差最大的第一个主成分获得最小的权重，偏差最小的最后一个主成分获得了最大的权重
+                      1。根据 PCA 的性质，异常点在最后一个主成分上有着较大的偏差，因此可以获得更高的分数。
+                      <br>整个算法的结构如图所示：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-e6f59b5e7f73ac59.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="PCA">
+                    </p>
+                    <h4 id="效果比较">
+                      <a href="#效果比较" class="headerlink" title="效果比较"></a>效果比较</h4>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>基于高斯分布</th>
+                          <th>基于矩阵分解</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-4c8721e22a2e1506.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-3a0ccf37b3762067.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>可以明显看到，矩阵分解关注的是偏离我主成分多的就是异常点，而高斯仅仅是你出现的地方不”人口密集区”就异常。明显主成份更抓住了问题的本质。</p>
+                    <h3 id="0x06-方案三之非线性模型（自编码器）">
+                      <a href="#0x06-方案三之非线性模型（自编码器）" class="headerlink" title="0x06. 方案三之非线性模型（自编码器）"></a>0x06. 方案三之非线性模型（自编码器）</h3>
+                    <p>自编码器网上资料很多，总结大概意思如下，我有一堆的数据，这其中是很多数据都是冗余的（有点类似于某组基构成的矩阵空间中，存在这非常多的空间向量，这些向量是由基线性组合而成，因此存在冗余，我们知道这一组基是这个空间的最精简最完善的表达，因此从这一堆向量中找出基这一过程就类似于自编码器干的活啦！），因此从冗余的数据中提取出本质是我们的
+                      <strong>目的</strong>，好像有点绕，那我们举个栗子吧！</p>
+                    <p>我们知道图像其实是由一些边缘特征构成的吧,绝大数声音也是由一些基本结构组成的，因此在表现形式如此丰富的声音中仅有20种基本的结构，是不是说特征对声音这个具体的实物来说是具有稀疏性的（自然界大多数复杂实物均是如此），拥有好奇心、抓住事物的本质是人类的天性，因此从稀疏编码到自编码器的过渡就很自然了！</p>
+                    <blockquote>
+                      <p>早年在关于稀疏编码（Sparse Coding）的研究中，通过对大量黑白风景照片提取16*16的图像碎片分析，研究发现几乎所有的图像碎片都可以由64种正交的边组合得到，并且组合出一张图像碎片需要的边的数量是很少的，也就是稀疏的。声音也有同样的情况，大量未标注的音频中可以得到20种基本结构，绝大多数声音都可以由这些基本的结构线性组合得到。这就是特征的稀疏表达，通过少量的基本特征组合、拼装得到更高层抽象的特征。</p>
+                    </blockquote>
+                    <p>那
+                      <strong>方法</strong>是什么呢？方法如下所示：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-dfcf4b1dfb3652b3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>把数据输入编码器，然后再解码得到输出，把这个输出跟输入做误差得到误差函数进行学习，那么最终就会使得输出跟输入极像，这样的话我们得到的编码器就是这个数据集的完美特征描述！</p>
+                    <p>实际中使用的是神经网络来实现的：一个输入层、一个隐藏层和一个输出层。其中输出层和输入层具有相同的维数。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-7a0f19097120782d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>在这里我们可以粗略地理解为通过自编码器得到了类似PCA过程的一个子空间。当然还存在很多其他的一些自编码器变体用来解决各种不同特定问题的，暂且不表，另
+                      <a href="">开篇描述</a>。由于跟PCA类似因此我这个应用复杂度还没到需要使用神经网络模型来处理，因此只谈论思路。</p>
+                    <ul>
+                      <li>
+                        <a href="https://www.zhihu.com/question/41490383" target="_blank" rel="external">
+                          <strong>知乎上也解释的很到位</strong>
+                        </a>
+                      </li>
+                      <li>
+                        <a href="http://blog.csdn.net/pi9nc/article/details/27711441" target="_blank" rel="external">
+                          <strong>理论请看这</strong>
+                        </a>
+                      </li>
+                    </ul>
+                    <p>###0x07. 方案四之Holt-Winters（指数滑动平均建模）</p>
+                    <blockquote>
+                      <p>其实就我这个问题的能级来判断，通过常规的机器学习方法就可以很好的解决问题，前面的三种方案为我对该问题的一些拓展性思考。</p>
+                      <p>#####前言
+                        <br>芯片可靠性实验的企业标准越来越严格，对异常检测系统的稳定性提出了较高的要求，每一次实验场景的异常波动（实际过程中是每晚9点半的时候会有一个关中央空调的操作，因此会有一个结温以及电压电流的波动，问：不是在高温箱里操作的吗？答：NO！有些由于试验箱资源不够采用的是室温下的PTC方案因此会受环境温度影响）我们都要进行及时应对以减少误报的频率。</p>
+                    </blockquote>
+                    <p>根据对业务的深入了解，可知对实验状态这一目标函数来说，存在的主要数据特征有
+                      <strong>串口数据是否打印、串口关键信息是否缺失、芯片结温、工作电流、工作电压、时间百分比等</strong>：</p>
+                    <ul>
+                      <li>串口有打印数据说明芯片大体工作正常，串口接口的功能是正常的，通信链路正常，嗯！很大概率实验状态是正常的。</li>
+                      <li>串口有打印数据但是仍有可能内部某些模块出问题了啊（比如GPU模块在高温长时间运行下会报异常）！因此这里考虑的是芯片内部模块状态，通过检测串口关键字的方式
+                        <strong>对芯片进行全方位的检测</strong>；</li>
+                      <li>芯片结温有两个要求：第一是满足可靠性标准的125摄氏度以上要求，第二是温度不能飘动很大，因此基于此这里设置一个特征；</li>
+                      <li>工作电流：这里说的是实验板整体的工作电流，正常稳定情况下电流有一定的工作模式，表现出来就是电流波形具有周期性，通过判断电流是否正常来判断实验板工作是否正常（毕竟实验板都异常了，肯定实验参数就不对了，因此必须及时检查出来），这与我之前做的《通过电流波形实时预测实验板元器件的寿命》项目具有一定的相似性，这里就不详述了，有时间再开篇，大概就是
+                        <strong>从设计硬件电路的时候就要考虑好检测电路、写驱动代码的时候要设计好debug接口，乃至上位机做好debug逻辑及数据的分析，最终来进行寿命预测。</strong>
+                      </li>
+                      <li>工作电压：这里是用来监测短路情况或者供电电源失效的；</li>
+                      <li>功耗分析：是基于电压和电流的组合特，这个组合特征为冗余特征，暂时不知是否有用，留经实测验证。</li>
+                      <li>时间参数：之前说过在分析数据的过程中发现在每天晚上九点半以及每天早上八点半左右都会出现芯片结温的一个温度值的波动，究其原因是因为这个时候是中央空调开关机的时间点，因此建模时需要考虑进去。</li>
+                    </ul>
+                    <blockquote>
+                      <p>好了，这里解释下我为什么不用PCA跟自编码器来做，因为这些特征就是人工选出来的一组特征基啊！PCA及自编码器是用来做稀疏的，也就是说你本来有很多维度的数据，但是你不知道哪些是重要的，因此就用这两算法来提取特征，这里我的特征已然明显，因此我这里针对每个参数进行滑动平均预测，最终组合进行整体预测。</p>
+                    </blockquote>
+                    <p>#####这里我针对电流这个单一变量进行异常预测如下:</p>
+                    <p>基本的操作就是先定义一个阀值，只要超过该阀值就算异常，否则就算正常，而阀值的计算是由高斯模型拟合出来的，这个放到实际场景中应该说只能算base
+                      line，这只是一条基本准则，是粗略的而不是精准的，因此，加上一阶拟合（从“位移”到了”速度”）考虑前后时刻的差值，差值过大的话就可以
+                      <strong>提前预测</strong>芯片可能会出问题，该方案实测过程中漏报率跟误报率都挺大。</p>
+                    <p>因此需要在同时考虑到数据周期性跟实时性的情况下，设计一种模型来提高预测的准确率。</p>
+                    <p>
+                      <strong>异常的定义：</strong>
+                      <br>所谓异常就是跟大众不一样，特殊的就叫异常。之前的高斯模型是按照出现的概率来定义异常，PCA、自编码器是找到数据的某种趋势，然后出现在这个趋势上的概率来定义异常，都挺好！能解决一定的问题，但是没有考虑时间因素的影响；在实际过程中，我们的数据是实时的，数据是跟时间组合出现的，构成了时间序列数据！比如空调启断的空档</p>
+                    <p>
+                      <strong>分析：</strong>
+                      <br>基本思路就是使用一批正常的历史数据来预测出当前应该有的数据，然后把实际测得的数据来跟当前预测数据进行比较,然后设计一个灵活的阀值策略来保证系统的鲁棒性，怎么样，是不是很自然的思路！很直接啊有木有！
+                      <br>是不是类似于男女生交往的逻辑：“我觉得你应该是怎样的，但是你却没有这样，所以我们分手吧！”；
+                      <br>之前的做法就是：</p>
+                    <ul>
+                      <li>“啊！你没房？我们分手吧！”
+                        <ul>
+                          <li>（你不觉得这样子太草率了吗？可能只凭当前就来断定一个人的未来啊！）</li>
+                        </ul>
+                      </li>
+                      <li>“那好，你毕业都一年了还是没买房，是不是你能力不行啊，不是潜力股，我看不到希望！我们分手吧！”
+                        <ul>
+                          <li>（我···）</li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <p>现在该怎样哄女票呢？</p>
+                    <ul>
+                      <li>（妹砸！你看哈，目前我刚毕业，工作很认真很拼，领导很器重我，我不是一个好吃懒做的人，也还有一些人生追求，我也一直努力工作想给你一个温暖舒适的家！你看要不这样你按照我们的实际情况进行设想，我明年什么时候该要有些什么，到时后我要是不满足要求，你就勇敢做决定，我也不敢强求，当然了具体这个要求怎么满足咱们可以好好讨论讨论，毕竟万事可商量嘛！目标是死的人是活的嘛！）</li>
+                    </ul>
+                    <p>我们这里使用的是过去的电流数据来预测当前的数据，使用的数据大小，以及使用的预测算法都会影响最终的预测效果。</p>
+                    <p>我们的数据具有一定的周期性，相邻时刻也具有很强的相关性，因此我们的目标是使用该数据预测出当前的订单量。</p>
+                    <p>###0x08. 我的方案之三个臭皮匠</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-0da6353b85095ada.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="架构">
+                    </p>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/"
+                                                                                                        title="机器学习实战-项目（努力写着呢~）">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/ML/逻辑回归实践/" rel="next" title="逻辑回归实践">
+                          <i class="fa fa-chevron-left"></i> 逻辑回归实践
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/ML/机器学习实践项目之高斯分布/" rel="prev" title="机器学习实践项目之高斯分布">
+                          机器学习实践项目之高斯分布
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x01-背景">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          0x01. 背景</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x02-需求描述及分析">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          0x02. 需求描述及分析</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x03-精彩的，现在才开始！">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          0x03. 精彩的，现在才开始！</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x04-方案一之多元高斯分布">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          0x04. 方案一之多元高斯分布</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x05-方案二之主成份分析法（PCA）">
+                        <span class="nav-number">5.</span>
+                        <span class="nav-text">
+                          0x05. 方案二之主成份分析法（PCA）</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#先补充一点理论知识跟直观感受：">
+                            <span class="nav-number">5.1.</span>
+                            <span class="nav-text">
+                              先补充一点理论知识跟直观感受：</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#效果比较">
+                            <span class="nav-number">5.2.</span>
+                            <span class="nav-text">
+                              效果比较</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#0x06-方案三之非线性模型（自编码器）">
+                        <span class="nav-number">6.</span>
+                        <span class="nav-text">
+                          0x06. 方案三之非线性模型（自编码器）</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

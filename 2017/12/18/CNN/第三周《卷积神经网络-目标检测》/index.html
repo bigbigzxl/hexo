@@ -1,0 +1,1139 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="目录    目标定位     就是人工标注数据，然后让机器学习目标位置框；   特征点检测     扩展一下，我不再单一定位框了（也就是一个特征），而是直接定位n个特征点的坐标；   目标检测     这里提出了我们移动窗口目标检测算法的原理，大概是怎么做的：拿个框在这个图片里面一步一步移动着找目标。   卷积的滑动窗口实现     讲了下计算量的性能热点，并给出解决方案；     就是我们">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="第三周《卷积神经网络-目标检测》">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN/第三周《卷积神经网络-目标检测》/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="目录    目标定位     就是人工标注数据，然后让机器学习目标位置框；   特征点检测     扩展一下，我不再单一定位框了（也就是一个特征），而是直接定位n个特征点的坐标；   目标检测     这里提出了我们移动窗口目标检测算法的原理，大概是怎么做的：拿个框在这个图片里面一步一步移动着找目标。   卷积的滑动窗口实现     讲了下计算量的性能热点，并给出解决方案；     就是我们">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-a8ace5a2af13874e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-55194e88f4204daa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c00b8e6a8c08631e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-47410c2e47ac512e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-ed77e84450909102.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-9653599a25be30a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-775b1149741483e2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1934d8d13cabdb77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-824205ea0c2de69f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-1e209b6ca0406e81.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c7fd29c27bc460aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-231f5da646e00065.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-6bd035a2e1083024.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-2a22870b0bacedcb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-39915af7bd3a1ec5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-35e828851e2a929e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-852df9a34eda527f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-406666628f894600.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3cd90a4a66574028.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-fb5ac4209cb7a9f0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-33a9285af924b454.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-cfd26bba99b35b30.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-08ac34733ea2320f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f0382b6a1b5e613b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2017-12-18T07:51:04.595Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="第三周《卷积神经网络-目标检测》">
+  <meta name="twitter:description" content="目录    目标定位     就是人工标注数据，然后让机器学习目标位置框；   特征点检测     扩展一下，我不再单一定位框了（也就是一个特征），而是直接定位n个特征点的坐标；   目标检测     这里提出了我们移动窗口目标检测算法的原理，大概是怎么做的：拿个框在这个图片里面一步一步移动着找目标。   卷积的滑动窗口实现     讲了下计算量的性能热点，并给出解决方案；     就是我们">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-a8ace5a2af13874e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN/第三周《卷积神经网络-目标检测》/"
+  />
+
+  <title>第三周《卷积神经网络-目标检测》 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN/第三周《卷积神经网络-目标检测》/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">第三周《卷积神经网络-目标检测》</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:50:28+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/CNN/" itemprop="url" rel="index">
+                            <span itemprop="name">CNN</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          6,810
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          23
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h3 id="目录">
+                      <a href="#目录" class="headerlink" title="目录"></a>目录</h3>
+                    <ol>
+                      <li>目标定位
+                        <br>就是人工标注数据，然后让机器学习目标位置框；</li>
+                      <li>特征点检测
+                        <br>扩展一下，我不再单一定位框了（也就是一个特征），而是直接定位n个特征点的坐标；</li>
+                      <li>目标检测
+                        <br>这里提出了我们移动窗口目标检测算法的原理，大概是怎么做的：拿个框在这个图片里面一步一步移动着找目标。</li>
+                      <li>卷积的滑动窗口实现
+                        <br>讲了下计算量的性能热点，并给出解决方案；
+                        <br>就是我们把后面的全连接换成卷积后，发现被测图在进行滑动检测的时候是有大量的计算量是重合的，因此把这部分计算量给一次性处理了，时间花销大大降低啊！
+                        <br>注意这里是不能输出bounding box的。</li>
+                      <li>bounding box预测</li>
+                      <li>交并比</li>
+                      <li>非极大值抑制</li>
+                      <li>Anchor boxes</li>
+                      <li>YOLO 算法</li>
+                      <li>RPN网络</li>
+                    </ol>
+                    <h4 id="P3-1-目标定位">
+                      <a href="#P3-1-目标定位" class="headerlink" title="P3.1 目标定位"></a>P3.1 目标定位</h4>
+                    <p>目标检测分为
+                      <strong>定位</strong>跟
+                      <strong>分类</strong>；</p>
+                    <p>我们之前整的都是分类，都是输入一张图，然后输出这个图是哪一类的结果，没有涉及到
+                      <strong>定位问题</strong>，因此这里我们引入了研究。</p>
+                    <p>我们不仅要检测一个目标，有时可能还要检测多个目标，比如，自动驾驶的时候，我们要检测出前面是否有人、汽车、摩托车等等，并且还要准确框出其位置，这样子才不会撞上去啊！所以整出个定位完全就是工业需求嘛！</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-a8ace5a2af13874e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>分类定位</strong>，是最基本的情况，其图中一般是一个对象（如上图中间图所示），且对象占图面积很大；</li>
+                      <li>
+                        <strong>对象检测</strong>则包括很多对象，以及很多种类的对象，情况更复杂（上图右）。</li>
+                    </ul>
+                    <blockquote>
+                      <p>思路是这样的：
+                        <strong>分类 –》分类定位 –》对象检测</strong>，这个过程是思路的延续。</p>
+                    </blockquote>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-55194e88f4204daa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>我们来看下上述的思路是如何延续的：
+                      <strong>常规的分类</strong>如图所示，输入图片，然后卷积，最后通过softmax直接输出类别的概率值(这里假设有4类)。</p>
+                    <p>
+                      <strong>注意咯！开始思路延续了！doge~</strong>
+                    </p>
+                    <p>我们把softmax那个地方改一下，除了输出四类之外，还增加bounding box参数；</p>
+                    <blockquote>
+                      <p>这里注意一下，bx，by是框的中心坐标，坐标原点是你整张图的左上角，右下角为（1，1），因此坐标值都是图片里面的百分比位置；bw和bh就是对应的长宽值，当然也按比例输出值就好了。</p>
+                    </blockquote>
+                    <p>那么问题来了，我们怎么做呢？</p>
+                    <p>首先得
+                      <strong>标注数据集</strong>，就是把图片打标，给每张图贴上类别标签，同时还给出框的参数，然后喂给卷积网络进行有监督训练，这样子反向传播梯度下降一整，就
+                      <strong>让网络不仅学会如何识别类别，同时还学会了如何去框定图片的位置</strong>，bingo！网络又增加一项技能！反正都是学，技多不压身啊！</p>
+                    <blockquote>
+                      <p>
+                        <strong>插句嘴：</strong>我们做数据集的时候，根据经验，目标在图中的位置参数最好是bx=0.5，水平中间，by=0.7，目标在中下位置，bw=0.4，bh=0.3也就是说目标占图片面积的比例也不要太大了的好啊！这是吴恩达大佬给出值，估计是他们的经验之谈吧！（如有误解，烦请指出！抱拳）</p>
+                    </blockquote>
+                    <p>
+                      <strong>上面讲了我们要把分类问题的softmax输出值改造一下具体如何改造呢</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <p>首先
+                          <strong>定义输出y</strong>，y由八个变量构成（打标的数据也是按这样子来）：</p>
+                        <ul>
+                          <li>Pc表示是否含有目标，有为1，没有为0；</li>
+                          <li>bx，by，bw，bh是定位框的参数；</li>
+                          <li>c1，c2，c3是目标分别三个类别的概率；
+                            <blockquote>
+                              <p>注意：当图片中没有目标的时候，除了Pc参数外的其他参数我们都不关心，因为没必要嘛！这在设计损失函数的时候需要注意。</p>
+                            </blockquote>
+                          </li>
+                        </ul>
+                      </li>
+                      <li>
+                        <p>然后
+                          <strong>设计损失函数</strong>
+                        </p>
+                        <ul>
+                          <li>当图片中有目标存在时，也就是Pc=1时，损失函数就是所有参数的
+                            <strong>平方误差</strong>相加，如图所示；然后利用反向传播和梯度下降来有监督地训练中间的网络；</li>
+                          <li>当Pc=0的时候，其他参数就没意义了，因此损失函数就单单是训练Pc的了，也就是一个逻辑回归了！</li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <blockquote>
+                      <p>
+                        <strong>就喜欢插嘴：</strong> 实际中 c1，c2，c3可以选择log损失函数， bx，by，bw，bh选用平方误差损失函数，Pc用逻辑回归损失函数、平方差损失函数都是ok的！</p>
+                    </blockquote>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-c00b8e6a8c08631e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="image.png">
+                    </p>
+                    <h4 id="P3-2-特征点检测">
+                      <a href="#P3-2-特征点检测" class="headerlink" title="P3.2 特征点检测"></a>P3.2 特征点检测</h4>
+                    <p>之前讲到了，通过训练框参数来获取目标的位置，既然位置参数都出来了，那么我们可不可以直接输出某些特征点参数，以人脸识别为例，我们可以直接先训练出网络可以输出人眼左边点的位置参数lx和ly；</p>
+                    <p>既然一点出来了，那么我们是不是可以输出右眼角坐标，眼睛轮廓点（特征点集合）坐标、鼻子轮廓点的坐标、嘴巴轮廓点的坐标、脸轮廓的坐标乃至直接输出
+                      <strong>人脸特征点==组合==</strong>的坐标，如下图所示，哪些红色的描点是可以人为设定的，</p>
+                    <blockquote>
+                      <p>（ps. 以前不是网上有篇文章说的是国外有个哥们设计了一套反人脸识别系统的东东，就是拿一些黑色胶带，把脸上部分区域贴上，类似下图中的描点区域，然后人脸识别算法就失效了，我认为这深层次的原因就是把特征点给抹去了吧！从侧面也能说明，人脸特征区域基本上都是类似的了！）</p>
+                    </blockquote>
+                    <ul>
+                      <li>人脸检测基本构造模块就是：输入图片（
+                        <strong>人为辛苦标注的数据集，包含特征点位置参数</strong>），然后用该数据集来训练卷积网络，教会它识别图片中是否有人脸，以及教会它输出人脸的特征点（是标注集时人为选定的）位置参数；</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-47410c2e47ac512e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>上面说到了数据集，这里需要特别说明一下，这些数据集
+                        <strong>全部都是人为打标的</strong>，标注出人脸关键位置的坐标，送入给神经网络进行学习，也就是说
+                        <strong>数据集是关键啊</strong>！</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-ed77e84450909102.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="image.png">
+                    </p>
+                    <ul>
+                      <li>还可以做人体的姿势识别，核心点就是特征点的选择及打标，比如下图右三。</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-9653599a25be30a7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h4 id="P3-3-目标检测">
+                      <a href="#P3-3-目标检测" class="headerlink" title="P3.3 目标检测"></a>P3.3 目标检测</h4>
+                    <blockquote>
+                      <p>
+                        <strong>之前讲到了目标定位及特征点检测（也就是框出图中目标的位置，并且对应的特征点参数，如人脸位置坐标，也已经输出），那么现在就应该进行目标检测了！</strong>
+                      </p>
+                    </blockquote>
+                    <p>
+                      <strong>基于滑动窗口目标检测算法</strong>：</p>
+                    <ul>
+                      <li>
+                        <p>我们首先要做的是
+                          <strong>搞出训练集</strong>，如下图所示，我们从图中剪切出车子的图片并
+                          <strong>打好标签</strong>，注意剪切出来的都是车子在中央的标准图片集！</p>
+                      </li>
+                      <li>
+                        <p>然后将这些训练集来
+                          <strong>训练出一个卷积网络</strong>，接下来才是采用滑动窗口目标检测算法来进行目标检测了！</p>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-775b1149741483e2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="image.png">
+                    </p>
+                    <ul>
+                      <li>理解起来超级直观，就是先
+                        <strong>设定一个选择框（红色）</strong>，然后从左上角开始，跟卷积一样的移动（其中移动的一些参数都是超参数来的），框内的图片送入上面训练好的网络，输出一个值表示当前红色框内是否有汽车，然后依次滑完整个图片。
+                        <ul>
+                          <li>很显然，一个尺寸的框很有可能框不到图中汽车，因此要准备好几种尺寸的框，依次检测直到检测出汽车，
+                            <strong>当然了具体用几个框？框的尺寸用多大？这都是要调的，且看这里会不会讲到这些！？</strong>
+                            <br>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-1934d8d13cabdb77.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="image.png">
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <blockquote>
+                      <p>
+                        <strong>总结：很显然，这样子做计算量超级大，因为每移动一步产生的小图都是要送去卷积网络的啊！</strong>
+                        <br>既然每移动一步产生的图片送入卷积网络，那么我们可以选择大一点的stride嘛！这样子就可以减少图片的数量以及卷积计算量，
+                        <strong>同时需要清醒的认识到的是，这样子做会使得检测粒度变大，性能有可能降低。反之，小步幅小粒度就会增加计算量。</strong>
+                      </p>
+                      <p>ps. 卷积之前采用的是
+                        <strong>线性分类器</strong>，因此滑动检测的计算量还是可以的，但是卷积的计算量太巨大，因此检测速度太慢，好在后面的研究讲到了如何优化使得速度得以提升！(我想这就是人类存在的意义吧！不断想出新的优化的办法，不断使得“系统”得以螺旋上升，这应该就是写在人类基因代码里面的算法吧！人类因此而不断地向前走、进化。我们得从人类之上俯瞰“能量”的流动规律，抓住规律把握baseline，获得灵感的触发，天道即行。)</p>
+                    </blockquote>
+                    <h4 id="P3-4-卷积滑动窗口的实现">
+                      <a href="#P3-4-卷积滑动窗口的实现" class="headerlink" title="P3.4 卷积滑动窗口的实现"></a>P3.4 卷积滑动窗口的实现</h4>
+                    <p>首先讲的是如何
+                      <strong>将全连接层转换为卷积层</strong>，当然这么做的好处，在后面进行滑动窗口的时候就可以看出来。</p>
+                    <p>从下图第一行中可以看出，全连接层那个地方是直接把5X5X16=400个点直接解开成单独的像素点，有点类似于降维的味道啊，本来好好的二维信息，你这里直接给解成1维的了；然后softmax输出四类信息（车子，人，马路，山啊啥的）的概率。</p>
+                    <p>而第二行的操作，不同之处在于全连接那，我们不损失二维信息，但是要做到最终的输出还是四类的值，跟上面的输出一样，因此我们采用400个5*5的卷积核直接卷积输出的就是1X1X400的卷积层了，虽然跟上面的全连接形似，但是这个是卷积层，
+                      <strong>计算方式</strong>是不同的，后面的话就是类似了，总之
+                      <strong>全部都是卷积操作</strong>。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-824205ea0c2de69f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>这里你就不关心为啥我们要将全连接替换成卷积的模式嘛？</strong>
+                        <br>我认为有两点：第一就是这样子转换成卷积的模式跟全连接是等效，或者说效果相差不大的；其二这样子做使得计算方式统一了，因此在后面的加速优化方面可以更方便（实际情况也是如此，对每次的卷积统一整体优化）。</p>
+                    </blockquote>
+                    <p>
+                      <strong>厉害了，细心了我的哥：</strong>
+                      <br>第一行是14*14*3的图片进行的训练，得到的模型；</p>
+                    <p>第二行拿16*16*3的图片进行目标检测，当我们以stride = 2进行切割图片时会切割成四个子图，然后依次将这四个子图送入上面训练出来的模型进行
+                      <strong>前向传播计算</strong>，然后最后得到四组输出值。</p>
+                    <p>
+                      <code>等等。。。能发论文的人就是比我们更懂这个游戏啊，知晓游戏的所有基本操作，知道这个游戏里面的每一个细节，然后还爱着这个游戏，有着探索欲望，因此作者就发现这四个操作有计算重合的部分啊！因为四个子图本来就有重合的部分啊！当然咯！仅仅发现这个大部分人还是可以做到的，但是要给出解决方案的还属牛人！掌握这个召唤师战场每一个细节的牛人，作者发现我直接把一整张图送入上面的模型直接前向传播，输出的就是2\*2\*4的输出，也就是2\*2组输出，跟上面还是一样的啊！</code>
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>要点：子图的公共区共享计算。</strong>
+                        <br>
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-1e209b6ca0406e81.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </li>
+                    </ul>
+                    <p>我们可以看到，实际使用过程中，我们滑动窗口时不需要每个子图都进行前向传播，直接整张图进行卷积，然后
+                      <strong>输出一组结果，比如下图输出的是8X8X4，也就是说输出了64组结果（即64个框匹配后的结果），每个结果中有四个值，分别对应四类目标的概率值。</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-c7fd29c27bc460aa.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="image.png">
+                      <br>
+                      <strong>注：</strong>框的大小是由你的卷积网络训练完后决定的（检测之前的预训练那）。</p>
+                    <blockquote>
+                      <p>问题：
+                        <br>1、这个框的大小如何确定？假如选几个scaling的话，那怎么选？
+                        <br>2、这么移动不一定能刚好选择到汽车，那么stride如何选（权衡粒度跟性能）如何能保证一定框中汽车（也即如何使得选择框精准选定目标）？</p>
+                    </blockquote>
+                    <h4 id="P3-5-bounding-box预测">
+                      <a href="#P3-5-bounding-box预测" class="headerlink" title="P3.5 bounding box预测"></a>P3.5 bounding box预测</h4>
+                    <p>上一节讲到我们滑动窗口进行检测的时候很有可能是无法刚好把你的框框住图中的目标的，
+                      <strong>因为有可能目标是长方形的，而你的框是正方形的</strong>，因此
+                      <strong>最有可能的情况是窗口滑动过程中，其中一个框中出现目标的面积比其他的要大</strong>，因此我们可以从这个点入手进行思考，是否有合适的算法可以解决该问题！</p>
+                    <p>当然咯！别人已经想出了一个解决方案了，那就是
+                      <strong>YOLO算法</strong>，这里摘录如下：</p>
+                    <ul>
+                      <li>
+                        <p>将图像进行切割，这里假设是3X3的切割（实际使用时将会更精细），然后切割出的每个图片进行卷积操作直接输出[是否目标*1，坐标*4，类别*3]的向量，比如你将图片3X3分割，那么最终输出的就是3X3X8的输出；</p>
+                        <blockquote>
+                          <p>
+                            <strong>注：</strong>打标签的时候是这样打的，你看没有汽车的方格子，比如左第一个，是直接输出Pc=0的，其他的参数值我们是不关注的；其次绿色框中/黄色框是有大部分汽车的，因此汽车分别
+                            <strong>归属</strong>于这个框，而中间这个框虽然有一部分汽车，但是还是认定为没有汽车的。
+                            <br>
+                            <strong>由此可见这里框出来的不一定刚还完美适配车子的大小外形的，这里只做到你出现在那个剪切块内，关于具体的bonding
+                              box参数完美适配还得要优化且还得后面研究。</strong>
+                            <br>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-231f5da646e00065.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </p>
+                        </blockquote>
+                      </li>
+                      <li>
+                        <p>类似常规的分类和定位算法，因为这也是直接显示输出类型及bounding box；</p>
+                        <blockquote>
+                          <p>box参数定义跟之前还是差不多的，也是以最小单位方格的尺寸比例为值的。其次长宽参数是可能大于1的，因为这个车子很大，但是归属到当前切割区时，就会出现大于1的情况
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-6bd035a2e1083024.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </p>
+                        </blockquote>
+                      </li>
+                      <li>
+                        <p>可以使得神经网络输出的bounding box具有
+                          <strong>任意的宽高比，并且能输出更精确的坐标，并且不会受到滑动窗口法分类器的步长大小限制</strong>，
+                          <strong>其次我们并没有在每个分隔出的图片中跑卷积算法（比如3X3分割出来九张小图，我们就要做9次卷积），而是直接整张图全部进行卷积操作，因此速度很快！</strong>
+                        </p>
+                        <blockquote>
+                          <p>
+                            <strong>疑问：</strong>不受滑动窗口法分类器的步长大小限制？这句话怎么理解？
+                            <br>这玩意跟滑动窗口法本质上不是一样的么？</p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <h4 id="P3-6-交并化">
+                      <a href="#P3-6-交并化" class="headerlink" title="P3.6 交并化"></a>P3.6 交并化</h4>
+                    <p>解决如何判断算法运行良好的问题。</p>
+                    <p>
+                      <strong>背景：</strong>
+                    </p>
+                    <ul>
+                      <li>实际完美的框应该是图中的红色框，而我们算法实际框出来的是紫色那个框；</li>
+                    </ul>
+                    <p>
+                      <strong>定义：</strong>
+                    </p>
+                    <ul>
+                      <li>ioU就是交并比，也就是两个框的交集比上并集，一般
+                        <strong>人为</strong>设定大于0.5，当然了，要是你要求严格点也可以设为0.6或者0.7，并以此来
+                        <strong>评估你的定位算法是否精确</strong>。</li>
+                      <li>特别的ioU = 1就表示算法框出来的跟理想框完全一样，这个是完美的状态。
+                        <br>
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-2a22870b0bacedcb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </li>
+                    </ul>
+                    <h4 id="P3-7-非极大值抑制">
+                      <a href="#P3-7-非极大值抑制" class="headerlink" title="P3.7 非极大值抑制"></a>P3.7 非极大值抑制</h4>
+                    <p>我们之前的做法都是对某个对象检测出多次？</p>
+                    <ul>
+                      <li>滑动窗口是这样的；
+                        <br>这个肯定会检测出多次的。</li>
+                      <li>YOLO分隔后不也是如此嘛？
+                        <br>是的，也是如此，因此才提出非极大值抑制。</li>
+                    </ul>
+                    <p>我们实际操作的时候，比如这里做19X19de切割图片，然后运行检测算法，然后每个格子都会输出一组向量，来表示我这个格子里面是不是含有汽车。</p>
+                    <p>然后，有一部分格子（如图中绿色、橙色那些）都会认为自己这个格子里面
+                      <strong>含有汽车的概率很高</strong>，车子的中心点应该在我这个格子内部。但是我们从全局来看是知道只有一个理论中心点的。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-39915af7bd3a1ec5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>非极大值抑制：保证每个对象只检测一次。
+                      <br>就是只输出概率极大的结果，抑制很接近但不是极大值的预测结果（也就是一簇框中选出定位效果最好的那个，其他的淘汰掉）</p>
+                    <p>如下图所示就是：选中0.9的框作为老大，其他0.6和0.7的就可以去掉了；0.8那边的也是同理。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-35e828851e2a929e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>具体算法步骤是：</p>
+                    <ul>
+                      <li>假设我们只识别汽车这一类，因此输出向量只有5维；</li>
+                      <li>在算法跑了一遍之后，直接把Pc&lt;=0.6的全部去掉，”你们这些吊车尾，淘汰，淘汰!” —火影</li>
+                      <li>选择Pc最大的那个框，然后跟这个框重叠度大于0.5（也就是这一簇的框）的全部去掉，这样就找到了一个目标了！</li>
+                      <li>重复上述步骤，继续找下一个目标，直至没有了。</li>
+                    </ul>
+                    <p>当要检测很多类的时候，每个类都要这样子进行一次操作。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-852df9a34eda527f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>我的问题是：</strong>
+                      </p>
+                      <ul>
+                        <li>
+                          <ol>
+                            <li>你这样剪成19X19的大小，然后输出19X19个结果向量，也就是说每一个格子最终会输出一个结果，那么你这是默认检测框的大小就是这个格子的大小啊，那么这样子的话**跟滑动窗口比起来是不是就是把stride加大了？</li>
+                          </ol>
+                        </li>
+                        <li>
+                          <ol>
+                            <li>这里也没有体现出每个对象只检测一次啊？不是也重复多次检测了么？
+                              <br>你看啊，目标附近的每个格子都认为他是真命天子，都要抢着计算资源来回归他的框参数，但是这么多计算量太大了嘛！因此我们提前预选一下，选出一个最有可能的代表，然后再对其进行框位置的回归。</li>
+                          </ol>
+                        </li>
+                        <li>
+                          <ol>
+                            <li>那个边框超过你当前格子，这个算法是怎么做到识别出框的？是传说中的全局视角么？
+                              <br>识别框大于格子大小这个问题应该是：反向传播学来的全局视角能力了！！！
+                              <br>我们标注训练集的时候，在一张大图中会给出目标的中心点以及框的参数的，那么我们在运行YOLO算法的时候就会基于反向传播来直接回归，因此这里体现的是
+                              <strong>全局的视角</strong>；回到微观的每个格子，都会输出一个目标概率值和位置框参数，我们有策略地选择一些做处理，最终得到一个目标框，然后基于此框进行反向回归，因此这里体现
+                              <strong>只检测一次</strong>；最终这个格子的框大小参数开始可能是随机的，通过训练是可以回归出标注数据集的位置的，因此说这里体现了学大框的全局能力。</li>
+                          </ol>
+                        </li>
+                      </ul>
+                    </blockquote>
+                    <h4 id="P3-8-Anchor-Boxes">
+                      <a href="#P3-8-Anchor-Boxes" class="headerlink" title="P3.8 Anchor Boxes"></a>P3.8 Anchor Boxes</h4>
+                    <p>之前是
+                      <strong>每个格子只能检测出一个对象</strong>，假如我们要每个格子检测出多个类别的话，就要用这里的Anchor Boxes了。</p>
+                    <p>如下图所示，车子跟人的中心点是在一起的，也就是说打标的时候就已经合在一起了，那么我反向传播的时候就根本不可能把网络训练得识别出这两个物种，因为网络的基本规则之一就是一个框中只能有一个目标；</p>
+                    <p>而解决方案就是预先设定不同形状的框，然后把框跟目标关联起来，不就是相当于加了一维信息嘛！（如图所示，编码由原来的一组就变成了两组，由于竖着的更符合人的特征，因此我们可以把第一组跟人关联起来，第二组横着的跟汽车关联起来）</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-406666628f894600.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>之前的做法是：标注数据的时候图像的中心点在哪个格子我们就把它分配给哪个格子；
+                      <br>现在Anchor boxes的做法是：我还是中心在那个格子我就分配给那个格子，但这样就区分不出来了嘛，所以我就又增加一个参数（grid
+                      cell，anchor boxes）这样子就能识别出一个格子类的两个对象了。
+                      <strong>同时输出向量是原来的两倍了，之前是8（因为我们有三类输出+位置参数四个+是否有目标的概率），现在两组值就是16了。</strong>
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-3cd90a4a66574028.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <blockquote>
+                      <p>是为了解决一个格子出现两个对象的问题，但是假如我们取19X19分割的话，那么出现这种场景的概率还是蛮低的。
+                        <br>好处就是我们可以更进一步地定制化目标检测算法，比如我们加上anchor之后就可以提前告诉网络，汽车就是躺着的长条形状的物体，这样子机器会学得更快一些，类似于机器学习里面的正则嘛~</p>
+                    </blockquote>
+                    <h4 id="P3-9-YOLO算法">
+                      <a href="#P3-9-YOLO算法" class="headerlink" title="P3.9 YOLO算法"></a>P3.9 YOLO算法</h4>
+                    <p>终于到正主了，终于可以融汇贯通了！</p>
+                    <ul>
+                      <li>第一步：构建数据集
+                        <br>
+                        <strong>为了简单示例</strong>，这里取3X3切割（实际中一般要取到19*19这个级别的），然后遍历这9个格子，每个格子输出1个16个参数的向量，共计3X3个；
+                        <br>16个参数是因为选用了两组anchor（实际中可能更多），每组8个是因为如图所示是要分三类的。</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-fb5ac4209cb7a9f0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>
+                        <p>第二步：构建网络
+                          <br>比如输入的是100X100的图片，那么我们最终要的输出是3X3X16的输出，此为大前提。</p>
+                      </li>
+                      <li>
+                        <p>第三步：神经网络的预测过程
+                          <br>如图所示，你把图片丢给网络后就输出3X3X16的向量，只有绿色框的那个里面的其中一个anchor box是有输出的，会告诉你Pc=1：对象在这个框内；具体的位置参数预测输出；这个对象属于哪一个类别；</p>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-33a9285af924b454.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>
+                        <p>非极大值抑制
+                          <br>每个格子都会输出两个anchor框（我们选择两个的嘛），
+                          <strong>可以看到二行三列这个格子的框是超出格子的了（这里可能会有疑问：我们运算单元是格子，为什么算法可以知道格子之外的信息呢？我的理解是，当时我们标注这个格子的时候，由于中心点在这个格子，因此人这个对象就配给这个格子了，然后对应标注的框参数肯定是最合适的竖长方形啊，然后把这种全局信息给到网络去学习，网咯的学习是作为一个整体的回归学习的，给的信息里面就有全局信息，所以学习肯定也会学习到全局信息的啊！因此这里直接预测出框是大于格子的没什么好惊讶的！）</strong>
+                          <br>
+                          <img src="http://upload-images.jianshu.io/upload_images/4749583-cfd26bba99b35b30.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                          alt="">
+                        </p>
+                      </li>
+                      <li>
+                        <p>运用非极大值抑制后，就把其他格子的框给消掉了，但是还是有两个anchor我们要选择最合适的那个，因此再对每个类别
+                          <strong>单独做</strong>非极大值选出最合适的框来就是最终的输出值了，这里人是竖框，车子是横框。</p>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-08ac34733ea2320f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h4 id="P3-10-RPN网络">
+                      <a href="#P3-10-RPN网络" class="headerlink" title="P3.10 RPN网络"></a>P3.10 RPN网络</h4>
+                    <p>region proposal network：候选区域（区域建议）网络</p>
+                    <p>
+                      <strong>R-CNN：带区域的卷积网络</strong>
+                    </p>
+                    <ul>
+                      <li>滑动窗口的时候由于没有目标的区域也进行了计算，因此这是时间和计算力等资源的浪费；</li>
+                      <li>因此只对部分区域进行计算，那如何找到这个区域呢？那就是
+                        <strong>图像分割</strong>啦！</li>
+                      <li>在分割出的框上跑分类器，这样子计算量可能会减少！</li>
+                      <li>一般流程是先把图片通过某种算法进行分割出框，然后送入分类型输出（输出也是包含bounding box哟，这样子更精准了），单数速度还是有点慢。
+                        <blockquote>
+                          <p>我的问题是：框的大小不是一样的，你怎么丢到分类器里面去？</p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-f0382b6a1b5e613b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>优点是：他自己也会输出一个bouding box，这样子的话定位单数是更准的。</li>
+                      <li>缺点是：太太太太慢了！！！</li>
+                    </ul>
+                    <p>
+                      <strong>Fast R-CNN：</strong>
+                      <br>后来出现了Fast R-CNN，因为之前R-CNN都是每个区域逐一分类的，因此速度慢，这个Fast R-CNN就是借鉴了滑动窗口的卷积实现，因此速度提升了！</p>
+                    <ul>
+                      <li>缺点是：
+                        <strong>得到候选区域</strong>的聚类步骤还是非常缓慢。</li>
+                    </ul>
+                    <p>
+                      <strong>Faster R-CNN:</strong>
+                    </p>
+                    <p>
+                      <strong>获得候选区域色块</strong>的操作是图像分割这块的核心，之前采用的是
+                      <strong>传统的分割算法</strong>，而这篇论文里面采用的是
+                      <strong>卷积神经网络</strong>。</p>
+                    <blockquote>
+                      <p>虽然你加速了，但还是比YOLO慢很多哇！</p>
+                    </blockquote>
+                    <h4 id="总结">
+                      <a href="#总结" class="headerlink" title="总结"></a>总结</h4>
+                    <p>传统目标检测系统采用deformable parts models (DPM)方法，通过滑动框方法提出目标区域，然后采用分类器来实现识别。</p>
+                    <p>近期的R-CNN类方法采用region proposal methods，首先生成潜在的bounding boxes，然后采用分类器识别这些bounding
+                      boxes区域。最后通过post-processing来去除重复bounding boxes来进行优化。这类方法流程复杂，存在速度慢和训练困难的问题。
+                    </p>
+                    <p> YOLO提供了另一种更为直接的思路： 直接在输出层回归bounding box的位置和bounding box所属的类别(整张图作为网络的输入，把
+                      Object Detection 的问题转化成一个 Regression 问题)。</p>
+                    <p>缺陷：
+                      <br>YOLO对相互靠的很近的物体（挨在一起且中点都落在同一个格子上的情况），还有很小的群体 检测效果不好，这是因为一个网格中只预测了两个框，并且只属于一类。</p>
+                    <p>测试图像中，当同一类物体出现的不常见的长宽比和其他情况时泛化能力偏弱。</p>
+                    <p>由于损失函数的问题，定位误差是影响检测效果的主要原因，尤其是大小物体的处理上，还有待加强。</p>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN/第三周《卷积神经网络-目标检测》/"
+                                                                                                        title="第三周《卷积神经网络-目标检测》">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/CNN/第三周《卷积神经网络-目标检测》/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/CNN/第一周《卷积神经网络》/" rel="next" title="第一周《卷积神经网络》">
+                          <i class="fa fa-chevron-left"></i> 第一周《卷积神经网络》
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/CNN/CNN TensorFlow实现/" rel="prev" title="CNN TensorFlow实现">
+                          CNN TensorFlow实现
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#目录">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          目录</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-1-目标定位">
+                            <span class="nav-number">1.1.</span>
+                            <span class="nav-text">
+                              P3.1 目标定位</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-2-特征点检测">
+                            <span class="nav-number">1.2.</span>
+                            <span class="nav-text">
+                              P3.2 特征点检测</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-3-目标检测">
+                            <span class="nav-number">1.3.</span>
+                            <span class="nav-text">
+                              P3.3 目标检测</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-4-卷积滑动窗口的实现">
+                            <span class="nav-number">1.4.</span>
+                            <span class="nav-text">
+                              P3.4 卷积滑动窗口的实现</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-5-bounding-box预测">
+                            <span class="nav-number">1.5.</span>
+                            <span class="nav-text">
+                              P3.5 bounding box预测</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-6-交并化">
+                            <span class="nav-number">1.6.</span>
+                            <span class="nav-text">
+                              P3.6 交并化</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-7-非极大值抑制">
+                            <span class="nav-number">1.7.</span>
+                            <span class="nav-text">
+                              P3.7 非极大值抑制</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-8-Anchor-Boxes">
+                            <span class="nav-number">1.8.</span>
+                            <span class="nav-text">
+                              P3.8 Anchor Boxes</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-9-YOLO算法">
+                            <span class="nav-number">1.9.</span>
+                            <span class="nav-text">
+                              P3.9 YOLO算法</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#P3-10-RPN网络">
+                            <span class="nav-number">1.10.</span>
+                            <span class="nav-text">
+                              P3.10 RPN网络</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#总结">
+                            <span class="nav-number">1.11.</span>
+                            <span class="nav-text">
+                              总结</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

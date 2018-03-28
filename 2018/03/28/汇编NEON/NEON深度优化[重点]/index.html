@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="官网介绍：         NEON宏观介绍           NEON Programmer’s Guide Version: 1.0        直观认识    NEON整体描述   Arm NEON technology is an advanced SIMD (single instruction multiple data) architecture   extension f">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="0x07 什么？！NEON还要优化？[重点]">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/汇编NEON/NEON深度优化[重点]/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="官网介绍：         NEON宏观介绍           NEON Programmer’s Guide Version: 1.0        直观认识    NEON整体描述   Arm NEON technology is an advanced SIMD (single instruction multiple data) architecture   extension f">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-60d58ba0a78ed2cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c7273fd45e4c8a37.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8af55d8f3be1129c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-fa0b87468acf9552.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-07651c1a0a3958b7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4749583-ece77b5901de65b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4749583-c5cac52292ca062a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://upload-images.jianshu.io/upload_images/4749583-c53641c43060b881.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-28T09:41:36.253Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0x07 什么？！NEON还要优化？[重点]">
+  <meta name="twitter:description" content="官网介绍：         NEON宏观介绍           NEON Programmer’s Guide Version: 1.0        直观认识    NEON整体描述   Arm NEON technology is an advanced SIMD (single instruction multiple data) architecture   extension f">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-60d58ba0a78ed2cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/汇编NEON/NEON深度优化[重点]/"
+  />
+
+  <title>0x07 什么？！NEON还要优化？[重点] | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/汇编NEON/NEON深度优化[重点]/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">0x07 什么？！NEON还要优化？[重点]</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T17:40:54+08:00">
+                          2018-03-28
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/汇编NEON/" itemprop="url" rel="index">
+                            <span itemprop="name">汇编NEON</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          5,846
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          24
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h1 id="官网介绍：">
+                      <a href="#官网介绍：" class="headerlink" title="官网介绍："></a>官网介绍：</h1>
+                    <ul>
+                      <li>
+                        <a href="https://developer.arm.com/technologies/neon" target="_blank" rel="external">NEON宏观介绍</a>
+                      </li>
+                      <li>
+                        <a href="https://developer.arm.com/products/architecture/a-profile/docs/den0018/a"
+                                                                                                        target="_blank" rel="external">NEON Programmer’s Guide Version: 1.0</a>
+                      </li>
+                    </ul>
+                    <h1 id="直观认识">
+                      <a href="#直观认识" class="headerlink" title="直观认识"></a>直观认识</h1>
+                    <p>
+                      <strong>NEON整体描述</strong>
+                      <br>Arm NEON technology is an advanced SIMD (single instruction
+                      multiple data) architecture extension for the Arm Cortex-A
+                      series and Cortex-R52 processors. </p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-60d58ba0a78ed2cb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>NEON technology was introduced to the Armv7-A and Armv7-R profiles.
+                      It is also now an extension to the Armv8-A and Armv8-R profiles.
+                      </p>
+                    <p>NEON technology is intended to improve the multimedia user experience
+                      by accelerating audio and video encoding/decoding, user interface,
+                      2D/3D graphics or gaming. NEON can also accelerate signal processing
+                      algorithms and functions to speed up applications such as audio
+                      and video processing, voice and facial recognition, computer
+                      vision and deep learning.</p>
+                    <p>
+                      <strong>其他具体的细节，在官网还有很多描述，自己去看吧！</strong>
+                    </p>
+                    <h1 id="持续优化">
+                      <a href="#持续优化" class="headerlink" title="持续优化"></a>持续优化</h1>
+                    <h2 id="初识">
+                      <a href="#初识" class="headerlink" title="初识"></a>初识</h2>
+                    <p>
+                      <a href="https://community.arm.com/cn/b/blog/posts/neon" target="_blank" rel="external">NEON的初步认识</a>
+                    </p>
+                    <p>NEON是SIMD架构下的一个加速部分，其实本来是给多媒体做的，因为多媒体计算量大，而且计算的方式比较单一，因此那伙设计cpu的家伙可能就想，我能不能针对真快做个并行部分？</p>
+                    <p>于是这玩意就出来了，嗯！就是这么来的（我瞎掰的）。</p>
+                    <p>
+                      <strong>详细的教程如下系列：</strong>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/android-community/b/android/posts/arm-neon-programming-quick-reference"
+                                                                                                      target="_blank" rel="external">安卓开发看这个入手：ARM NEON programming quick reference</a>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/processors/b/blog/posts/coding-for-neon---part-1-load-and-stores"
+                                                                                                      target="_blank" rel="external">Coding for NEON - Part 1: Load and Stores</a>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/processors/b/blog/posts/coding-for-neon---part-2-dealing-with-leftovers"
+                                                                                                      target="_blank" rel="external">Coding for NEON - Part 2: Dealing With Leftovers</a>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/processors/b/blog/posts/coding-for-neon---part-3-matrix-multiplication"
+                                                                                                      target="_blank" rel="external">Coding for NEON - Part 3: Matrix Multiplication</a>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/processors/b/blog/posts/coding-for-neon---part-4-shifting-left-and-right"
+                                                                                                      target="_blank" rel="external">Coding for NEON - Part 4: Shifting Left and Right</a>
+                    </p>
+                    <p>
+                      <a href="https://community.arm.com/processors/b/blog/posts/coding-for-neon---part-5-rearranging-vectors"
+                                                                                                      target="_blank" rel="external">Coding for NEON - Part 5: Rearranging Vectors</a>
+                    </p>
+                    <hr>
+                    <h2 id="实例">
+                      <a href="#实例" class="headerlink" title="实例"></a>实例</h2>
+                    <p>
+                      <a href="https://community.arm.com/cn/b/blog/posts/arm-neon" target="_blank" rel="external">ARM NEON技术在车位识别算法中的应用</a>
+                    </p>
+                    <p>这里面讲到了两个核心点：</p>
+                    <ul>
+                      <li>循环的时候，可以把循环展开，从而稀释掉循环判断在占用时间中的比例，这个优化的是CPU的计算时间；</li>
+                      <li>在数据运算的时候，比如乘法，我们可以把刚刚第一步展开的4个32bit一次性丢进Q寄存器，然后一次就计算完了，理论上是四倍计算加速啊！</li>
+                    </ul>
+                    <blockquote>
+                      <p>
+                        <strong>总结：</strong>虽然讲到了加速，而且还讲了点编译器的相关优化，但是都还不够geek，不够彻底，不够爽！</p>
+                    </blockquote>
+                    <p>
+                      <strong>你看看下面这一篇，就知道什么叫做严谨，什么叫做geek了！</strong>
+                    </p>
+                    <hr>
+                    <p>
+                      <a href="https://community.arm.com/cn/b/blog/posts/neon-assemble-optimization-2013"
+                                                                                                      target="_blank" rel="external">从一个复数点积算法看NEON的汇编优化</a>
+                    </p>
+                    <p>这里面讲到了指令重排、微架构、流水线等很深的东西，不懂，先知道设计原则就好。</p>
+                    <p>
+                      <strong>其中尤其关注的点是：指令流水排布</strong>
+                    </p>
+                    <ul>
+                      <li>那指令流水排布跟啥有关？即主要需要注意不要引起
+                        <strong>CPU的Hazard</strong>。</li>
+                      <li>介绍Hazard的连接在这：
+                        <a href="https://en.wikipedia.org/wiki/Hazard_(computer_architecture" target="_blank"
+                                                                                                        rel="external">
+                          <strong>链接</strong>
+                        </a>)。
+                        <h4 id="Hazard">
+                          <a href="#Hazard" class="headerlink" title="Hazard"></a>Hazard</h4>简短说下：在CPU微架构里，当下一条指令无法在接下来的时钟周期内被执行，由此导致的指令流水线问题就叫做Hazard。
+                        </li>
+                    </ul>
+                    <p>栗子🌰：你看哈，我现在是往Q0里面写数据，然后进入了流水线（假设是分取、算、存等步骤），下一条指令马上就是从Q0里面取出数据进行运算，那么很有可能我取的数据还是Q0原来的数据啊！因为由于流水线的原因，很有可能上面的Q0还没写回去，我就把数据给读出来了!</p>
+                    <p>看下面的图（可治陈年老颈椎）：
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-c7273fd45e4c8a37.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>你看上面一条指令假设需要花很多个指令周期（NEON指令确实如此），那么就被推入了流水线，并分割为好多的小步骤，其中最后一个步骤就是把数据写回Q0，让当前这条指令的下一句就是先取Q0的值，然后做运算啥的，你从图上看，是不是很有可能上一条指令的Q0还没写进去，我下面的Q0就读出来啦！
+                      <strong>因此在微架构里面叫这玩意做：Hazard</strong>。</p>
+                    <blockquote>
+                      <p>当然咯！这种情况肯定是不允许出现的，具体怎么解我不知道，我知道的是，肯定得等Q0写完才能读，因此势必流水线就会被破坏，势必就有资源会被作为牺牲品，因此这就是为什么不提倡上述这种操作方式，再下面的NEON优化部分，我会有更专业的操作来验证。</p>
+                    </blockquote>
+                    <hr>
+                    <p>
+                      <a href="https://community.arm.com/android-community/b/android/posts/ne10-library-getting-started"
+                                                                                                      target="_blank" rel="external">Ne10 Library Getting Started</a>
+                    </p>
+                    <p>讲了Ne10这个库的结构，并教你怎么编译啊、使用啊啥的，如文章名所示，就是一个入门文章。</p>
+                    <p>
+                      <a href="https://community.arm.com/android-community/b/android/posts/using-ne10-on-android-and-ios"
+                                                                                                      target="_blank" rel="external">Using Ne10 on Android and iOS</a>
+                    </p>
+                    <p>这个就是实例了，讲具体在安卓啊，苹果啊环境下是如何使用的。</p>
+                    <h2 id="什么！？你要还要优化NEON？">
+                      <a href="#什么！？你要还要优化NEON？" class="headerlink" title="什么！？你要还要优化NEON？"></a>什么！？你要还要优化NEON？</h2>
+                    <p>
+                      <a href="https://community.arm.com/android-community/b/android/posts/arm-neon-optimization"
+                                                                                                      target="_blank" rel="external">ARM NEON optimization</a>
+                    </p>
+                    <h4 id="Introduction">
+                      <a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h4>
+                    <p>如其名，就是Neon优化的，讲了一些实践技巧。hin重要啊！</p>
+                    <h4 id="Skill1：Remove-data-dependencies">
+                      <a href="#Skill1：Remove-data-dependencies" class="headerlink" title="Skill1：Remove data dependencies"></a>Skill1：Remove data dependencies</h4>
+                    <p>在
+                      <strong>ARMv7-A平台</strong>(==
+                      <strong>注意，其他平台不一定是这个效果了，需要去精调的哈</strong>==)下，NEON指令通常比ARM标准指令集需要更多的指令周期。</p>
+                    <p>(原文：On ARMv7-A platform, NEON instructions usually take more
+                      cycles than ARM instructions. To reduce instruction latency,
+                      it’s better to avoid using the destination register of current
+                      instruction as the source register of next instruction.)</p>
+                    <p>因此，为了减少指令延时时间，
+                      <strong>避免使用当前指令的目地寄存器作为下一条指令的源寄存器</strong>。</p>
+                    <blockquote>
+                      <p>这里我大胆猜测下：为什么当前指令的目的寄存器作为下一条指令的源寄存器会增加延时？我觉得是由于流水线的问题，你想啊，NEON指令要的周期数比ARM指令要多，也就是是说在指令流水线里面呆的时间越长，因此为了保证数据不会出现Hazard（见上面的wiki解释），于是我刚进流水线我就得把流水线给清了，这无疑是极大浪费资源跟效率的。本人拙见，请点评。</p>
+                    </blockquote>
+                    <p>
+                      <strong>C语言实现版本：</strong>
+                    </p>
+                    <p>就是两块内存中的数据求差分值，然后平方和，就是求均方差的函数，在求出差分（写入作为目的寄存器）后马上又要使用差分值平方（平方作为源寄存器）。</p>
+                    <figure class="highlight c">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="function">loat <span class="title">SumSquareError_C</span><span class="params">(<span class="keyword">const</span> <span class="keyword">float</span>* src_a, <span class="keyword">const</span> <span class="keyword">float</span>* src_b, <span class="keyword">int</span> count)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">  <span class="keyword">float</span> sse = <span class="number">0u</span>;</span><br><span class="line">  <span class="keyword">int</span> i;</span><br><span class="line">  <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; ++i) &#123;</span><br><span class="line">    <span class="keyword">float</span> diff = src_a[i] - src_b[i];</span><br><span class="line">    sse += (<span class="keyword">float</span>)(diff * diff);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sse;</span><br><span class="line">&#125;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>汇编实现版本1</strong>：</p>
+                    <p>这里几乎是常规的写法，你看注释那里，可以看到q0是vsub的目的寄存器，马上又是下面vmla的源寄存器了，所以这里是会打断流水线的（粗略解释见上面
+                      <strong>Hazard</strong>部分）。
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">float SumSquareError_NEON1(const float* src_a, const float* src_b, int count)</span><br><span class="line">&#123;</span><br><span class="line">  float sse;</span><br><span class="line">  asm volatile (</span><br><span class="line">    // Clear q8, q9, q10, q11</span><br><span class="line">    &quot;veor    q8, q8, q8                      \n&quot;</span><br><span class="line">    &quot;veor    q9, q9, q9                      \n&quot;</span><br><span class="line">    &quot;veor    q10, q10, q10                   \n&quot;</span><br><span class="line">    &quot;veor    q11, q11, q11                   \n&quot;</span><br><span class="line">  &quot;1:                                        \n&quot;</span><br><span class="line"></span><br><span class="line">    &quot;vld1.32     &#123;q0, q1&#125;, [%[src_a]]!       \n&quot;</span><br><span class="line">    &quot;vld1.32     &#123;q2, q3&#125;, [%[src_a]]!       \n&quot;</span><br><span class="line">    &quot;vld1.32     &#123;q12, q13&#125;, [%[src_b]]!     \n&quot;</span><br><span class="line">    &quot;vld1.32     &#123;q14, q15&#125;, [%[src_b]]!     \n&quot;</span><br><span class="line"></span><br><span class="line">    &quot;subs %[count], %[count], #16            \n&quot;</span><br><span class="line"></span><br><span class="line">// q0, q1, q2, q3 are the destination of vsub.</span><br><span class="line">// they are also the source of vmla.</span><br><span class="line"></span><br><span class="line">    &quot;vsub.f32 q0, q0, q12                    \n&quot;</span><br><span class="line">    &quot;vmla.f32   q8, q0, q0                   \n&quot;</span><br><span class="line">    &quot;vsub.f32   q1, q1, q13                  \n&quot;</span><br><span class="line">    &quot;vmla.f32   q9, q1, q1                   \n&quot;</span><br><span class="line">    &quot;vsub.f32   q2, q2, q14                  \n&quot;</span><br><span class="line">    &quot;vmla.f32   q10, q2, q2                  \n&quot;</span><br><span class="line">    &quot;vsub.f32   q3, q3, q15                  \n&quot;</span><br><span class="line">    &quot;vmla.f32   q11, q3, q3                  \n&quot;</span><br><span class="line">    &quot;bgt        1b                           \n&quot;</span><br><span class="line">    &quot;vadd.f32   q8, q8, q9                   \n&quot;</span><br><span class="line">    &quot;vadd.f32   q10, q10, q11                \n&quot;</span><br><span class="line">    &quot;vadd.f32   q11, q8, q10                 \n&quot;</span><br><span class="line">    &quot;vpadd.f32  d2, d22, d23                 \n&quot;</span><br><span class="line">    &quot;vpadd.f32  d0, d2, d2                   \n&quot;</span><br><span class="line">    &quot;vmov.32    %3, d0[0]                    \n&quot;</span><br><span class="line">    : &quot;+r&quot;(src_a),</span><br><span class="line">      &quot;+r&quot;(src_b),</span><br><span class="line">      &quot;+r&quot;(count),</span><br><span class="line">      &quot;=r&quot;(sse)</span><br><span class="line">    :</span><br><span class="line">    : &quot;memory&quot;, &quot;cc&quot;, &quot;q0&quot;, &quot;q1&quot;, &quot;q2&quot;, &quot;q3&quot;, &quot;q8&quot;, &quot;q9&quot;, &quot;q10&quot;, &quot;q11&quot;,</span><br><span class="line">      &quot;q12&quot;, &quot;q13&quot;,&quot;q14&quot;, &quot;q15&quot;);</span><br><span class="line">  return sse;</span><br><span class="line">&#125;</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>
+                      <strong>汇编实现版本2</strong>：</p>
+                    <p>你看这个操作就合理多了，把减法操作跟平方操作不连起来，在中间穿插其他的操作，从而保证Q0在被取的时候，流水线肯定把Q0的值写进去了，也就说留出足够的时间出来了。</p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">float SumSquareError_NEON2(const float* src_a, const float* src_b, int count)</span><br><span class="line">&#123;</span><br><span class="line">  float sse;</span><br><span class="line">  asm volatile (</span><br><span class="line">    // Clear q8, q9, q10, q11</span><br><span class="line">    &quot;veor    q8, q8, q8                  \n&quot;</span><br><span class="line">    &quot;veor    q9, q9, q9                  \n&quot;</span><br><span class="line">    &quot;veor    q10, q10, q10               \n&quot;</span><br><span class="line">    &quot;veor    q11, q11, q11               \n&quot;</span><br><span class="line">  &quot;1:                                    \n&quot;</span><br><span class="line">  </span><br><span class="line">    &quot;vld1.32     &#123;q0, q1&#125;, [%[src_a]]!   \n&quot;</span><br><span class="line">    &quot;vld1.32     &#123;q2, q3&#125;, [%[src_a]]!   \n&quot;</span><br><span class="line">    </span><br><span class="line">    &quot;vld1.32     &#123;q12, q13&#125;, [%[src_b]]! \n&quot;</span><br><span class="line">    &quot;vld1.32     &#123;q14, q15&#125;, [%[src_b]]! \n&quot;</span><br><span class="line">    </span><br><span class="line">    &quot;subs       %[count], %[count], #16  \n&quot;</span><br><span class="line">    </span><br><span class="line">    &quot;vsub.f32   q0, q0, q12              \n&quot;</span><br><span class="line">    &quot;vsub.f32   q1, q1, q13              \n&quot;</span><br><span class="line">    &quot;vsub.f32   q2, q2, q14              \n&quot;</span><br><span class="line">    &quot;vsub.f32   q3, q3, q15  </span><br><span class="line">                                         \n&quot;</span><br><span class="line">    &quot;vmla.f32   q8, q0, q0               \n&quot;</span><br><span class="line">    &quot;vmla.f32   q9, q1, q1               \n&quot;</span><br><span class="line">    &quot;vmla.f32   q10, q2, q2              \n&quot;</span><br><span class="line">    &quot;vmla.f32   q11, q3, q3              \n&quot;</span><br><span class="line">    &quot;bgt        1b                       \n&quot;</span><br><span class="line">    </span><br><span class="line">    &quot;vadd.f32   q8, q8, q9               \n&quot;</span><br><span class="line">    &quot;vadd.f32   q10, q10, q11            \n&quot;</span><br><span class="line">    &quot;vadd.f32   q11, q8, q10             \n&quot;</span><br><span class="line">    &quot;vpadd.f32  d2, d22, d23             \n&quot;</span><br><span class="line">    &quot;vpadd.f32  d0, d2, d2               \n&quot;</span><br><span class="line">    &quot;vmov.32    %3, d0[0]                \n&quot;</span><br><span class="line">    : &quot;+r&quot;(src_a),</span><br><span class="line">      &quot;+r&quot;(src_b),</span><br><span class="line">      &quot;+r&quot;(count),</span><br><span class="line">      &quot;=r&quot;(sse)</span><br><span class="line">    :</span><br><span class="line">    : &quot;memory&quot;, &quot;cc&quot;, &quot;q0&quot;, &quot;q1&quot;, &quot;q2&quot;, &quot;q3&quot;, &quot;q8&quot;, &quot;q9&quot;, &quot;q10&quot;, &quot;q11&quot;,</span><br><span class="line">      &quot;q12&quot;, &quot;q13&quot;,&quot;q14&quot;, &quot;q15&quot;);</span><br><span class="line">  return sse;</span><br><span class="line">&#125;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <blockquote>
+                      <p>
+                        <strong>结论</strong>: 在当前的ARMv7平台下测试效果是汇编版本2比版本1
+                        <strong>快了约30%</strong>，此外，intrinsics方式写的NEON指令可以通过编译器来进行精调。
+                        <br>
+                        <code>Note: this test runs on Cortex-A9. The result may be different
+                          on other platforms.</code>
+                      </p>
+                    </blockquote>
+                    <h4 id="Skill2：Reduce-branches">
+                      <a href="#Skill2：Reduce-branches" class="headerlink" title="Skill2：Reduce branches"></a>Skill2：Reduce branches</h4>
+                    <p>在NEON的指令集里面是没有分支跳转指令的，如果你硬是要跳转的话那就得用ARM指令集的了；</p>
+                    <p>在ARM处理器中分支预测技术被广泛应用，但是一旦分支预测失败了，那花费的代价尤其高啊！
+                      <code>(为啥呢？我认为是....我怎么知道啊！我又不是设计ARM内核的，但是我们可以知道的是：你买股票预测错了，你肯定是会有所损失的，搞不好还会上天台的...)</code>
+                    </p>
+                    <p>因此避免使用跳转指令是个明智的选择，但是实际过程中总的要分支的吧，怎么整？唯有等效替换，比如用
+                      <strong>逻辑操作代替分支选择</strong>。</p>
+                    <p>
+                      <strong>talk less, show me the code.(亮代码吧！兄嘚~)</strong>
+                    </p>
+                    <p>
+                      <strong>C语言版本：</strong>
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">if( flag )</span><br><span class="line">&#123;</span><br><span class="line">    dst[x * 4]     = a;</span><br><span class="line">    dst[x * 4 + 1] = a;</span><br><span class="line">    dst[x * 4 + 2] = a;</span><br><span class="line">    dst[x * 4 + 3] = a;</span><br><span class="line">&#125;</span><br><span class="line">else</span><br><span class="line">&#123;</span><br><span class="line">    dst[x * 4]     = b;</span><br><span class="line">    dst[x * 4 + 1] = b;</span><br><span class="line">    dst[x * 4 + 2] = b;</span><br><span class="line">    dst[x * 4 + 3] = b;</span><br><span class="line">&#125;</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>
+                      <strong>NEON版本：</strong>
+                    </p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">//dst[x * 4]       = (a&amp;Eflag) | (b&amp;~Eflag);</span><br><span class="line"></span><br><span class="line">//dst[x * 4 + 1] = (a&amp;Eflag) | (b&amp;~Eflag);</span><br><span class="line"></span><br><span class="line">//dst[x * 4 + 2] = (a&amp;Eflag) | (b&amp;~Eflag);</span><br><span class="line"></span><br><span class="line">//dst[x * 4 + 3] = (a&amp;Eflag) | (b&amp;~Eflag);</span><br><span class="line"></span><br><span class="line">VBSL qFlag, qA, qB</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>VBSL（按位选择）</strong>:</p>
+                    <ul>
+                      <li>如果目标的对应位为1，则该指令从第一个操作数中选择目标的每一位；</li>
+                      <li>如果目标的对应位为 0，则从第二个操作数中选择目标的每一位。</li>
+                    </ul>
+                    <p>ARM NEON 指令集提供以下指令来帮助用户实现上述的逻辑操作：
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">VCEQ, VCGE, VCGT, VCLE, VCLT……</span><br><span class="line">VBIT, VBIF, VBSL……</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>小结</strong>：减少分支并不是仅仅对NEON有用，这是一个对所有代码(指令集)都有用的小trick啦~ 甚至连在c语言里面这都是一条很有效的准则：
+                        <strong>少用分支</strong>。</p>
+                    </blockquote>
+                    <h4 id="Skill3：Preload-data-PLD">
+                      <a href="#Skill3：Preload-data-PLD" class="headerlink" title="Skill3：Preload data-PLD"></a>Skill3：Preload data-PLD</h4>
+                    <p>ARM处理器是加载/存储的系统（load/store system）。</p>
+                    <p>除了加载/存储指令集，其他的操作都是对寄存器的，因此提高加载/存储的效率对优化应用具有很高的实际意义。</p>
+                    <p>预加载指令允许处理器去通知内存系统，告诉他：hey！兄弟，我很有可能待会得来这个地址取个东西，先帮我准备好，ok？</p>
+                    <p>假如数据被正确预加载至cache了，于是cache 的hit rate将会极大提高，因此性能就极大提高了！</p>
+                    <p>但是，预取也不是百试百灵的，在新的处理器里面预取非常难用，而且一个预取的不好就会降低性能的。</p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">PLD syntax:</span><br><span class="line"></span><br><span class="line">    PLD&#123;cond&#125; [Rn &#123;, #offset&#125;]</span><br><span class="line"></span><br><span class="line">    PLD&#123;cond&#125; [Rn, +/-Rm &#123;, shift&#125;]</span><br><span class="line"></span><br><span class="line">    PLD&#123;cond&#125; label</span><br><span class="line"></span><br><span class="line">Where:</span><br><span class="line"></span><br><span class="line">Cond - is an optional condition code.</span><br><span class="line"></span><br><span class="line">Rn - is the register on which the memory address is based.</span><br><span class="line"></span><br><span class="line">Offset - is an immediate offset. If offset is omitted, the address is the value in Rn.</span><br><span class="line"></span><br><span class="line">Rm - contains an offset value and must not be PC (or SP, in Thumb state).</span><br><span class="line"></span><br><span class="line">Shift - is an optional shift.</span><br><span class="line"></span><br><span class="line">Label - is a PC-relative expression.</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>PLD操作的一些特征</strong>：</p>
+                    <ul>
+                      <li>独立于加载/存储的的指令运行（Independent of load and store instruction execution）；</li>
+                      <li>当处理器在持续执行其他指令的时候，预加载是在
+                        <strong>后台运行</strong>的；</li>
+                      <li>偏移量指定为实际情况（The offset is specified to real cases）。</li>
+                    </ul>
+                    <h4 id="Skill4：Misc">
+                      <a href="#Skill4：Misc" class="headerlink" title="Skill4：Misc"></a>Skill4：Misc</h4>
+                    <p>在ARM NEON编程里面，不同的指令序列能实现同样的操作；但是更少的指令并不总是意味着更好的性能（也就是说
+                      <strong>指令数量跟性能不是绝对的线性对应关系</strong>）。</p>
+                    <p>那指令数量跟性能的关系是基于什么呢？</p>
+                    <p>基于特定情况下的benchmark and profiling result（基准和分析结果），如下就是一些特定情况下的实践分析。</p>
+                    <h5 id="Floating-point-VMLA-VMLS-instruction">
+                      <a href="#Floating-point-VMLA-VMLS-instruction" class="headerlink" title="Floating-point VMLA/VMLS instruction"></a>Floating-point VMLA/VMLS instruction</h5>
+                    <blockquote>
+                      <p>注意咯：这里的数据仅对Cortex-A9平台有效，对于其他的平台结果就需要重新评估啦！</p>
+                    </blockquote>
+                    <p>通常，VMUL+VADD/VMUL+VSUB指令能够被VMLA/VMLS指令替换，因为指令数量更少了，更精简了。</p>
+                    <p>但是，对比于浮点VMUL操作，浮点VMLA/VMLS操作有更长的指令delay，假如在这段delay空隙中没有其他的指令能够插入的话，使用浮点VMUL+VADD/VMUL+VSUB操作将会表现出更好的性能。</p>
+                    <blockquote>
+                      <p>问题：如何会更好？我认为还是一个流水线的问题罢！</p>
+                    </blockquote>
+                    <p>举个实例：Ne10库中的浮点FIR函数，代码片段如下所述：</p>
+                    <p>
+                      <strong>Implementation 1: VMLA</strong>
+                    </p>
+                    <p>这里在
+                      <code>VMLA</code>之间只有一个
+                      <code>VEXT</code>指令，而VMLA则需要9个指令周期的延时（
+                      <code>according to the table of NEON floating-point instructions
+                        timing</code>）
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">Implementation 1: VMLA</span><br><span class="line"></span><br><span class="line">VEXT qTemp1,qInp,qTemp,#1</span><br><span class="line">VMLA qAcc0,qInp,dCoeff_0[0]</span><br><span class="line">VEXT qTemp2,qInp,qTemp,#2</span><br><span class="line">VMLA qAcc0,qTemp1,dCoeff_0[1]</span><br><span class="line">VEXT qTemp3,qInp,qTemp,#3</span><br><span class="line">VMLA qAcc0,qTemp2,dCoeff_1[0]</span><br><span class="line">VMLA qAcc0,qTemp3,dCoeff_1[1]</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>
+                      <strong>Implementation 2: VMUL+VADD</strong>
+                    </p>
+                    <p>这里仍然还有
+                      <code>qAcc0</code>的数据依赖缺（就是说流水线里面的Hazard，见前文的分析），但是
+                      <code>VADD/VMUL</code>只需要5个指令周期哈！</p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">Implementation 2: VMUL+VADD</span><br><span class="line"></span><br><span class="line">VEXT qTemp1,qInp,qTemp,#1</span><br><span class="line">VMLA qAcc0,qInp,dCoeff_0[0] ]</span><br><span class="line">VMUL qAcc1,qTemp1,dCoeff_0[1]</span><br><span class="line">VEXT qTemp2,qInp,qTemp,#2</span><br><span class="line">VMUL qAcc2,qTemp2,dCoeff_1[0]</span><br><span class="line">VADD qAcc0, qAcc0, qAcc1</span><br><span class="line">VEXT qTemp3,qInp,qTemp,#3</span><br><span class="line">VMUL qAcc3,qTemp3,dCoeff_1[1]</span><br><span class="line">VADD qAcc0, qAcc0, qAcc2</span><br><span class="line">VADD qAcc0, qAcc0, qAcc3</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <blockquote>
+                      <p>
+                        <strong>小结</strong>：实测第二个版本有更好的性能。</p>
+                    </blockquote>
+                    <p>上述仅是代码的一部分，想要详细的代码请看这：
+                      <a href="https://github.com/projectNe10/Ne10/commit/97c162781c83584851ea3758203f9d2aa46772d5?diff=split:"
+                                                                                                      target="_blank" rel="external">Github上Ne10库的源码</a>
+                    </p>
+                    <blockquote>
+                      <p>具体实现代码位置在：modules/dsp/NE10_fir.neon.s：line 195</p>
+                    </blockquote>
+                    <p>下面是上面提到的，指令周期对照表：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8af55d8f3be1129c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="NEON floating-point instructions timing">
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>总结</strong>：优化手段总结如下</p>
+                      <ul>
+                        <li>尽可能地利用指令之间的延时空隙；</li>
+                        <li>避免使用分支；</li>
+                        <li>关注cache hit；</li>
+                      </ul>
+                    </blockquote>
+                    <h2 id="NEON-assembly-and-intrinsics">
+                      <a href="#NEON-assembly-and-intrinsics" class="headerlink" title="NEON assembly and intrinsics"></a>NEON assembly and intrinsics</h2>
+                    <p>NEON汇编方式跟intrinsics方式对比如下：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-fa0b87468acf9552.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>我们可以看到是分三个方面进行对比的：</p>
+                    <hr>
+                    <p>
+                      <strong>性能：</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>assembly</strong>： 对有经验的开发者来说，针对特定平台的汇编代码总是有最佳的性能表现，</li>
+                      <li>
+                        <strong>intrinsics</strong>： 然而intrinsics方式则严重依赖于使用的工具链；</li>
+                    </ul>
+                    <hr>
+                    <p>
+                      <strong>可移植性：</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>assembly</strong>： 不同的指令集架构（
+                        <strong>ISA</strong>: Instruction Set Architecture）有不同的汇编实现；甚至是在同样的指令集架构下，
+                        <strong>不同微架构</strong>的汇编代码都可能需要精调来实现理想的性能；</li>
+                      <li>
+                        <strong>intrinsics</strong>： 编程一次，即可适用于所有的指令集架构，编译器甚至会考虑到不同的微架构来进行性能精调；</li>
+                    </ul>
+                    <hr>
+                    <p>
+                      <strong>操作性：</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>assembly</strong>： 对比于C来说是很难读写的咯！</li>
+                      <li>
+                        <strong>intrinsics</strong>： 跟C语言类似，读写容易；</li>
+                    </ul>
+                    <hr>
+                    <blockquote>
+                      <p>小结：但是现实情况是远比这复杂的，尤其当碰到ARMv7-A/v8-A 跨平台问题时，因此接下来我们针对这给出些栗子来进行分析。</p>
+                    </blockquote>
+                    <h2 id="编写代码">
+                      <a href="#编写代码" class="headerlink" title="编写代码"></a>编写代码</h2>
+                    <p>对于NEON的初学者，内联函数的方式是比汇编更容易的，但是有经验的开发者（比如我….雾）可能对NEON汇编编程更为熟悉，毕竟我们需要时间去适应内联函数的编码方式啊！！！！</p>
+                    <p>一些在真实开发过程中可能会出现的问，现描述如下：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-07651c1a0a3958b7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <hr>
+                    <p>
+                      <strong>Flexibility of instruction</strong>
+                    </p>
+                    <p>使用汇编的方式可能会更灵活，
+                      <strong>主要体现在数据的load/store</strong>。</p>
+                    <blockquote>
+                      <p>当然这个不足，可以在将来的编译器升级过程中进行解决。</p>
+                    </blockquote>
+                    <p>有时候，编译器是有能力将两条内联函数指令优化为一条汇编指令的，比如：</p>
+                    <p>
+                      <img src="https://upload-images.jianshu.io/upload_images/4749583-ece77b5901de65b2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>因此，伴随着ARMv8工具连的升级，有望使得内联函数方式有跟汇编一样的灵活度；</p>
+                    <hr>
+                    <p>
+                      <strong>Register allocation</strong>：</p>
+                    <p>当使用NEON汇编编程时，寄存器必须由用户分配，因此你必须清楚地知道哪个寄存器被占用了；</p>
+                    <p>使用内联函数方式的好处之一是，你只管定义变量，不用管它的安全性，因为编译器会自动分配寄存器的，这是一个优点，但是有时候也是缺点；</p>
+                    <p>
+                      <strong>实践证明：在内联函数编程模式下同时使用太多的NEON寄存器会使得gcc编译器产生寄存器分配异常。当这种情况发生时，许多的数据都被推进栈区（为啥？你心里没点B数么？NEON寄存器总共就这么多，提这么多的要求，消化不下啦，只能放到郊区的内存里面去啦，郊区那么远，你说浪费时间不！！！），这将会极大地降低程序的性能。</strong>
+                    </p>
+                    <p>因此当使用内联函数编程时，得好好考虑这个问题，当出现性能异常的时候，比如C的性能居然比NEON的还要好，这个时候你首先要做的就是反汇编，来确认是不是出现寄存器分配问题了！</p>
+                    <p>对于ARMv8-A AArch64，有更多的NEON寄存器（32个 128bit NEON寄存器），因此对于寄存器分配问题的影响就较低了！</p>
+                    <hr>
+                    <p>
+                      <strong>Performance and compiler</strong>
+                    </p>
+                    <p>在一个特定的平台下，NEON汇编的的性能表现仅仅取决于其实现代码，与编译器鸟关系都没有的啊！好处就是你能预测并估计你手调代码的性能表现，这很正常嘛！</p>
+                    <p>相反的，内联函数的性能严重依赖于使用的编译器。不同的编译器会带来不同的性能，通常是老编译器性能会有最差的性能，同时使用老编译器时你要注意你内联函数的兼容性啊！</p>
+                    <p>精调代码的时候，你不能预测和控制性能，但是偶尔也会有惊喜哟！，有时候内联函数的性能反而超过汇编方式，这不是不会出现，但是可以说是“罕见”。</p>
+                    <p>编译器将会在NEON优化的过程中产生影响，下面这张图描述了NEON实现和优化的通常过程：
+                      <br>
+                      <img src="https://upload-images.jianshu.io/upload_images/4749583-c5cac52292ca062a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>NEON汇编和内联方式有同样的实现过程，编码-调试-性能测试，但是他们却有不同的优化步骤：</p>
+                    <hr>
+                    <p>
+                      <strong>汇编精调的方法如下</strong>：</p>
+                    <ul>
+                      <li>改变实现方式，比如改变指令、调节并行度；</li>
+                      <li>调整指令序列来减少数据依赖性（上面已经分析过了，就是怕流水线断掉）；</li>
+                      <li>试试我前面提到的那些skills</li>
+                    </ul>
+                    <p>当精调汇编代码的时候，一个经验之谈(复杂的、富有经验的)是：</p>
+                    <ul>
+                      <li>明确知道使用指令的数量；</li>
+                      <li>使用PMU(
+                        <code>Performance Monitoring Unit</code>)来获取执行周期；</li>
+                      <li>基于已使用指令的时间消耗来调整指令的序列，并尽你所能地最小化指令延时（延时间隙插入指令）；</li>
+                    </ul>
+                    <p>这种方式的的缺点是优化仅仅是针对于某个
+                      <code>micro-architecture</code>的，移植性不好啊！同时对于相对较小的收益来说，这也是非常耗时的，也就是性价比不是很高啊！</p>
+                    <hr>
+                    <p>
+                      <strong>NEON intrinsics 精调的方法更难哟！</strong>：</p>
+                    <ul>
+                      <li>使用汇编优化里面的那一套方法，整一遍试一下！</li>
+                      <li>反汇编看数据依赖跟寄存器使用情况；</li>
+                      <li>检查性能是否满足期望，如果没有，那就换个编译器再来一遍，知道性能满足期望了！</li>
+                    </ul>
+                    <p>当移植ARMv7-A的汇编代码到ARMv7-A/v8-A进行兼容时，汇编代码的性能可以作为一个参考，因此我们很容易就知道何时算优化结束。</p>
+                    <p>然而，当内联函数方式来优化ARMv8-A的代码时，是没有性能参考点的，因此很难确定当前的性能是否是最优值；</p>
+                    <p>基于ARMv7-A的经验，可能有这样的疑问：是不是汇编就一定有更好的性能呢？我认为随着 ARMv8-A 环境的成熟化，内联函数将会有更好的性能。</p>
+                    <h4 id="Cross-platform-and-portability">
+                      <a href="#Cross-platform-and-portability" class="headerlink" title="Cross-platform and portability"></a>Cross-platform and portability</h4>
+                    <p> 许多现已存的NEON汇编代码，仅能在ARMv7-A/ARMv8-A平台下的AArch32模式下运行，假如你想让这些代码在ARMv8-A
+                      AArch64模式下运行，你必须
+                      <strong>重写这些代码</strong>，这需要花费很多的功夫啊！</p>
+                    <p>
+                      <img src="https://upload-images.jianshu.io/upload_images/4749583-c53641c43060b881.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p> 在这样的情形下，假如代码是用内联函数方式实现的，它们能够在ARMv8-A AArch64 模式下直接运行。</p>
+                    <p>
+                      <strong>跨平台是一个明显的优势</strong>，同时，不同平台你仅仅需要保持一份代码，这大大减少了维护工作。</p>
+                    <p>然而，由于
+                      <code>ARMv7-A/ARMv8-A</code>平台不同的硬件资源（Q寄存器数量的差异），有时候即使是使用内联函数，但还是需要两套代码的。</p>
+                    <p>下面以Ne10工程下的FFT实现为例子：</p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">// radix 4 butterfly with twiddles</span><br><span class="line"></span><br><span class="line">scratch[0].r = scratch_in[0].r;</span><br><span class="line"></span><br><span class="line">scratch[0].i = scratch_in[0].i;</span><br><span class="line"></span><br><span class="line">scratch[1].r = scratch_in[1].r * scratch_tw[0].r - scratch_in[1].i * scratch_tw[0].i;</span><br><span class="line"></span><br><span class="line">scratch[1].i = scratch_in[1].i * scratch_tw[0].r + scratch_in[1].r * scratch_tw[0].i;</span><br><span class="line"></span><br><span class="line">scratch[2].r = scratch_in[2].r * scratch_tw[1].r - scratch_in[2].i * scratch_tw[1].i;</span><br><span class="line"></span><br><span class="line">scratch[2].i = scratch_in[2].i * scratch_tw[1].r + scratch_in[2].r * scratch_tw[1].i;</span><br><span class="line"></span><br><span class="line">scratch[3].r = scratch_in[3].r * scratch_tw[2].r - scratch_in[3].i * scratch_tw[2].i;</span><br><span class="line"></span><br><span class="line">scratch[3].i = scratch_in[3].i * scratch_tw[2].r + scratch_in[3].r * scratch_tw[2].i;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>以上的代码片段列出了FFT的基本操作单元-
+                      <code>radix4 butterfly</code>，从代码里面我们能推出如下信息：</p>
+                    <ul>
+                      <li>假如2个
+                        <code>radix4 butterflies</code>在1个循环里面执行，则需要20个
+                        <code>64-bit NEON</code>寄存器；</li>
+                      <li>假如4个
+                        <code>radix4 butterflies</code>在1个循环里面执行，则需要20个
+                        <code>128-bit NEON</code>寄存器</li>
+                    </ul>
+                    <p>而且,
+                      <code>ARMv7-A/v8-A AArch32 and v8-A AArch64</code>资源如下：</p>
+                    <ul>
+                      <li>
+                        <code>ARMv7-A/v8-A AArch32有：32 64-bit or 16 128-bit NEON registers.</code>
+                      </li>
+                      <li>
+                        <code>ARMv8-A AArch64 有：32 128-bit NEON registers.</code>
+                      </li>
+                    </ul>
+                    <p>考虑到上述因素，Ne10库的FFT实现代码里面，最终是有添加个汇编版本的：</p>
+                    <ul>
+                      <li>汇编版本是用于
+                        <code>ARMv7-A/v8-A AAch32</code>，里面是一个循环内执行
+                        <code>2 radix4 butterflies</code>;</li>
+                      <li>内联函数版本用于
+                        <code>ARMv8-A AArch64</code>，里面是一个循环内执行
+                        <code>4 radix4 butterflies</code>;</li>
+                    </ul>
+                    <p>上述实例表明：当维护一份跨平台(
+                      <code>ARMv7-A/v8-A</code>)的代码时，你需要关注一些
+                      <strong>例外情况</strong>。</p>
+                    <h1 id="总结">
+                      <a href="#总结" class="headerlink" title="总结"></a>总结</h1>
+                    <p>内联函数优化的越来越好了，甚至在ARMv8 平台下有优于汇编的性能，同时兼容性方面又比汇编好，因此使用内联函数是上上之选。</p>
+                    <p>毕竟，NEON肯定会更新的，到时一更新你的底层汇编得全部跟着更新，但是使用内联函数的话就不要考虑这些了，反正编译器都帮我们做了嘛！</p>
+                    <p>最后关于内联函数告诉后辈们几点人生经验：</p>
+                    <ul>
+                      <li>使用的寄存器数量要考虑周全；</li>
+                      <li>编译器注意好啊！</li>
+                      <li>一定要看看产生的汇编代码啊！</li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/汇编NEON/NEON深度优化[重点]/" title="0x07 什么？！NEON还要优化？[重点]">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/汇编NEON/NEON深度优化[重点]/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2018/03/28/汇编NEON/ARM分支在v7a和v8a下的汇编实现/" rel="next" title="ARM分支在v7a和v8a下的汇编实现">
+                          <i class="fa fa-chevron-left"></i> ARM分支在v7a和v8a下的汇编实现
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/28/汇编NEON/NEON加速之memcpy在ARM平台的优化/" rel="prev" title="0x06 NEON加速之memcpy在ARM平台的优化">
+                          0x06 NEON加速之memcpy在ARM平台的优化
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#官网介绍：">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          官网介绍：</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#直观认识">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          直观认识</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#持续优化">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          持续优化</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#初识">
+                            <span class="nav-number">3.1.</span>
+                            <span class="nav-text">
+                              初识</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#实例">
+                            <span class="nav-number">3.2.</span>
+                            <span class="nav-text">
+                              实例</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-4">
+                              <a class="nav-link" href="#Hazard">
+                                <span class="nav-number">3.2.0.1.</span>
+                                <span class="nav-text">
+                                  Hazard</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-2">
+                      <a class="nav-link" href="#什么！？你要还要优化NEON？">
+                        <span class="nav-number">3.3.</span>
+                        <span class="nav-text">
+                          什么！？你要还要优化NEON？</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#Introduction">
+                            <span class="nav-number">3.3.0.1.</span>
+                            <span class="nav-text">
+                              Introduction</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#Skill1：Remove-data-dependencies">
+                            <span class="nav-number">3.3.0.2.</span>
+                            <span class="nav-text">
+                              Skill1：Remove data dependencies</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#Skill2：Reduce-branches">
+                            <span class="nav-number">3.3.0.3.</span>
+                            <span class="nav-text">
+                              Skill2：Reduce branches</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#Skill3：Preload-data-PLD">
+                            <span class="nav-number">3.3.0.4.</span>
+                            <span class="nav-text">
+                              Skill3：Preload data-PLD</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#Skill4：Misc">
+                            <span class="nav-number">3.3.0.5.</span>
+                            <span class="nav-text">
+                              Skill4：Misc</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-5">
+                              <a class="nav-link" href="#Floating-point-VMLA-VMLS-instruction">
+                                <span class="nav-number">3.3.0.5.1.</span>
+                                <span class="nav-text">
+                                  Floating-point VMLA/VMLS instruction</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                      </ol>
+                    </li>
+                  </ol>
+                  </li>
+                  <li class="nav-item nav-level-2">
+                    <a class="nav-link" href="#NEON-assembly-and-intrinsics">
+                      <span class="nav-number">3.4.</span>
+                      <span class="nav-text">
+                        NEON assembly and intrinsics</span>
+                    </a>
+                  </li>
+                  <li class="nav-item nav-level-2">
+                    <a class="nav-link" href="#编写代码">
+                      <span class="nav-number">3.5.</span>
+                      <span class="nav-text">
+                        编写代码</span>
+                    </a>
+                    <ol class="nav-child">
+                      <li class="nav-item nav-level-4">
+                        <a class="nav-link" href="#Cross-platform-and-portability">
+                          <span class="nav-number">3.5.0.1.</span>
+                          <span class="nav-text">
+                            Cross-platform and portability</span>
+                        </a>
+                      </li>
+                    </ol>
+                  </li>
+                  </ol>
+                  </li>
+                  </ol>
+                  </li>
+                  <li class="nav-item nav-level-1">
+                    <a class="nav-link" href="#总结">
+                      <span class="nav-number">4.</span>
+                      <span class="nav-text">
+                        总结</span>
+                    </a>
+                  </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

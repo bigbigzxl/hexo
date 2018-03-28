@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="相比较于1.0版本，1.1版本开始就使用了serialutil有了win32file为什么还需要这个呢？这得从它是啥说起。   #serialutil.py是什么？          源码的描述字段这这样说的：          Python Serial Port Extension for Win32, Linux, BSD, Jython          #see __init__.">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="五、pyserial1.x---serialutil演进">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/五、pyserial1.x---serialutil演进/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="相比较于1.0版本，1.1版本开始就使用了serialutil有了win32file为什么还需要这个呢？这得从它是啥说起。   #serialutil.py是什么？          源码的描述字段这这样说的：          Python Serial Port Extension for Win32, Linux, BSD, Jython          #see __init__.">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c6b5a9f0916e7180.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-28T06:39:56.694Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="五、pyserial1.x---serialutil演进">
+  <meta name="twitter:description" content="相比较于1.0版本，1.1版本开始就使用了serialutil有了win32file为什么还需要这个呢？这得从它是啥说起。   #serialutil.py是什么？          源码的描述字段这这样说的：          Python Serial Port Extension for Win32, Linux, BSD, Jython          #see __init__.">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-c6b5a9f0916e7180.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/五、pyserial1.x---serialutil演进/"
+  />
+
+  <title>五、pyserial1.x---serialutil演进 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/五、pyserial1.x---serialutil演进/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">五、pyserial1.x---serialutil演进</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T14:39:15+08:00">
+                          2018-03-28
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/python总结/" itemprop="url" rel="index">
+                            <span itemprop="name">python总结</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          2,255
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          10
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <blockquote>
+                      <p>相比较于1.0版本，1.1版本开始就使用了serialutil有了win32file为什么还需要这个呢？这得从它是啥说起。</p>
+                      <p>#serialutil.py是什么？
+                        <br>
+                        <a href="http://www.ast.cam.ac.uk/~rgm/dazle/software/dics/src/serialutil.html#SerialBase"
+                                                                                                        target="_blank" rel="external">源码</a>的描述字段这这样说的：
+                        <br>
+                        <code>Python Serial Port Extension for Win32, Linux, BSD, Jython</code>
+                        <br>
+                        <code>#see __init__.py#(C) 2001-2003 Chris Liechti &lt;cliechti@gmx.net&gt;</code>
+                        <br>
+                        <code># this is distributed under a free software license, see
+                          license.txt</code>
+                        <br>就是python 串口的一个扩展包，而且作者就是pyserial的作者自己啊！整个srialutil.py里面主要就一个FileLike类。
+                        <br>
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-c6b5a9f0916e7180.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="继承关系">
+                        <br>
+                        <strong>上图的来源是
+                          <a href="http://www.ast.cam.ac.uk/~rgm/dazle/software/dics/src/serialutil.html#SerialBase"
+                                                                                                          target="_blank" rel="external">(这儿)</a>,是pyserial2.1版本时的文件，里面详细讲解了类成员。</strong>
+                      </p>
+                    </blockquote>
+                    <p>从图中可以看出serial.serialwin32.Serial类是继承自serial.serialwin32.SerialBase类的，而这个类又是继承自serial.serialutil.FileLike类，这基本是成型形态了！也就是趋于稳定的版本了（
+                      <strong>确实也是pyserial2.1系列的版本了</strong>）</p>
+                    <p>我们要
+                      <strong>体会作者的设计历程</strong>的话，还是得从
+                      <strong>最初版本开始</strong>，我们知道是在pyserial1.1系列开始后才有的serialutil.py（在之前是直接win32file操作），于是我们从这个时期的代码开始研究，分为三个阶段：</p>
+                    <ul>
+                      <li>pyserial1.* 阶段</li>
+                      <li>pyserial2.* 阶段</li>
+                      <li>
+                        <p>pyserial3.* 阶段</p>
+                        <p>##pyserial1.* 阶段
+                          <br>我diff了一下1.11、1.13、1.16、1.17四个版本，基本没改动，增加了个串口异常类，且还未实现的，也就是搭了个“棚子”，在1.18版本时将flush实现给去掉了（让子类serial去实现），同时在readlines里面加了点字符串结束判断的逻辑，直到1.19、1.21都是如此。接下来我们看下最初版本的源码，并尝试去体会下作者是怎么想的：</p>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>serialutil.y @pyserial1.11</strong>
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">FileLike</span>:</span></span><br><span class="line">    <span class="string">"""An abstract file like class.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    This class implements readline and readlines based on read and</span></span><br><span class="line"><span class="string">    writelines based on write.</span></span><br><span class="line"><span class="string">    This class is used to provide the above functions for to Serial</span></span><br><span class="line"><span class="string">    port objects.</span></span><br><span class="line"><span class="string">    </span></span><br><span class="line"><span class="string">    Note that when the serial port was opened with _NO_ timeout that</span></span><br><span class="line"><span class="string">    readline blocks until it sees a newline (or the specified size is</span></span><br><span class="line"><span class="string">    reached) and that readlines would never return and therefore</span></span><br><span class="line"><span class="string">    refuses to work (it raises an exception in this case)!</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">read</span><span class="params">(self, size)</span>:</span> <span class="keyword">raise</span> NotImplementedError</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">write</span><span class="params">(self, s)</span>:</span> <span class="keyword">raise</span> NotImplementedError</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">readline</span><span class="params">(self, size=None)</span>:</span></span><br><span class="line">        <span class="string">"""read a line which is terminated with '\\n' or until timeout"""</span></span><br><span class="line"></span><br><span class="line">        line = <span class="string">''</span></span><br><span class="line">        <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">            c = self.read(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> c:</span><br><span class="line">                line += c   <span class="comment">#not very efficient but lines are usually not that long</span></span><br><span class="line">                <span class="keyword">if</span> c == <span class="string">'\n'</span>:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">if</span> size <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> len(line) &gt;= size:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> line</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">readlines</span><span class="params">(self, sizehint=None)</span>:</span></span><br><span class="line">        <span class="string">"""read alist of lines, until timeout</span></span><br><span class="line"><span class="string">        sizehint is ignored"""</span></span><br><span class="line">        <span class="keyword">if</span> self.timeout <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">            <span class="keyword">raise</span> ValueError, <span class="string">"Serial port MUST have enabled timeout for this function!"</span></span><br><span class="line">        lines = []</span><br><span class="line">        <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">            line = self.readline()</span><br><span class="line">            <span class="keyword">if</span> line:</span><br><span class="line">                lines.append(line)</span><br><span class="line">                <span class="keyword">if</span> line[<span class="number">-1</span>] != <span class="string">'\n'</span>:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> lines</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">xreadlines</span><span class="params">(self, sizehint=None)</span>:</span></span><br><span class="line">        <span class="string">"""just call readlines - just here for compatibility"""</span></span><br><span class="line">        <span class="keyword">return</span> self.readlines()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">writelines</span><span class="params">(self, sequence)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> sequence:</span><br><span class="line">            self.write(line)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">flush</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""map flush to flushOutput, ignore  exception when that method is not available"""</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.flushOutput()</span><br><span class="line">        <span class="keyword">except</span> NameError:</span><br><span class="line">            <span class="keyword">pass</span></span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>创建一个“祖先”基类
+                      <code>class FIleLike</code>，这是一个抽象的类似于文件的类，也就是
+                      <strong>把串口抽象为一个文件的类</strong>。</p>
+                    <p>他说是基于read和write来实现readlines和writelines，但是在这里面又没实现这两个方法，而是直接定义好接口，然后直接抛出异常，就是说
+                      <strong>作者的意图是：定义好接口，子类去实现它，基类会做重构检测，也就是子类继承后没有重构这两个函数的话，在调用时就会报错，也算是一种检测机制。</strong>
+                    </p>
+                    <p>而在父类里面实现writelines和readlines，我估计是这样的：
+                      <strong>把串口抽象成一个文件之后，底层的read/write函数肯定是需要你去实现的，但是一旦基础搭好之后，readlines这样的上层建筑就可以直接抽象出来，因为这是通用的流程啊！</strong>
+                    </p>
+                    <p>
+                      <strong>还可以这么辅助理解：我们写linux驱动的时候，不也是把字符串设备抽离出统一的read/write接口嘛，这部分是直接跟硬件打交道的，不同的硬件写法当然不同啊！而一旦这个桥梁搭建好之后，想利用这接口实现什么逻辑这部分跟硬件就解耦了啊，因此我们就可以在基类里面实现这部分逻辑啊。</strong>
+                    </p>
+                    <p>
+                      <strong>再比如我们的通信系统也是如此的思路：我们通过基站这个统一的接口连入网络，然后在网络里面我们可以玩很多网络游戏的啊，这些游戏是基于基站的，也就是说基站一垮，一切玩完，同时这些游戏在抽离出基站接口之后的逻辑是可以完全独立设计的。但作者为什么要把“基站接口”留给子类去实现呢？因为我接入网络的方式不只一种啊，还可以是wifi还可以是以太网啊，所以这个底层的read/write实现就不一样了呀，同时上层是不用改的啊！</strong>
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>
+                          <em>总结：我们设计抽象的基类时候，跟具体实现相关的我们直接定义出接口顺便做点边界检测就好，而脱离出具体场景的逻辑部分就可以直接实现了。</em>
+                        </strong>
+                      </p>
+                    </blockquote>
+                    <figure class="highlight python">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readline</span><span class="params">(self, size=None)</span>:</span></span><br><span class="line">        <span class="string">"""read a line which is terminated with '\\n' or until timeout"""</span></span><br><span class="line"></span><br><span class="line">        line = <span class="string">''</span></span><br><span class="line">        <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">            c = self.read(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> c:</span><br><span class="line">                line += c   <span class="comment">#not very efficient but lines are usually not that long</span></span><br><span class="line">                <span class="keyword">if</span> c == <span class="string">'\n'</span>:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">if</span> size <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> len(line) &gt;= size:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> line</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>从上面的代码可以看出，是无限轮训读完的数据，每次读一个字符，同时对读出的字符做存在判断（这里就限制了self.read需要返回什么样的数据，就是所谓的
+                      <strong>“祖师爷定规矩”</strong>），如果self.read返回True，我首先把字符串拴起来，接着判断是换行字符就跳出循环，字符数够了也跳出循环，假如没有获取到字符，跳出循环。</p>
+                    <p>这里是不是可以这么理解：self.read(1)你
+                      <strong>必须</strong>去获取一个字符回来，只要返回的是None说明就是异常了，其中的timeout什么的，你就自己去搞定了！
+                      <strong>我只看结果！！！！！！！！！！看到没有这就是典型企业中层领导者的做事风格啊！代码处处是哲学啊！于代码中体悟人类社会的框架！</strong>
+                    </p>
+                    <p>其次作者自己也吐了个槽：
+                      <code>#not very efficient but lines are usually not that long</code>
+                      这种一次读一个字符的方式不是很有效率，但是通常字符串的长度也不是太长。
+                      <strong>也就是说就当前的需求来看，能用就行了，不要一开始就想搞个大事情！饭要一口一口吃，路还得一步一步走！</strong>
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>
+                          <em>总结：逻辑很简单，我一次次读就行了，读到换行就结束并返回字符串，跟写单片机代码是一样一样的！</em>
+                        </strong>
+                      </p>
+                    </blockquote>
+                    <p>\
+                      <br>\
+                      <br>
+                      <strong>readlines()思路是：这里对timeout作了要求，但是实际上却仅仅做了个存在与否的断言，读取部分还是调用二级接口readline来实现，控制逻辑跟readline调用read是一样一样的啊！</strong>
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readlines</span><span class="params">(self, sizehint=None)</span>:</span></span><br><span class="line">       <span class="string">"""read alist of lines, until timeout</span></span><br><span class="line"><span class="string">       sizehint is ignored"""</span></span><br><span class="line">       <span class="keyword">if</span> self.timeout <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">           <span class="keyword">raise</span> ValueError, <span class="string">"Serial port MUST have enabled timeout for this function!"</span></span><br><span class="line">       lines = []</span><br><span class="line">       <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">           line = self.readline()</span><br><span class="line">           <span class="keyword">if</span> line:</span><br><span class="line">               lines.append(line)</span><br><span class="line">               <span class="keyword">if</span> line[<span class="number">-1</span>] != <span class="string">'\n'</span>:</span><br><span class="line"></span><br><span class="line">                   <span class="keyword">break</span></span><br><span class="line">           <span class="keyword">else</span>:</span><br><span class="line">               <span class="keyword">break</span></span><br><span class="line">       <span class="keyword">return</span> lines</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>\
+                      <br>
+                      <strong>我们再来看下1.x系列最后一个版本跟最初版本之间有什么区别：</strong>
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readline</span><span class="params">(self, size=None, eol=<span class="string">'\n'</span>)</span>:</span></span><br><span class="line">        <span class="string">"""read a line which is terminated with end-of-line (eol) character</span></span><br><span class="line"><span class="string">        ('\n' by default) or until timeout"""</span></span><br><span class="line">        line = <span class="string">''</span></span><br><span class="line">        <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">            c = self.read(<span class="number">1</span>)</span><br><span class="line">            <span class="keyword">if</span> c:</span><br><span class="line">                line += c   <span class="comment">#not very efficient but lines are usually not that long</span></span><br><span class="line"></span><br><span class="line">                <span class="keyword">if</span> c == eol:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">                <span class="keyword">if</span> size <span class="keyword">is</span> <span class="keyword">not</span> <span class="keyword">None</span> <span class="keyword">and</span> len(line) &gt;= size:</span><br><span class="line">                    <span class="keyword">break</span></span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line">        <span class="keyword">return</span> line</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>对比上面的readline可知，
+                      <strong>这里将字符串结束的标志设计为可配置的，不再单一地限定为换行符了！(估计是某一个具体的实际场景中不再是以换行符为结束标志了)</strong>其它部分什么都没变。</p>
+                    <p>
+                      <strong>同理，readlines做相应的重构。</strong>
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">readlines</span><span class="params">(self, sizehint=None, eol=<span class="string">'\n'</span>)</span>:</span></span><br><span class="line">       <span class="string">"""read a list of lines, until timeout</span></span><br><span class="line"><span class="string">       sizehint is ignored"""</span></span><br><span class="line">       <span class="keyword">if</span> self.timeout <span class="keyword">is</span> <span class="keyword">None</span>:</span><br><span class="line">           <span class="keyword">raise</span> ValueError, <span class="string">"Serial port MUST have enabled timeout for this function!"</span></span><br><span class="line">       lines = []</span><br><span class="line">       <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">           line = self.readline(eol=eol)</span><br><span class="line">           <span class="keyword">if</span> line:</span><br><span class="line">               lines.append(line)</span><br><span class="line"></span><br><span class="line">               <span class="keyword">if</span> line[<span class="number">-1</span>] != eol:    <span class="comment">#was the line received with a timeout?</span></span><br><span class="line">                   <span class="keyword">break</span></span><br><span class="line">           <span class="keyword">else</span>:</span><br><span class="line">               <span class="keyword">break</span></span><br><span class="line">       <span class="keyword">return</span> lines</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>
+                      <strong>writelines则相当简陋！如下，直接调用接口就行，连写成功与否的判断都没有: “我反正写了，成不成不知道！”</strong>Σ(
+                      ° △ °|||)︴
+                      <strong>且在1.x系列里面这都没改，看看2.x系列里面是否有改观。</strong>
+                      <br>
+                      <figure class="highlight python">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">writelines</span><span class="params">(self, sequence)</span>:</span></span><br><span class="line">        <span class="keyword">for</span> line <span class="keyword">in</span> sequence:</span><br><span class="line">            self.write(line)</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <blockquote>
+                      <p>1.x系列最后一个版本1.21里面把flush()给去掉了！也就是这部分也撒手不管了！为啥？</p>
+                    </blockquote>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/五、pyserial1.x---serialutil演进/"
+                                                                                                        title="五、pyserial1.x---serialutil演进">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/五、pyserial1.x---serialutil演进/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2018/03/28/python总结/三、《Python Programming on Win32》关于Win32file摘要及思考/" rel="next"
+                                                                                                        title="三、《Python Programming on Win32》关于Win32file摘要及思考">
+                          <i class="fa fa-chevron-left"></i> 三、《Python Programming on Win32》关于Win32file摘要及思考
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/28/ML/线性代数的几个基本概念/" rel="prev" title="线性代数的几个基本概念">
+                          线性代数的几个基本概念
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

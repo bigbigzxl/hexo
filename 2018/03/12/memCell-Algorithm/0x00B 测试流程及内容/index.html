@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="生产流程 然后我们看一下DRAM的生产流程哈！得知道它是从哪来的！ 从wafer开始，会在晶圆厂进行CP测试，测试完之后就会去bounding打线然后封装，封完后送去做FT测试，测完之后合格的就可以作为产品卖出去啦！当然啦其中还是有很多细节没讲到的！先大体这么理解啦！         为什么需要测试？    缺陷检测：            包括         wafer缺陷 跟">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="0x00B 验证流程及其内容">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memCell-Algorithm/0x00B 测试流程及内容/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="生产流程 然后我们看一下DRAM的生产流程哈！得知道它是从哪来的！ 从wafer开始，会在晶圆厂进行CP测试，测试完之后就会去bounding打线然后封装，封完后送去做FT测试，测完之后合格的就可以作为产品卖出去啦！当然啦其中还是有很多细节没讲到的！先大体这么理解啦！         为什么需要测试？    缺陷检测：            包括         wafer缺陷 跟">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-0e60bd4d4f4730d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-0309b1bae3468f6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-81d6c9fe545df033.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-c92bd0ac81f1d607.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-08c2866e00385264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-e744c52d5b4b2667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-69e17b1a5a063284.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3c60dab1b08306f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8878c5bd6c861401.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-318984958716de66.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-3c60dab1b08306f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f652b06f511ad3f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-b7242d7af43227a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-86a5fb4fa0859597.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-12T12:23:05.821Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="0x00B 验证流程及其内容">
+  <meta name="twitter:description" content="生产流程 然后我们看一下DRAM的生产流程哈！得知道它是从哪来的！ 从wafer开始，会在晶圆厂进行CP测试，测试完之后就会去bounding打线然后封装，封完后送去做FT测试，测完之后合格的就可以作为产品卖出去啦！当然啦其中还是有很多细节没讲到的！先大体这么理解啦！         为什么需要测试？    缺陷检测：            包括         wafer缺陷 跟">
+  <meta name="twitter:image" content="http://upload-images.jianshu.io/upload_images/4749583-0e60bd4d4f4730d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memCell-Algorithm/0x00B 测试流程及内容/"
+  />
+
+  <title>0x00B 验证流程及其内容 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memCell-Algorithm/0x00B 测试流程及内容/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">0x00B 验证流程及其内容</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-12T10:56:56+08:00">
+                          2018-03-12
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/DDR内存颗粒验证算法专题/" itemprop="url" rel="index">
+                            <span itemprop="name">DDR内存颗粒验证算法专题</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          1,152
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          5
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h1 id="生产流程">
+                      <a href="#生产流程" class="headerlink" title="生产流程"></a>生产流程</h1>
+                    <p>然后我们看一下DRAM的生产流程哈！得知道它是从哪来的！</p>
+                    <p>从wafer开始，会在晶圆厂进行CP测试，测试完之后就会去bounding打线然后封装，封完后送去做FT测试，测完之后合格的就可以作为产品卖出去啦！当然啦其中还是有很多细节没讲到的！先大体这么理解啦！</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-0e60bd4d4f4730d2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h1 id="为什么需要测试？">
+                      <a href="#为什么需要测试？" class="headerlink" title="为什么需要测试？"></a>为什么需要测试？</h1>
+                    <ol>
+                      <li>缺陷检测：
+                        <ul>
+                          <li>包括
+                            <strong>wafer缺陷</strong> 跟
+                            <strong>封装缺陷</strong>；</li>
+                        </ul>
+                      </li>
+                      <li>保证产品满足客户规格：
+                        <ul>
+                          <li>Voltage guard band</li>
+                          <li>Temperature guard band</li>
+                          <li>Timing guard band</li>
+                          <li>Complex test pattern</li>
+                        </ul>
+                      </li>
+                      <li>收集测试数据用来提升研发和工艺的精度
+                        <ul>
+                          <li>Quality</li>
+                          <li>Reliability</li>
+                          <li>Cost</li>
+                          <li>Efficiency</li>
+                        </ul>
+                      </li>
+                    </ol>
+                    <h1 id="IC测试方法论">
+                      <a href="#IC测试方法论" class="headerlink" title="IC测试方法论"></a>IC测试方法论</h1>
+                    <p>理论上的结构如图所示，tester供电并输出pattern到DUT，然后对比输出得出测试结果，这是单site的框图，多site就是级联图了。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-0309b1bae3468f6b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="DUT = Device Under Test">
+                    </p>
+                    <h1 id="典型的DRAM-FT测试流程总览">
+                      <a href="#典型的DRAM-FT测试流程总览" class="headerlink" title="典型的DRAM FT测试流程总览"></a>典型的DRAM FT测试流程总览</h1>
+                    <p>
+                      <strong>1. Burn-in</strong>
+                    </p>
+                    <ul>
+                      <li>MBT(Monitor Burn in test): 压力测试来去除早期缺陷芯片；</li>
+                      <li>TBT（Test Burn in test）：长时间的pattern测试；
+                        <blockquote>
+                          <p>一般像那种ATE设备，都是：Very Low Speed(5-20MHz), High Parallel Test
+                            (10-20Kpcs/oven), Low Cost</p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>2. Core Test</strong>
+                    </p>
+                    <ul>
+                      <li>DC Test</li>
+                      <li>Functional Test
+                        <blockquote>
+                          <p>Low Speed (DDR3 @667MHz), Typical tester Advantest T5588
+                            + 512DUT HiFix</p>
+                          <ul>
+                            <li>爱德万测试机：Advantest T5588；</li>
+                            <li>512个DUT通道；</li>
+                            <li>HiFix：IC成品测试界面接口板</li>
+                          </ul>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>3. Speed Test</strong>
+                    </p>
+                    <ul>
+                      <li>Speed &amp; AC Timing Test
+                        <blockquote>
+                          <p>Full Speed (DDR3 @1600MHz and above), Advantest T5503 +
+                            256DUT HiFix</p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <strong>4. Backend后端检测</strong>
+                    </p>
+                    <p>Marking ==》 Ball Scan ==》 Visual Inspection ==》Baking ==》Vacuum
+                      Pack </p>
+                    <h2 id="1-Burn-in">
+                      <a href="#1-Burn-in" class="headerlink" title="1. Burn-in"></a>1. Burn-in</h2>
+                    <h3 id="MBT-Monitor-Burn-in-test">
+                      <a href="#MBT-Monitor-Burn-in-test" class="headerlink" title="MBT(Monitor Burn in test)"></a>MBT(Monitor Burn in test)</h3>
+                    <p>MBT就是给IC施加压力并且去除掉早期失效的IC，压力包括以下部分：</p>
+                    <ul>
+                      <li>高温：High Temperature Stress (125degC)</li>
+                      <li>高压：High Voltage Stress</li>
+                      <li>pattern压力：Stressful Pattern</li>
+                    </ul>
+                    <p>从下面的浴盆曲线可以看出，IC的失效率在前期跟后期都很大，因此前期做一个帅选很有必要。
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-81d6c9fe545df033.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h3 id="TBT">
+                      <a href="#TBT" class="headerlink" title="TBT"></a>TBT</h3>
+                    <p>长时间的测试pattern。</p>
+                    <ul>
+                      <li>多温度：Multiple temperature tested (e.g. 88’C, 25’C, -10’C)</li>
+                      <li>低速长时间：Long test time at low speed</li>
+                      <li>全空间扫描：Patterns cover all cell arrays</li>
+                      <li>无压测试：No Stressful condition</li>
+                      <li>High parallel test count, low cost</li>
+                    </ul>
+                    <blockquote>
+                      <p>
+                        <strong>MBT跟TBT均不测DC</strong>：Both MBT and TBT does NOT test DC (Ando
+                        Oven)</p>
+                    </blockquote>
+                    <h2 id="2-Core-Test">
+                      <a href="#2-Core-Test" class="headerlink" title="2. Core Test"></a>2. Core Test</h2>
+                    <p>DRAM Advantest Test.</p>
+                    <h3 id="DC-test">
+                      <a href="#DC-test" class="headerlink" title="DC test"></a>DC test</h3>
+                    <p>测试原理图：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>ISVM</th>
+                          <th>VSIM</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-c92bd0ac81f1d607.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-08c2866e00385264.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <strong>I Source; V Measure</strong>
+                          </td>
+                          <td>
+                            <strong>V Source; I Measure</strong>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <ul>
+                      <li>Open/Short test</li>
+                    </ul>
+                    <p>OS测试目的是何？
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">1、Check connection between pins and test fixture</span><br><span class="line">  2、Check if pin to pin is short in IC package</span><br><span class="line">  3、Check if pin to wafer pad has open in IC package</span><br><span class="line">  4、Check if protection diodes work on die</span><br><span class="line">  5、It is a quick electrical check to determine if it is safe to apply power</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <blockquote>
+                      <p>Also called Continuity Test</p>
+                    </blockquote>
+                    <p>缺陷类型如下：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Wafer Problem(Defect of diode)</th>
+                          <th>Assembly Problem(Wire bonding/Solder ball)</th>
+                          <th>Contact Problem(Socket issue)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-e744c52d5b4b2667.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-69e17b1a5a063284.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-3c60dab1b08306f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>具体的测试电路什么的我们就不考虑了！这种短路开路的缺陷一般在后面的测试中也会部分体现，我们现在的基于A53的测试平台肯定是不支持如此大规模OS测试的。</p>
+                    <ul>
+                      <li>
+                        <p>Leakage test
+                          <br>漏电缺陷测试是用来：</p>
+                        <ul>
+                          <li>Verify resistance of pin to VDD/VSS is high enough；</li>
+                          <li>Verify resistance of pin to pins is high enough；</li>
+                          <li>Identify process problem in CMOS device ；</li>
+                        </ul>
+                      </li>
+                    </ul>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Wafer Problem</th>
+                          <th>Assembly Problem</th>
+                          <th>Contact Problem(Socket issue)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-8878c5bd6c861401.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-318984958716de66.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="http://upload-images.jianshu.io/upload_images/4749583-3c60dab1b08306f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                            alt="">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <ul>
+                      <li>IDD test</li>
+                    </ul>
+                    <p>目的是测不同状态下的IDD电流，来看看功耗是不是超了。</p>
+                    <h3 id="Functional-test">
+                      <a href="#Functional-test" class="headerlink" title="Functional test"></a>Functional test</h3>
+                    <p>用来验证DRAM是不是能正常工作。</p>
+                    <ul>
+                      <li>Different parameter &amp; Pattern for each function</li>
+                      <li>To check DRAM can operate functionally</li>
+                    </ul>
+                    <p>EFT： easy function test
+                      <br>把0或1写入全部的cell然后读出比较，这样子来确认IC的
+                      <strong>基本功能</strong>。</p>
+                    <p>典型算法是：
+                      <strong>March C-</strong>
+                    </p>
+                    <ul>
+                      <li>
+                        <strong>Algorithm:</strong> ↑(w0);↑(r0,w1);↑(r1,w0);↓(r0,w1);↓(r1,w0);
+                        ↓(r0)</li>
+                      <li>
+                        <strong>Operation Count:</strong> 10*n</li>
+                      <li>
+                        <strong>Scan type:</strong> X-Scan (X inc -&gt; Y inc，也就是说先定Y，然后扫x轴，扫完一轮后Y加一，然后沿着x轴继续扫),
+                        Y-Scan(Y inc -&gt; X inc)</li>
+                      <li>
+                        <strong>Fault Coverage:</strong> Most of Failure Mode</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-f652b06f511ad3f5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="March C- is the most effective">
+                    </p>
+                    <blockquote>
+                      <p>
+                        <strong>关于算法部分详细的解析请看后面的章节。</strong>
+                      </p>
+                    </blockquote>
+                    <h2 id="3-Speed-Test">
+                      <a href="#3-Speed-Test" class="headerlink" title="3. Speed Test"></a>3. Speed Test</h2>
+                    <p>Timing test @ different speed grade</p>
+                    <h3 id="AC-timing-test">
+                      <a href="#AC-timing-test" class="headerlink" title="AC timing test"></a>AC timing test</h3>
+                    <p>To verify IC can work as each timing parameter defined in datasheet.</p>
+                    <ul>
+                      <li>Rise and fall time</li>
+                      <li>Setup and hold time</li>
+                      <li>Delay test</li>
+                      <li>Others</li>
+                    </ul>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-b7242d7af43227a1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h3 id="Speed-test">
+                      <a href="#Speed-test" class="headerlink" title="Speed test"></a>Speed test</h3>
+                    <p>Test DRAM at different speed:</p>
+                    <ul>
+                      <li>
+                        <ol>
+                          <li>DDR3-1600(11-11-11) Test</li>
+                        </ol>
+                      </li>
+                      <li>
+                        <ol>
+                          <li>DDR3-1333(9-9-9) Test</li>
+                        </ol>
+                      </li>
+                      <li>
+                        <ol>
+                          <li>DDR3-1066(7-7-7) Test</li>
+                        </ol>
+                      </li>
+                    </ul>
+                    <p>Test for each timing (tRCD, tRRD…) ……</p>
+                    <h3 id="test-plan-in-program">
+                      <a href="#test-plan-in-program" class="headerlink" title="test plan in program"></a>test plan in program</h3>
+                    <p>代码里面是先进行OS测试，然后测漏电，再测IDD，接着测EFT也就是March C-，最后测其他功能测试，然后才是速度测试AC测试。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-86a5fb4fa0859597.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <h2 id="3-Backend后端检测">
+                      <a href="#3-Backend后端检测" class="headerlink" title="3. Backend后端检测"></a>3. Backend后端检测</h2>
+                    <p>测试完之后会有机器对log位置啊，ball是不是变形啊这样子的缺陷进行检测，ok后就是打包送客户啦~</p>
+                    <p>这其中一个检查外观是用到了机器视觉方面的东西，但是由于场景太单一，因此用常规算法均可解决，我在想深度学习算法在这一块可以做些什么呢？！</p>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memCell-Algorithm/0x00B 测试流程及内容/"
+                                                                                                        title="0x00B 验证流程及其内容">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/12/memCell-Algorithm/0x00B
+                          测试流程及内容/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/ML/梯度消失的原因/" rel="next" title="梯度消失的原因">
+                          <i class="fa fa-chevron-left"></i> 梯度消失的原因
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/12/memCell-Algorithm/0x03 测试算法/" rel="prev" title="0x03 测试算法">
+                          0x03 测试算法
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#生产流程">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          生产流程</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#为什么需要测试？">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          为什么需要测试？</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#IC测试方法论">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          IC测试方法论</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#典型的DRAM-FT测试流程总览">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          典型的DRAM FT测试流程总览</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#1-Burn-in">
+                            <span class="nav-number">4.1.</span>
+                            <span class="nav-text">
+                              1. Burn-in</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#MBT-Monitor-Burn-in-test">
+                                <span class="nav-number">4.1.1.</span>
+                                <span class="nav-text">
+                                  MBT(Monitor Burn in test)</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#TBT">
+                                <span class="nav-number">4.1.2.</span>
+                                <span class="nav-text">
+                                  TBT</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#2-Core-Test">
+                            <span class="nav-number">4.2.</span>
+                            <span class="nav-text">
+                              2. Core Test</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#DC-test">
+                                <span class="nav-number">4.2.1.</span>
+                                <span class="nav-text">
+                                  DC test</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#Functional-test">
+                                <span class="nav-number">4.2.2.</span>
+                                <span class="nav-text">
+                                  Functional test</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-Speed-Test">
+                            <span class="nav-number">4.3.</span>
+                            <span class="nav-text">
+                              3. Speed Test</span>
+                          </a>
+                          <ol class="nav-child">
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#AC-timing-test">
+                                <span class="nav-number">4.3.1.</span>
+                                <span class="nav-text">
+                                  AC timing test</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#Speed-test">
+                                <span class="nav-number">4.3.2.</span>
+                                <span class="nav-text">
+                                  Speed test</span>
+                              </a>
+                            </li>
+                            <li class="nav-item nav-level-3">
+                              <a class="nav-link" href="#test-plan-in-program">
+                                <span class="nav-number">4.3.3.</span>
+                                <span class="nav-text">
+                                  test plan in program</span>
+                              </a>
+                            </li>
+                          </ol>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#3-Backend后端检测">
+                            <span class="nav-number">4.4.</span>
+                            <span class="nav-text">
+                              3. Backend后端检测</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

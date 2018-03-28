@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="多元高斯分布与一元高斯分布的关系 首先一维标准正态分布：      二维标准正态分布，就是   两个独立的一维标准正态分布随机变量的联合分布：      把两个随机变量组合成一个随机向量：      则有：      然后从标准正态分布推广到一般正态分布，办法是通过一个线性变换：         注意前面的系数多了一个|A|（A的行列式）。 可以证明这个分布的均值为µ，协方差为：">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="机器学习实践项目之高斯分布">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实践项目之高斯分布/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="多元高斯分布与一元高斯分布的关系 首先一维标准正态分布：      二维标准正态分布，就是   两个独立的一维标准正态分布随机变量的联合分布：      把两个随机变量组合成一个随机向量：      则有：      然后从标准正态分布推广到一般正态分布，办法是通过一个线性变换：         注意前面的系数多了一个|A|（A的行列式）。 可以证明这个分布的均值为µ，协方差为：">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28x%29+%3D+%5Cfrac%7B1%7D%7B%5Csqrt%7B2%5Cpi%7D%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7Bx%5E2%7D%7B2%7D+%5Cright%29">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28x%2Cy%29+%3D+p%28x%29p%28y%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7Bx%5E2%2By%5E2%7D%7B2%7D+%5Cright%29">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=%5Cmathbf%7Bv%7D+%3D+%5Bx%5C%2C%5C%2C%5C%2Cy%5D%5ET">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bv%7D%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7B1%7D%7B2%7D%5Cmathbf%7Bv%7D%5ET%5Cmathbf%7Bv%7D+%5Cright%29">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=%5Cmathbf%7Bv%7D+%3D+A%28%5Cmathbf%7Bx%7D-%5Cmu%29">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bx%7D%29+%3D+%5Cfrac%7B%7CA%7C%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%5B+-%5Cfrac%7B1%7D%7B2%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5ET+A%5ETA+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5Cright%5D">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=%28A%5ETA%29%5E%7B-1%7D">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=%5CSigma+%3D+%28A%5ETA%29%5E%7B-1%7D">
+  <meta property="og:image" content="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bx%7D%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7C%5CSigma%7C%5E%7B1%2F2%7D%7D+%5Cexp+%5Cleft%5B+-%5Cfrac%7B1%7D%7B2%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5ET+%5CSigma%5E%7B-1%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5Cright%5D">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-78bd30c9029f26b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-dd50954de07fe5df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8ac6dd6d7e4c4256.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/初始分布.png">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/对数操作后的分布.png">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-f9ea12cae228c8f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-cf1c057ef05a4193.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-58c3c2e19ae06ebb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-8bbfe5234a7b7a9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-fb83f8a7db48464e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-93a1a4a41088b2d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-90e82ed6a2985065.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_热力图.png">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变主对角线.png">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变次对角线.png">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变次对角线2.png">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变均值向量.png">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-64c26a995e8e7bb1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-00f1b6e8c89e12ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-65525028189442bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:image" content="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_同轴分布.png">
+  <meta property="og:image" content="http://upload-images.jianshu.io/upload_images/4749583-fc744ed99a6d86f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240">
+  <meta property="og:updated_time" content="2018-03-28T06:31:00.943Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="机器学习实践项目之高斯分布">
+  <meta name="twitter:description" content="多元高斯分布与一元高斯分布的关系 首先一维标准正态分布：      二维标准正态分布，就是   两个独立的一维标准正态分布随机变量的联合分布：      把两个随机变量组合成一个随机向量：      则有：      然后从标准正态分布推广到一般正态分布，办法是通过一个线性变换：         注意前面的系数多了一个|A|（A的行列式）。 可以证明这个分布的均值为µ，协方差为：">
+  <meta name="twitter:image" content="https://www.zhihu.com/equation?tex=p%28x%29+%3D+%5Cfrac%7B1%7D%7B%5Csqrt%7B2%5Cpi%7D%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7Bx%5E2%7D%7B2%7D+%5Cright%29">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实践项目之高斯分布/"
+  />
+
+  <title>机器学习实践项目之高斯分布 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实践项目之高斯分布/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">机器学习实践项目之高斯分布</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-12-18T15:58:45+08:00">
+                          2017-12-18
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/ML/" itemprop="url" rel="index">
+                            <span itemprop="name">ML</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          3,143
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          11
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h3 id="多元高斯分布与一元高斯分布的关系">
+                      <a href="#多元高斯分布与一元高斯分布的关系" class="headerlink" title="多元高斯分布与一元高斯分布的关系"></a>多元高斯分布与一元高斯分布的关系</h3>
+                    <p>首先一维标准正态分布：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=p%28x%29+%3D+%5Cfrac%7B1%7D%7B%5Csqrt%7B2%5Cpi%7D%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7Bx%5E2%7D%7B2%7D+%5Cright%29"
+                                                                                                      alt="">
+                    </p>
+                    <p>二维标准正态分布，就是
+                      <strong>两个独立的一维标准正态分布随机变量的联合分布</strong>：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=p%28x%2Cy%29+%3D+p%28x%29p%28y%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7Bx%5E2%2By%5E2%7D%7B2%7D+%5Cright%29"
+                                                                                                      alt="">
+                    </p>
+                    <p>把两个随机变量组合成一个随机向量：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=%5Cmathbf%7Bv%7D+%3D+%5Bx%5C%2C%5C%2C%5C%2Cy%5D%5ET"
+                                                                                                      alt="">
+                    </p>
+                    <p>则有：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bv%7D%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%28+-%5Cfrac%7B1%7D%7B2%7D%5Cmathbf%7Bv%7D%5ET%5Cmathbf%7Bv%7D+%5Cright%29"
+                                                                                                      alt="">
+                    </p>
+                    <p>然后从标准正态分布推广到一般正态分布，办法是通过一个线性变换：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=%5Cmathbf%7Bv%7D+%3D+A%28%5Cmathbf%7Bx%7D-%5Cmu%29"
+                                                                                                      alt="">
+                      <img src="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bx%7D%29+%3D+%5Cfrac%7B%7CA%7C%7D%7B2%5Cpi%7D+%5Cexp+%5Cleft%5B+-%5Cfrac%7B1%7D%7B2%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5ET+A%5ETA+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5Cright%5D"
+                                                                                                      alt="">
+                    </p>
+                    <p>注意前面的系数多了一个|A|（A的行列式）。</p>
+                    <p>可以证明这个分布的均值为µ，协方差为：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=%28A%5ETA%29%5E%7B-1%7D" alt="">
+                    </p>
+                    <p>记</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=%5CSigma+%3D+%28A%5ETA%29%5E%7B-1%7D"
+                                                                                                      alt="">
+                    </p>
+                    <p>那就有：</p>
+                    <p>
+                      <img src="https://www.zhihu.com/equation?tex=p%28%5Cmathbf%7Bx%7D%29+%3D+%5Cfrac%7B1%7D%7B2%5Cpi%7C%5CSigma%7C%5E%7B1%2F2%7D%7D+%5Cexp+%5Cleft%5B+-%5Cfrac%7B1%7D%7B2%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5ET+%5CSigma%5E%7B-1%7D+%28%5Cmathbf%7Bx%7D+-+%5Cmu%29+%5Cright%5D"
+                                                                                                      alt="">
+                      <br>高维情形同理。</p>
+                    <p>
+                      <a href="https://www.zhihu.com/question/36339816/answer/67043318" target="_blank"
+                                                                                                      rel="external">参考链接：</a>
+                    </p>
+                    <h4 id="算法流程">
+                      <a href="#算法流程" class="headerlink" title="算法流程"></a>
+                      <strong>算法流程</strong>
+                    </h4>
+                    <p>有了前面的知识，我们可以得到，采用了高斯分布的异常检测算法流程如下：</p>
+                    <ul>
+                      <li>
+                        <ol>
+                          <li>选择一些足够反映异常样本的特征 。</li>
+                        </ol>
+                      </li>
+                      <li>
+                        <ol>
+                          <li>对各个特征进行参数估计：</li>
+                        </ol>
+                      </li>
+                      <li>
+                        <ol>
+                          <li>当新的样本x到来时，计算其概率p（x）, 如果超出卡定范围，则认为样本x 是异常样本。</li>
+                        </ol>
+                      </li>
+                    </ul>
+                    <p>我们用
+                      <a href="https://zh.coursera.org/learn/machine-learning" target="_blank" rel="external">
+                        <strong>斯坦福机器学习课程</strong>
+                      </a>里面的例子来说明一下。</p>
+                    <p>我们假定有两个特征，均服从高斯分布，并且通过极大似然估计我们得知其分布参数了：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-78bd30c9029f26b9.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="高斯分布热力图">
+                    </p>
+                    <p>由于一个参数则是二维的，两个参数就当然是三维的了，我们把这个三维图堪称热力图嘛（本来直观理解也是一样的嘛，概率越高的地方就越热，比如东京就是最热的地方，逃~），二维图你一根直线就可以卡范围了，三维下就是一个平面了（当然高纬度空间就是超平面咯！）就是下图中描红的位置，以下的区域都是异常样本！
+                      <br>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-dd50954de07fe5df.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                      <br>我们从顶上往下看，即投影下来，可以看到这个红色圈就是上面的切割平面与三维体的相交部分，圈内就是正常样本，圈外就是异常样本。</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-8ac6dd6d7e4c4256.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="高斯分布热力图投影">
+                    </p>
+                    <h4 id="数据集划分">
+                      <a href="#数据集划分" class="headerlink" title="数据集划分"></a>数据集划分</h4>
+                    <p>划分为训练集、交叉验证集跟测试集。</p>
+                    <h4 id="算法评估">
+                      <a href="#算法评估" class="headerlink" title="算法评估"></a>算法评估</h4>
+                    <p>由于实际场景中异常样本是极少的，所以整个数据集是非常偏斜的，我们不能单纯的用预测准确率来评估算法优劣，而是：
+                      <a href="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E7%AE%97%E6%B3%95%E5%88%86%E6%9E%90%E4%B8%8E%E4%BC%98%E5%8C%96/articles/%E5%81%8F%E6%96%9C%E7%B1%BB.html"
+                                                                                                      target="_blank" rel="external">
+                        <strong>(参考链接在这)</strong>
+                      </a>
+                    </p>
+                    <ul>
+                      <li>真阳性、假阳性、真阴性、假阴性</li>
+                      <li>查准率（Precision）与 召回率（Recall）</li>
+                    </ul>
+                    <p>这里乍一看其实有点类似于逻辑回归，因为不就是二分类问题嘛！但是实际上不是的啊！
+                      <br>监督学习其实就是拟合啊！它要求正负样本数量大小一致。</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>有监督学习</th>
+                          <th>异常检测</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>数据分布均匀</td>
+                          <td>数据非常偏斜，异常样本数目远小于正常样本数目</td>
+                        </tr>
+                        <tr>
+                          <td>可以根据对正样本的拟合来知道正样本的形态，从而预测新来的样本是否是正样本</td>
+                          <td>异常的类型不一，很难根据对现有的异常样本（即正样本）的拟合来判断出异常样本的形态</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>下面的表格则展示了二者的一些应用场景：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>有监督学习</th>
+                          <th>异常检测</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>垃圾邮件检测</td>
+                          <td>故障检测</td>
+                        </tr>
+                        <tr>
+                          <td>天气预测（预测雨天、晴天、或是多云天气）</td>
+                          <td>某数据中心对于机器设备的监控</td>
+                        </tr>
+                        <tr>
+                          <td>癌症的分类</td>
+                          <td>制造业判断一个零部件是否异常</td>
+                        </tr>
+                        <tr>
+                          <td>···</td>
+                          <td>···</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <h4 id="特征选择">
+                      <a href="#特征选择" class="headerlink" title="特征选择"></a>特征选择</h4>
+                    <p>因为我们建立模型的基础是假设特诊满足高斯分布，那么要是特征不符合高斯分布呢？
+                      <br>答案当然是整成高斯分布啊！
+                      <br>我们一开始拿到的特征的分布可能是这样的：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>转换之前的特征</th>
+                          <th>转换之后的特征</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/初始分布.png"
+                                                                                                            alt="">
+                          </td>
+                          <td>
+                            <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/对数操作后的分布.png"
+                                                                                                            alt="">
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>我们可以通过
+                      <strong>对数操作或者其他操作</strong>将他转化为高斯分布，例如，上面的特征经对数操作后形成的分布就非常
+                      <strong>接近</strong>于高斯分布：</p>
+                    <h4 id="构建新特征">
+                      <a href="#构建新特征" class="headerlink" title="构建新特征"></a>构建新特征</h4>
+                    <p>在参加上次乐信的数据挖掘比赛中，发现有些特征是可以组合起来构建新特怔的，比如借钱的额度是一个特征，借钱的时间是一个特征，利用这两个原始特征我们可以来计算借钱的频率，从侧面刻画这个客户的金融状况。
+                      <br>再比如我的芯片工作电流值是一个参数，电压也是一个参数，乘起来就是功耗参数了，这能刻画出IC是否出现工作状态变化了这一场景，这对异常的识别就更细致了。</p>
+                    <h3 id="多元高斯分布">
+                      <a href="#多元高斯分布" class="headerlink" title="多元高斯分布"></a>多元高斯分布</h3>
+                    <p>
+                      <strong>异常检测算法无法解决的问题</strong>，还是现以一个例子来解释：
+                      <br>假设在数据中心监控机器的例子中，我们有如下的内存和CPU使用数据：</p>
+                    <p>
+                      <a href="http://studyai.site/img/17_05_26/001.png" target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-f9ea12cae228c8f7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                    </p>
+                    <p>其中对于这两个维度的数据，都服从正态分布：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>x1</th>
+                          <th>x2</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <a href="http://studyai.site/img/17_05_26/002.png" target="_blank" rel="external">
+                              <img src="http://upload-images.jianshu.io/upload_images/4749583-cf1c057ef05a4193.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                              alt="">
+                            </a>
+                          </td>
+                          <td>
+                            <a href="http://studyai.site/img/17_05_26/003.png" target="_blank" rel="external">
+                              <img src="http://upload-images.jianshu.io/upload_images/4749583-58c3c2e19ae06ebb.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                              alt="">
+                            </a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>如果现在在我们的测试集中，有一个异常数据点出现在下图的位置中：
+                      <br>
+                      <a href="http://studyai.site/img/17_05_26/004.png" target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-8bbfe5234a7b7a9a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>那么在这种情况下我们会发现，这一点对应的两个维度下的概率其实都不低，从p(x)的结果上，我们无法准确预测这个样本是否属于异常。产生这个问题的实际原因其实是这样的，从x1和x2这两个维度(
+                      <strong>注：这里是从两个纬度来看的，单单就某一维来看都是正常的，但是两维就是异常的，因为其实这两个变量之间是有一定的相关性的，你直接相乘处理进行判断的话相当于不去管相关性了，也就是业务的一些内在特征就把它给丢了</strong>)来看，我们的正常数据及时大多数集中分布在这样一个范围内：</p>
+                    <p>
+                      <a href="http://studyai.site/img/17_05_26/005.png" target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-fb83f8a7db48464e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                    </p>
+                    <p>但我们使用之前的异常检测算法，其实是以中心区域向外以正圆的形式扩散的。也就是说距离中心区域距离相等的点，对应的p(x)都是一样的，所以我们可能无法检测到这一个异常样本，因为它也处在一个p(x)比较大的范围内：</p>
+                    <p>
+                      <strong>这里要这么理解：假如不认为两个特征之间有相关性的话，那么就是以(µ1,µ2)为中心，然后以σ1，σ2为半径画椭圆，因此画出来的极有可能就是粉红色的这些线，而我们真实的确实蓝色那个圈，因此直观上就可知道我们丢失了一些特征，从而拟合出现问题了；</strong>
+                    </p>
+                    <p>
+                      <strong>那么丢失的是什么呢？ 显然就是特征相关性了。</strong>
+                      <br>
+                      <a href="http://studyai.site/img/17_05_26/006.png" target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-93a1a4a41088b2d8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>所以，为了解决异常检测算法的这一问题，接下来我解释改良版的异常检测算法，要用到叫做
+                      <strong>多元高斯分布（多元正态分布）</strong>的东西。</p>
+                    <h4 id="定义">
+                      <a href="#定义" class="headerlink" title="定义"></a>定义</h4>
+                    <p>多元高斯分布模型被定义为：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-90e82ed6a2985065.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>其中， µ表示
+                      <strong>样本均值</strong>， ∑表示
+                      <strong>样本协方差矩阵</strong>。
+                      <br>多元高斯分布模型的热力图如下：
+                      <br>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_热力图.png"
+                                                                                                      alt="">
+                    </p>
+                    <h4 id="参数">
+                      <a href="#参数" class="headerlink" title="参数"></a>参数</h4>
+                    <ul>
+                      <li>
+                        <ol>
+                          <li>改变
+                            <strong>主对角线</strong>的数值可以进行不同方向的宽度拉伸：</li>
+                        </ol>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变主对角线.png"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>
+                        <ol>
+                          <li>改变
+                            <strong>次对角线</strong>的数值可以旋转分布图像：</li>
+                        </ol>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变次对角线.png"
+                                                                                                      alt="">
+                      <br>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变次对角线2.png"
+                                                                                                      alt="">
+                    </p>
+                    <ul>
+                      <li>
+                        <ol>
+                          <li>改变 µ 可以对分布图像进行位移：</li>
+                        </ol>
+                      </li>
+                    </ul>
+                    <p>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_改变均值向量.png"
+                                                                                                      alt="">
+                    </p>
+                    <blockquote>
+                      <p>因此
+                        <strong>方向上</strong>我们人工可以通过调整协方差矩阵来旋转、拉伸上图中粉色的边界圈，使之适应真实数据，
+                        <strong>方法上</strong>我们可以直接利用如下的多元高斯公式来进行计算（拟合）出真实数据对应的协方差矩阵。</p>
+                      <h3 id="具体算法操作步骤：">
+                        <a href="#具体算法操作步骤：" class="headerlink" title="具体算法操作步骤："></a>具体算法操作步骤：</h3>
+                      <ul>
+                        <li>根据数据集拟合参数得到：</li>
+                      </ul>
+                    </blockquote>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-64c26a995e8e7bb1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>然后新的测试样本到来时，你直接输入公式:</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-00f1b6e8c89e12ba.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="">
+                    </p>
+                    <p>最后，如果p(x)&lt;ε时，就把它标记为是一个异常样本，反之，如果p(x)&gt;=ε则不标记为异常样本。</p>
+                    <p>所以，如果使用多元高斯分布来解决异常检测问题，你可能会得到这样一个高斯分布的概率模型：
+                      <br>
+                      <a href="http://studyai.site/img/17_05_26/031.png" target="_blank" rel="external">
+                        <img src="http://upload-images.jianshu.io/upload_images/4749583-65525028189442bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                        alt="">
+                      </a>
+                      <br>所以，他可以正常的识别出之前用普通的异常检测算法无法正确检测的那个异常样本。</p>
+                    <h4 id="多元高斯分布模型与一般高斯分布模型的差异">
+                      <a href="#多元高斯分布模型与一般高斯分布模型的差异" class="headerlink" title="多元高斯分布模型与一般高斯分布模型的差异"></a>多元高斯分布模型与一般高斯分布模型的差异</h4>
+                    <p>原先的模型是这样的：
+                      <strong>p(x)=p(x1;µ1,σ21)×p(x2;µ2,σ22)×…×p(xn;µn,σ2n)</strong>，事实上，可以证明我们原先的这种模型，是多元高斯模型的一种。</p>
+                    <p>实际上，一般的高斯分布模型只是多元高斯分布模型的一个
+                      <strong>约束</strong>，它将多元高斯分布的等高线约束到了如下所示同轴分布（概率密度的等高线是沿着轴向的）：
+                      <br>
+                      <img src="https://yoyoyohamapi.gitbooks.io/mit-ml/content/%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B/attachments/多元高斯_同轴分布.png"
+                                                                                                      alt="">
+                      <br>其实这个模型对应于一种多元高斯分布的特例，具体来说这个特例被定义为约束p(x)的分布(也就是多元高斯分布p(x))，使得它的概率密度函数的等高线是沿着轴向的。也就是要求协方差矩阵Σ的非对角线元素都为0。</p>
+                    <p>所以你可以得到多元高斯分布p(x)
+                      <br>看起来是上图中这三种样式的。你会发现，在这3个例子中，它们的轴都是沿着x1，x2的轴的。
+                      <br>因此，在协方差矩阵Σ的非对角线元素都为0的情况下，这两者是相同的：</p>
+                    <p>
+                      <img src="http://upload-images.jianshu.io/upload_images/4749583-fc744ed99a6d86f3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"
+                                                                                                      alt="Screenshot-2017-10-19 斯坦福机器学习课程 第九周 (3)多元高斯分布">
+                    </p>
+                    <p>何时使用多元高斯模型？何时使用原始模型？</p>
+                    <p>既然我们知道了原始的模型是多元高斯模型的一个特例，那么应该在什么时候用哪个模型呢？</p>
+                    <p>事实情况是，
+                      <strong>原始模型比较常用，而多元高斯模型比较少用。</strong>
+                    </p>
+                    <p>假设在你的样本中，x1和x2是
+                      <strong>线性相关的特征组合</strong>，下面是这两种算法在处理不正常的特征组合时的具体方式对比：</p>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>一元高斯模型</th>
+                          <th>多元高斯模型</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>捕捉到这两个特征，建立一个新的特征x3(比如x3=x1/x2)，去尝试手工组合并改变这个新的特征变量，从而使得算法能很好的工作。</td>
+                          <td>自动捕捉不同特征变量之间的相关性。</td>
+                        </tr>
+                        <tr>
+                          <td>运算量小(更适用于特征变量个数n很大的情况)</td>
+                          <td>计算更复杂（Σ是n×n的矩阵，这里会涉及两个n×n的矩阵相乘的逻辑，计算量很大）</td>
+                        </tr>
+                        <tr>
+                          <td>即使训练样本数m很小的情况下，也能工作的很好</td>
+                          <td>必须满足m&gt;n，或者Σ不可逆（奇异矩阵）。这种情况下，还可以帮助你省去为了捕捉特征值组合而手动建立额外特征变量所花费的时间。</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                    <p>由此可以看出，基于多元高斯分布模型的异常检测应用十分有限。</p>
+                    <p>
+                      <strong>异常情况的应对</strong>
+                      <br>当你在拟合多元高斯模型时，如果你发现协方差矩阵Σ是奇异的（不可逆的），一般只有两种情况：</p>
+                    <ul>
+                      <li>第一种是它没有满足m&gt;n的条件</li>
+                      <li>第二种情况是，你有冗余特征变量 冗余特征变量的意思是出现了以下两种情况的任意一种：
+                        <pre><code>-  出现了两个完全一样的特征变量（你可能不小心把同一个特征变量复制了两份）
+- 如果你有x3=x4+x5，这里x3其实并没有包含额外的信息，相对于x4和x5来说，它就是冗余特征变量。
+</code></pre>
+                      </li>
+                    </ul>
+                    <p>这是你调试算法时的一个小知识，可能很少会遇到，但是一旦你发现Σ不可逆，那么首先需要从这两个方面来考虑解决方案。</p>
+                    <blockquote>
+                      <p>小结：多元高斯分布（Multivariate Gaussian Distribution）的形式很简单，就是一元高斯分布的在向量形式的推广。
+                        <br>
+                        <strong>也就是说：引入协方差是为了自动地去发掘特征之间的关系的，假如特征之间独立那么就是似然估计模型了嘛，把各特征概率乘起来就好了。</strong>
+                        <br>从上面这些图以及背景中可知，没引入协方差前，切割三维热力图就是平着切的，但是引入协方差后即可以对切割的超平面做一些拉伸旋转的操作，获得更好的切割边界，从而更好地进行分类，
+                        <strong>也就是找到了特怔之间的相关性嘛！</strong>。</p>
+                    </blockquote>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实践项目之高斯分布/" title="机器学习实践项目之高斯分布">http://www.jianshu.com/u/a08f88f9ed9d/2017/12/18/ML/机器学习实践项目之高斯分布/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2017/12/18/ML/机器学习实战-项目（努力写着呢~）/" rel="next" title="机器学习实战-项目（努力写着呢~）">
+                          <i class="fa fa-chevron-left"></i> 机器学习实战-项目（努力写着呢~）
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2017/12/18/ML/梯度消失的原因/" rel="prev" title="梯度消失的原因">
+                          梯度消失的原因
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#多元高斯分布与一元高斯分布的关系">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          多元高斯分布与一元高斯分布的关系</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#算法流程">
+                            <span class="nav-number">1.1.</span>
+                            <span class="nav-text">
+
+                              算法流程
+                            </span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#数据集划分">
+                            <span class="nav-number">1.2.</span>
+                            <span class="nav-text">
+                              数据集划分</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#算法评估">
+                            <span class="nav-number">1.3.</span>
+                            <span class="nav-text">
+                              算法评估</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#特征选择">
+                            <span class="nav-number">1.4.</span>
+                            <span class="nav-text">
+                              特征选择</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#构建新特征">
+                            <span class="nav-number">1.5.</span>
+                            <span class="nav-text">
+                              构建新特征</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#多元高斯分布">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          多元高斯分布</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#定义">
+                            <span class="nav-number">2.1.</span>
+                            <span class="nav-text">
+                              定义</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#参数">
+                            <span class="nav-number">2.2.</span>
+                            <span class="nav-text">
+                              参数</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                    <li class="nav-item nav-level-3">
+                      <a class="nav-link" href="#具体算法操作步骤：">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          具体算法操作步骤：</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-4">
+                          <a class="nav-link" href="#多元高斯分布模型与一般高斯分布模型的差异">
+                            <span class="nav-number">3.1.</span>
+                            <span class="nav-text">
+                              多元高斯分布模型与一般高斯分布模型的差异</span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

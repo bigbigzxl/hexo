@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="前言 · 零 我们知道，在python里面要终止一个线程，常规的做法就是   设置/检查 —&amp;gt;标志或者锁方式来实现的。 这种方式好不好呢？ 应该是不大好的！因为在所有的程序语言里面，   突然地终止一个线程，这无论如何都不是一个好的设计模式。    同时  有些情况下更甚，比如：    线程打开一个必须合理关闭的临界资源时，比如打开一个可读可写的文件；   线程已经创建了好几个其他的线">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="如何优雅地终止python线程">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/如何优雅地终止python线程/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="前言 · 零 我们知道，在python里面要终止一个线程，常规的做法就是   设置/检查 —&amp;gt;标志或者锁方式来实现的。 这种方式好不好呢？ 应该是不大好的！因为在所有的程序语言里面，   突然地终止一个线程，这无论如何都不是一个好的设计模式。    同时  有些情况下更甚，比如：    线程打开一个必须合理关闭的临界资源时，比如打开一个可读可写的文件；   线程已经创建了好几个其他的线">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:updated_time" content="2018-03-28T06:37:19.310Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="如何优雅地终止python线程">
+  <meta name="twitter:description" content="前言 · 零 我们知道，在python里面要终止一个线程，常规的做法就是   设置/检查 —&amp;gt;标志或者锁方式来实现的。 这种方式好不好呢？ 应该是不大好的！因为在所有的程序语言里面，   突然地终止一个线程，这无论如何都不是一个好的设计模式。    同时  有些情况下更甚，比如：    线程打开一个必须合理关闭的临界资源时，比如打开一个可读可写的文件；   线程已经创建了好几个其他的线">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/如何优雅地终止python线程/"
+  />
+
+  <title>如何优雅地终止python线程 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/如何优雅地终止python线程/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">如何优雅地终止python线程</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T14:36:56+08:00">
+                          2018-03-28
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/python总结/" itemprop="url" rel="index">
+                            <span itemprop="name">python总结</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          1,739
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          8
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h1 id="前言-·-零">
+                      <a href="#前言-·-零" class="headerlink" title="前言 · 零"></a>前言 · 零</h1>
+                    <p>我们知道，在python里面要终止一个线程，常规的做法就是
+                      <strong>设置/检查 —&gt;标志或者锁</strong>方式来实现的。</p>
+                    <p>这种方式好不好呢？</p>
+                    <p>应该是不大好的！因为在所有的程序语言里面，
+                      <strong>突然地终止一个线程，这无论如何都不是一个好的设计模式</strong>。</p>
+                    <p>
+                      <strong>同时</strong>
+                    </p>
+                    <p>有些情况下更甚，比如：</p>
+                    <ul>
+                      <li>线程打开一个必须合理关闭的临界资源时，比如打开一个可读可写的文件；</li>
+                      <li>线程已经创建了好几个其他的线程，这些线程也是需要被关闭的(这可存在子孙线程游离的风险啊！)。</li>
+                    </ul>
+                    <p>简单来说，就是我们一大群的线程共线了公共资源，你要其中一个线程“离场”，假如这个线程刚好占用着资源，那么强制让其离开的结局就是资源被锁死了，大家都拿不到了！怎么样是不是有点类似修仙类小说的情节！</p>
+                    <blockquote>
+                      <p>
+                        <strong>知道为啥threading仅有start而没有end不？</strong>
+                      </p>
+                      <p>你看，线程一般用在网络连接、释放系统资源、dump流文件，这些都跟IO相关了，你突然关闭线程那这些
+                        <br>没有合理地关闭怎么办？是不是就是给自己造bug呢？啊？！</p>
+                      <p>因此这种事情中最重要的不是终止线程而是
+                        <strong>线程的清理</strong>啊。</p>
+                    </blockquote>
+                    <h1 id="解决方案-·-壹">
+                      <a href="#解决方案-·-壹" class="headerlink" title="解决方案 · 壹"></a>解决方案 · 壹</h1>
+                    <p>一个比较nice的方式就是每个线程都带一个退出请求标志，在线程里面间隔一定的时间来检查一次，看是不是该自己离开了！</p>
+                    <figure class="highlight python">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="keyword">import</span> threading</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">StoppableThread</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">    <span class="string">"""Thread class with a stop() method. The thread itself has to check</span></span><br><span class="line"><span class="string">    regularly for the stopped() condition."""</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        super(StoppableThread, self).__init__()</span><br><span class="line">        self._stop_event = threading.Event()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">stop</span><span class="params">(self)</span>:</span></span><br><span class="line">        self._stop_event.set()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">stopped</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._stop_event.is_set()</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>在这部分代码所示，当你想要退出线程的时候你应当显示调用stop()函数，并且使用join()函数来等待线程
+                      <strong>合适地退出</strong>。线程应当周期性地检测停止标志。</p>
+                    <p>然而，还有一些使用场景中你真的需要kill掉一个线程：比如，当你封装了一个外部库，但是这个外部库
+                      <strong>在长时间调用</strong>，因此你想中断这个过程。</p>
+                    <h1 id="解决方案-·-貳">
+                      <a href="#解决方案-·-貳" class="headerlink" title="解决方案 · 貳"></a>解决方案 · 貳</h1>
+                    <p>接下来的方案是允许在python线程里面raise一个Exception（当然是有一些限制的）。</p>
+                    <figure class="highlight python">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_async_raise</span><span class="params">(tid, exctype)</span>:</span></span><br><span class="line">    <span class="string">'''Raises an exception in the threads with id tid'''</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> inspect.isclass(exctype):</span><br><span class="line">        <span class="keyword">raise</span> TypeError(<span class="string">"Only types can be raised (not instances)"</span>)</span><br><span class="line">    res = ctypes.pythonapi.PyThreadState_SetAsyncExc(tid,</span><br><span class="line">                                                  ctypes.py_object(exctype))</span><br><span class="line">    <span class="keyword">if</span> res == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">raise</span> ValueError(<span class="string">"invalid thread id"</span>)</span><br><span class="line">    <span class="keyword">elif</span> res != <span class="number">1</span>:</span><br><span class="line">        <span class="comment"># "if it returns a number greater than one, you're in trouble,</span></span><br><span class="line">        <span class="comment"># and you should call it again with exc=NULL to revert the effect"</span></span><br><span class="line">        ctypes.pythonapi.PyThreadState_SetAsyncExc(tid, <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">raise</span> SystemError(<span class="string">"PyThreadState_SetAsyncExc failed"</span>)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ThreadWithExc</span><span class="params">(threading.Thread)</span>:</span></span><br><span class="line">    <span class="string">'''A thread class that supports raising exception in the thread from</span></span><br><span class="line"><span class="string">       another thread.</span></span><br><span class="line"><span class="string">    '''</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_my_tid</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""determines this (self's) thread id</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        CAREFUL : this function is executed in the context of the caller</span></span><br><span class="line"><span class="string">        thread, to get the identity of the thread represented by this</span></span><br><span class="line"><span class="string">        instance.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> self.isAlive():</span><br><span class="line">            <span class="keyword">raise</span> threading.ThreadError(<span class="string">"the thread is not active"</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># do we have it cached?</span></span><br><span class="line">        <span class="keyword">if</span> hasattr(self, <span class="string">"_thread_id"</span>):</span><br><span class="line">            <span class="keyword">return</span> self._thread_id</span><br><span class="line"></span><br><span class="line">        <span class="comment"># no, look for it in the _active dict</span></span><br><span class="line">        <span class="keyword">for</span> tid, tobj <span class="keyword">in</span> threading._active.items():</span><br><span class="line">            <span class="keyword">if</span> tobj <span class="keyword">is</span> self:</span><br><span class="line">                self._thread_id = tid</span><br><span class="line">                <span class="keyword">return</span> tid</span><br><span class="line"></span><br><span class="line">        <span class="comment"># <span class="doctag">TODO:</span> in python 2.6, there's a simpler way to do : self.ident</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">raise</span> AssertionError(<span class="string">"could not determine the thread's id"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">raiseExc</span><span class="params">(self, exctype)</span>:</span></span><br><span class="line">        <span class="string">"""Raises the given exception type in the context of this thread.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        If the thread is busy in a system call (time.sleep(),</span></span><br><span class="line"><span class="string">        socket.accept(), ...), the exception is simply ignored.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        If you are sure that your exception should terminate the thread,</span></span><br><span class="line"><span class="string">        one way to ensure that it works is:</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">            t = ThreadWithExc( ... )</span></span><br><span class="line"><span class="string">            ...</span></span><br><span class="line"><span class="string">            t.raiseExc( SomeException )</span></span><br><span class="line"><span class="string">            while t.isAlive():</span></span><br><span class="line"><span class="string">                time.sleep( 0.1 )</span></span><br><span class="line"><span class="string">                t.raiseExc( SomeException )</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        If the exception is to be caught by the thread, you need a way to</span></span><br><span class="line"><span class="string">        check that your thread has caught it.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        CAREFUL : this function is executed in the context of the</span></span><br><span class="line"><span class="string">        caller thread, to raise an excpetion in the context of the</span></span><br><span class="line"><span class="string">        thread represented by this instance.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        _async_raise( self._get_my_tid(), exctype )</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>正如注释里面描述，这不是啥“灵丹妙药”，因为，假如线程在python解释器之外busy，这样子的话终端异常就抓不到啦~</p>
+                    <p>这个代码的合理使用方式是：让线程抓住一个
+                      <strong>特定的异常</strong>然后执行清理操作。这样的话你就能终端一个任务并能合适地进行清除。</p>
+                    <h1 id="解决方案-·-叁">
+                      <a href="#解决方案-·-叁" class="headerlink" title="解决方案 · 叁"></a>解决方案 · 叁</h1>
+                    <p>假如我们要做个啥事情，类似于中断的方式，那么我们就可以用thread.join方式。
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">join的原理就是依次检验线程池中的线程是否结束，没有结束就阻塞直到线程结束，如果结束则跳转执行下一个线程的join函数。</span><br><span class="line"></span><br><span class="line">先看看这个：</span><br><span class="line"></span><br><span class="line">1. 阻塞主进程，专注于执行多线程中的程序。</span><br><span class="line"></span><br><span class="line">2. 多线程多join的情况下，依次执行各线程的join方法，前头一个结束了才能执行后面一个。</span><br><span class="line"></span><br><span class="line">3. 无参数，则等待到该线程结束，才开始执行下一个线程的join。</span><br><span class="line"></span><br><span class="line">4. 参数timeout为线程的阻塞时间，如 timeout=2 就是罩着这个线程2s 以后，就不管他了，继续执行下面的代码。</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <figure class="highlight python">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="comment"># coding: utf-8</span></span><br><span class="line"><span class="comment"># 多线程join</span></span><br><span class="line"><span class="keyword">import</span> threading, time  </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">doWaiting1</span><span class="params">()</span>:</span>  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">'start waiting1: '</span> + time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span>  </span><br><span class="line">    time.sleep(<span class="number">3</span>)  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">'stop waiting1: '</span> + time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span> </span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">doWaiting2</span><span class="params">()</span>:</span>  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">'start waiting2: '</span> + time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span>   </span><br><span class="line">    time.sleep(<span class="number">8</span>)  </span><br><span class="line">    <span class="keyword">print</span> <span class="string">'stop waiting2: '</span>, time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span>  </span><br><span class="line"></span><br><span class="line">tsk = []    </span><br><span class="line">thread1 = threading.Thread(target = doWaiting1)  </span><br><span class="line">thread1.start()  </span><br><span class="line">tsk.append(thread1)</span><br><span class="line"></span><br><span class="line">thread2 = threading.Thread(target = doWaiting2)  </span><br><span class="line">thread2.start()  </span><br><span class="line">tsk.append(thread2)</span><br><span class="line"></span><br><span class="line"><span class="keyword">print</span> <span class="string">'start join: '</span> + time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span>   </span><br><span class="line"><span class="keyword">for</span> tt <span class="keyword">in</span> tsk:</span><br><span class="line">    tt.join()</span><br><span class="line"><span class="keyword">print</span> <span class="string">'end join: '</span> + time.strftime(<span class="string">'%H:%M:%S'</span>) + <span class="string">"\n"</span></span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>默认join方式，也就是不带参，阻塞模式，只有子线程运行完才运行其他的。</strong>
+                    </p>
+                    <p>1、 两个线程在同一时间开启，join 函数执行。</p>
+                    <p>2、waiting1 线程执行（等待）了3s 以后，结束。</p>
+                    <p>3、waiting2 线程执行（等待）了8s 以后，运行结束。</p>
+                    <p>4、join 函数（返回到了主进程）执行结束。</p>
+                    <blockquote>
+                      <p>
+                        <strong>这里是默认的join方式，是在线程已经开始跑了之后，然后再join的，注意这点，join之后主线程就必须等子线程结束才会返回主线。</strong>
+                      </p>
+                    </blockquote>
+                    <p>join的参数，也就是timeout参数，改为2，即join（2），那么结果就是如下了：</p>
+                    <ol>
+                      <li>
+                        <p>两个线程在同一时间开启，join 函数执行。</p>
+                      </li>
+                      <li>
+                        <p>wating1 线程在执行（等待）了三秒以后，完成。</p>
+                      </li>
+                      <li>
+                        <p>join 退出（两个2s，一共4s，36-32=4，无误）。</p>
+                      </li>
+                      <li>
+                        <p>waiting2 线程由于没有在 join 规定的等待时间内（4s）完成，所以自己在后面执行完成。</p>
+                      </li>
+                    </ol>
+                    <blockquote>
+                      <p>
+                        <strong>join(2)就是:我给你子线程两秒钟，每个的2s钟结束之后我就走，我不会有丝毫的顾虑！</strong>
+                      </p>
+                    </blockquote>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/如何优雅地终止python线程/"
+                                                                                                        title="如何优雅地终止python线程">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/如何优雅地终止python线程/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2018/03/28/python总结/一、pyserial_1.0(16years ago )/" rel="next" title="一、pyserial_1.0(16years ago )">
+                          <i class="fa fa-chevron-left"></i> 一、pyserial_1.0(16years ago )
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/28/python总结/Python增强建议书(PEP8Python Enhancement Proposals)/" rel="prev"
+                                                                                                        title="Python增强建议书(PEP8Python Enhancement Proposals)">
+                          Python增强建议书(PEP8Python Enhancement Proposals)
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#前言-·-零">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          前言 · 零</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#解决方案-·-壹">
+                        <span class="nav-number">2.</span>
+                        <span class="nav-text">
+                          解决方案 · 壹</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#解决方案-·-貳">
+                        <span class="nav-number">3.</span>
+                        <span class="nav-text">
+                          解决方案 · 貳</span>
+                      </a>
+                    </li>
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#解决方案-·-叁">
+                        <span class="nav-number">4.</span>
+                        <span class="nav-text">
+                          解决方案 · 叁</span>
+                      </a>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>

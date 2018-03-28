@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"
+  />
+  <meta name="theme-color" content="#222">
+
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css"
+  />
+
+  <link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet"
+                                                                                  type="text/css" />
+
+  <link href="/css/main.css?v=5.1.3" rel="stylesheet" type="text/css" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/32x32.png?v=5.1.3">
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/16x16.png?v=5.1.3">
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.3" color="#222">
+
+  <meta name="keywords" content="Hexo, ZXL" />
+
+  <meta name="description" content="Win32file Module概述    Native File Manipulation。   There are times when the standard Python file objects can’t meet your requirements,   and you need to use the Windows API to manipulate files.   当通">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="三、《Python Programming on Win32》关于Win32file摘要及思考">
+  <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/三、《Python Programming on Win32》关于Win32file摘要及思考/index.html">
+  <meta property="og:site_name" content="十曰立">
+  <meta property="og:description" content="Win32file Module概述    Native File Manipulation。   There are times when the standard Python file objects can’t meet your requirements,   and you need to use the Windows API to manipulate files.   当通">
+  <meta property="og:locale" content="zh-Hans">
+  <meta property="og:updated_time" content="2018-03-28T06:39:34.115Z">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="三、《Python Programming on Win32》关于Win32file摘要及思考">
+  <meta name="twitter:description" content="Win32file Module概述    Native File Manipulation。   There are times when the standard Python file objects can’t meet your requirements,   and you need to use the Windows API to manipulate files.   当通">
+
+  <script type="text/javascript" id="hexo.configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {
+      root: '/',
+      scheme: 'Pisces',
+      version: '5.1.3',
+      sidebar: {
+        "position": "left",
+        "display": "post",
+        "offset": 12,
+        "b2t": false,
+        "scrollpercent": false,
+        "onmobile": false
+      },
+      fancybox: true,
+      tabs: true,
+      motion: {
+        "enable": true,
+        "async": false,
+        "transition": {
+          "post_block": "fadeIn",
+          "post_header": "slideDownIn",
+          "post_body": "slideDownIn",
+          "coll_header": "slideLeftIn",
+          "sidebar": "slideUpIn"
+        }
+      },
+      duoshuo: {
+        userId: '0',
+        author: '博主'
+      },
+      algolia: {
+        applicationID: '',
+        apiKey: '',
+        indexName: '',
+        hits: {
+          "per_page": 10
+        },
+        labels: {
+          "input_placeholder": "Search for Posts",
+          "hits_empty": "We didn't find any results for the search: ${query}",
+          "hits_stats": "${hits} results found in ${time} ms"
+        }
+      }
+    };
+
+  </script>
+
+  <link rel="canonical" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/三、《Python Programming on Win32》关于Win32file摘要及思考/"
+  />
+
+  <title>三、《Python Programming on Win32》关于Win32file摘要及思考 | 十曰立</title>
+
+</head>
+
+<div id="hexo-helper-live2d">
+  <canvas id="live2dcanvas" width="150" height="300"></canvas>
+</div>
+<style>
+  #live2dcanvas {
+    position: fixed;
+    width: 150px;
+    height: 300px;
+    opacity: 0.7;
+    right: 0px;
+    z-index: 999;
+    pointer-events: none;
+    bottom: -20px;
+  }
+
+</style>
+<script type="text/javascript" src="/live2d/device.min.js"></script>
+<script type="text/javascript">
+  const loadScript = function loadScript(c, b) {
+    var a = document.createElement("script");
+    a.type = "text/javascript";
+    "undefined" != typeof b && (a.readyState ? a.onreadystatechange =
+      function() {
+        if ("loaded" == a.readyState || "complete" == a.readyState) a.onreadystatechange =
+          null, b()
+      } : a.onload = function() {
+        b()
+      });
+    a.src = c;
+    document.body.appendChild(a)
+  };
+  (function() {
+    if ((typeof(device) != 'undefined') && (device.mobile())) {
+      document.getElementById("live2dcanvas").style.width = '75px';
+      document.getElementById("live2dcanvas").style.height = '150px';
+    } else
+    if (typeof(device) === 'undefined') console.error(
+      'Cannot find current-device script.');
+    loadScript("/live2d/script.js", function() {
+      loadlive2d("live2dcanvas",
+        "/live2d/assets/Gantzert_Felixander.model.json", 0.5);
+    });
+  })();
+
+</script>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+    <a href="https://github.com/bigbigzxl">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67"
+                                                                                      alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png">
+    </a>
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner">
+        <div class="site-brand-wrapper">
+          <div class="site-meta custom-logo">
+
+            <div class="custom-logo-site-title">
+              <a href="/" class="brand" rel="start">
+                <span class="logo-line-before">
+                  <i></i>
+                </span>
+                <span class="site-title">十曰立</span>
+                <span class="logo-line-after">
+                  <i></i>
+                </span>
+              </a>
+            </div>
+
+            <p class="site-subtitle">每日十立其身</p>
+
+          </div>
+
+          <div class="site-nav-toggle">
+            <button>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+              <span class="btn-bar"></span>
+            </button>
+          </div>
+        </div>
+
+        <nav class="site-nav">
+
+          <ul id="menu" class="menu">
+
+            <li class="menu-item menu-item-home">
+              <a href="/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-home"></i>
+                <br /> 首页
+              </a>
+            </li>
+
+            <li class="menu-item menu-item-categories">
+              <a href="/categories/" rel="section">
+
+                <i class="menu-item-icon fa fa-fw fa-heart"></i>
+                <br /> 分类
+              </a>
+            </li>
+
+          </ul>
+
+        </nav>
+
+      </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+
+            <div id="posts" class="posts-expand">
+
+              <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+
+                <div class="post-block">
+                  <link itemprop="mainEntityOfPage" href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/三、《Python Programming on Win32》关于Win32file摘要及思考/">
+
+                  <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+                    <meta itemprop="name" content="十曰立">
+                    <meta itemprop="description" content="">
+                    <meta itemprop="image" content="/images/avatar.png">
+                  </span>
+
+                  <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+                    <meta itemprop="name" content="十曰立">
+                  </span>
+
+                  <header class="post-header">
+
+                    <h1 class="post-title" itemprop="name headline">三、《Python Programming on Win32》关于Win32file摘要及思考</h1>
+
+                    <div class="post-meta">
+                      <span class="post-time">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-calendar-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">发表于</span>
+
+                        <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-03-28T14:39:14+08:00">
+                          2018-03-28
+                        </time>
+
+                      </span>
+
+                      <span class="post-category">
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-folder-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">分类于</span>
+
+                        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                          <a href="/categories/python总结/" itemprop="url" rel="index">
+                            <span itemprop="name">python总结</span>
+                          </a>
+                        </span>
+
+                      </span>
+
+                      <div class="post-wordcount">
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-file-word-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">字数统计&#58;</span>
+
+                        <span title="字数统计">
+                          1,838
+                        </span>
+
+                        <span class="post-meta-divider">|</span>
+
+                        <span class="post-meta-item-icon">
+                          <i class="fa fa-clock-o"></i>
+                        </span>
+
+                        <span class="post-meta-item-text">阅读时长 &asymp;</span>
+
+                        <span title="阅读时长">
+                          8
+                        </span>
+
+                      </div>
+
+                    </div>
+                  </header>
+
+                  <div class="post-body" itemprop="articleBody">
+
+                    <h1 id="Win32file-Module概述">
+                      <a href="#Win32file-Module概述" class="headerlink" title="Win32file Module概述"></a>Win32file Module概述</h1>
+                    <p>
+                      <strong>Native File Manipulation。</strong>
+                      <br>There are times when the standard Python file objects can’t
+                      meet your requirements, and you need to use the Windows API
+                      to manipulate files.
+                      <br>当通用的文件操作方法(就是python里面的open、read、write)无法满足特殊需求（安全性啊啥的~）时，这个时候windows操作文件的API就是时候发挥效果了！</p>
+                    <p>This can happen in a number of situations, such as:
+                      <br>
+                      <code>• You need to read or write data to or from a Windows pipe.</code>
+                      <br>你需要从一个windows管道读出或者写入数据时。
+                      <br>
+                      <code>• You need to set custom Windows security on a file you are
+                        creating.</code>
+                      <br>需要设定特殊文件的安全性时。
+                      <br>
+                      <code>• You need to perform advanced techniques for performance reasons,
+                        such as &quot;Overlapped&quot; operations or using completion
+                        ports.</code>
+                      <br>Completion ports利用一些线程，帮助平衡由I/O请求所引起的负载
+                      <br>OVERLAPPED I/O（
+                      <a href="http://blog.csdn.net/xiaoding133/article/details/7775139" target="_blank"
+                                                                                                      rel="external">异步I/O</a>）是一个包含了用于异步输入输出的信息的结构体
+                      <br>
+                      <strong>总之：就是你要提高文件操作性能的时候用这些。</strong>
+                      <br>
+                      <figure class="highlight plain">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line">win32file.WriteFile() </span><br><span class="line">returns the error code from the operation. </span><br><span class="line">This is either zero or win32error.ERROR_IO_PENDING if overlapped I/O is used. </span><br><span class="line">All other error codes are converted to a Python exception.</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">The win32file.CreateFile() function opens or creates standard files, </span><br><span class="line">returning a handle to the file. </span><br><span class="line">Standard files come in many flavors, including synchronous files </span><br><span class="line">(where read or write operations don&apos;t return until the </span><br><span class="line">operation has completed); asynchronous (or overlapped I/O) files, </span><br><span class="line">where read and write operations return immediately; </span><br><span class="line">and temporary files that are automatically deleted when the handle is closed. </span><br><span class="line">Files may also be opened requesting that</span><br><span class="line"> Windows not cache any file operations, that no buffering is performed, etc.</span><br><span class="line"></span><br><span class="line">This function returns a PyHANDLE object. </span><br><span class="line">PyHANDLEs are simply objects that wrap standard Win32 HANDLEs. </span><br><span class="line">When a PyHANDLE object goes out of scope, it&apos;s automatically closed;</span><br><span class="line"> thus, it&apos;s generally not necessary to close</span><br><span class="line"> these HANDLEs as it is necessary when using these from C or C++.</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <figure class="highlight plain">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line">Overlapped I/O</span><br><span class="line">Windows provides a number of techniques for high-performance file I/O. </span><br><span class="line">The most common is overlapped I/O. Using overlapped I/O, </span><br><span class="line">the win32file.ReadFile() and win32file.WriteFile() operations are asynchronous </span><br><span class="line">and return before the actual I/O operation has completed. </span><br><span class="line">When the I/O operation finally completes, a Windows event is signaled.</span><br><span class="line"></span><br><span class="line">Overlapped I/O does have some requirements normal I/O operations don&apos;t:</span><br><span class="line">• The operating system doesn&apos;t automatically advance the file pointer.</span><br><span class="line"> When not using overlapped I/O, a ReadFile or WriteFile operation automatically</span><br><span class="line"> advances the file pointer, so the next operation automatically reads the subsequent</span><br><span class="line"> data in the file. When usingoverlapped I/O, you must manage the location</span><br><span class="line"> in the file manually.</span><br><span class="line">• The standard technique of returning a Python string object from</span><br><span class="line"> win32file. ReadFile() doesn&apos;t work. Because the I/O operation has not </span><br><span class="line">completed when the call returns, a Python string can&apos;t be used.</span><br><span class="line">As you can imagine, the code for performing overlapped I/O is more complex than </span><br><span class="line">when performing synchronous I/O. Chapter 18, WindowsNT Services, </span><br><span class="line">contains some sample code that uses basic </span><br><span class="line">overlapped I/O on a Windows-named pipe.</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>#Win32file Module解析
+                      <br>
+                      <code>The win32file module contains functions that interface to the
+                        File and other I/O-related Win32 API functions.
+                      </code>
+                    </p>
+                    <p>
+                      <strong>CreateFile(FileName,········)</strong>
+                      <br>Opens or creates a file or a number of other objects and returns
+                      a handle that can access the object.
+                      <br>
+                      <code>FileName</code>
+                      <br>The name of the file, pipe, or
+                      <strong>
+                        <em>other resource</em>
+                      </strong> to open.
+                      <br>
+                      <code>Result</code>
+                      <br>A PyHANDLE object to the file.</p>
+                    <hr>
+                    <p>
+                      <strong>ReadFile()</strong>
+                      <br>Reads data from an open file.
+                      <br>
+                      <code>errCode, data = ReadFile(FileHandle, Size, Overlapped)</code>
+                      <br>
+                      <em>FileHandle</em>
+                      <br>
+                      <code>The file handle identifying the file to read from. This handle
+                        typically is obtained from win32file.CreateFile().</code>
+                      <br>
+                      <em>Size or ReadBuffer</em>
+                      <br>
+                      <code>If Size is specified as a Python integer, it&#39;s the number
+                        of bytes to read from the file. When using overlapped I/O,
+                        a ReadBuffer shouldbe used, indicating where the ReadFile
+                        operation should place the data.</code>
+                      <br>这句话的意思是：将如你放的是一个整型数据，那么readfile（）啊，你得从这个文件里读这么多的数据回来，但是一旦是异步文件读取的话，你必须指定一个buffer，你想啊：</p>
+                    <ul>
+                      <li>正常的同步文件读取流程是这样的，你给我把数据挖回来，我等着，然后底层I/O操作就吭哧吭哧把数据给挖回来了（同时你一直在矿井口即
+                        <code>FileHandle</code>这等着），然后把数据放到一个叫做data的“箩筐”内~交接完毕！</li>
+                      <li>但是异步读取是这么一个流程：一天一个商人找到一个包工头（应用程序），说：啊，小刘啊（readfile()）啊，你给我去
+                        <code>FileHandle</code>这个矿井挖一箩筐矿回来！接收到指令后，小刘（readfile()）就去找到挖矿工铁柱（系统底层驱动），说：铁柱啊，你给我去
+                        <code>FileHandle</code>这个矿井挖一筐矿上来，然后就去干其他事了(走的时候给了铁柱一部手机（overlapped），说“整完了给我电话，我来收”)，但是这其中有个问题啊，铁柱整好的矿往哪放啊？同步模式下，铁柱冒出矿井就可以看到刘工头在井口等着，直接往框内一放，就交接完事了，但是这个不一样啊，铁柱只有在出矿井后才有信号，这个时候打电话给刘工头，然后就是干等着，指不定工头啥时候来呢！说不定等的这段时间都可以再挖一卡车矿了呢！！说不定等着等着铁柱都快饿挂了！而且可以肯定的是这个时间内其他包工头不能给铁柱派活了！！总之就是浪费了大量的资源；因此我们就想啊，要是我们在叫铁柱下去挖矿的时候顺便告诉它你挖完后直接放到我们指定的地点，然后通知我们，我们就会来取的（取到data这个“箩筐”内），放到指定地点后你想干嘛干嘛去，大大提高你的效率！毕竟整个矿场就靠着（
+                        <strong>基于</strong>）你们这群底层的干活人员来
+                        <strong>运转</strong>呢！
+                        <strong>科科~</strong>
+                        <blockquote>
+                          <p>
+                            <strong>
+                              <em>感悟：这其实就是一个现代商业社会微剧场的缩影，在实际场景中人们总是很容易的想到优化的方式，并且留心生活的极客们早就把生活写入了代码，优化了代码！因此我们平时留心注意生活，学习生活中的智慧、优化思维然后再拓展发散到各行各业各方个面，余以为这是一种可行的策略。</em>
+                            </strong>
+                          </p>
+                        </blockquote>
+                      </li>
+                    </ul>
+                    <p>
+                      <em>Overlapped</em>
+                      <br>
+                      <code>An OVERLAPPED object or None if overlapped I/O isn&#39;t being
+                        performed. This parameter can be omitted, in which case None
+                        is used.</code>
+                      <br>
+                      <em>Result</em>
+                      <br>
+                      <code>errCode:Either 0, or ERROR_IO_PENDING.</code>
+                      <br>
+                      <code>Data:The data read from the file.</code>
+                      <br>这里的data就是上面描述的“箩筐”。异常代码这里是两种要么0要么就是异步I/O挂起提示，0表示数据获取成功，I/O挂起是异步文件读取的时候，提前返回时的返回码。</p>
+                    <h2 id="gt-这里的中层哲学是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的-ERROR-IO-PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR-IO-PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供高效率的接口-和-高精度的搜查（可选），这想必就是严谨的做事态度吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现共赢。">
+                      <a href="#gt-这里的中层哲学是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的-ERROR-IO-PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR-IO-PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供高效率的接口-和-高精度的搜查（可选），这想必就是严谨的做事态度吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现共赢。"
+                                                                                                      class="headerlink" title="&gt;这里的中层哲学是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的 ERROR_IO_PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR_IO_PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供高效率的接口 和 高精度的搜查（可选），这想必就是严谨的做事态度吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现共赢。"></a>&gt;这里的
+                      <strong>
+                        <em>中层哲学</em>
+                      </strong>是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的
+                      ERROR_IO_PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR_IO_PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供
+                      <strong>高效率的接口</strong> 和
+                      <strong>高精度的搜查（可选）</strong>，这想必就是严谨的
+                      <strong>做事态度</strong>吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现
+                      <strong>共赢</strong>。</h2>
+                    <p>
+                      <strong>WriteFile()</strong>
+                      <br>Writes data to an open file.
+                      <br>
+                      <code>errCode = WriteFile(FileHandle, Data, Overlapped)</code>
+                      <br>
+                      <em>FileHandle</em>
+                      <br>
+                      <code>The file handle identifying the file to read from. This handle
+                        typically is obtained from win32file.CreateFile().</code>
+                      <br>
+                      <em>Data</em>
+                      <br>
+                      <code>The data to write to the file, as a Python string.</code>
+                    </p>
+                    <p>
+                      <em>Overlapped</em>
+                      <br>
+                      <code>An OVERLAPPED object or None if overlapped I/O isn&#39;t being
+                        performed. This parameter can be omitted, in which case None
+                        is used.</code>
+                      <br>
+                      <em>Result</em>
+                    </p>
+                    <h2 id="errCode-Either-0-or-ERROR-IO-PENDING">
+                      <a href="#errCode-Either-0-or-ERROR-IO-PENDING" class="headerlink" title="errCode: Either 0 or ERROR_IO_PENDING."></a>
+                      <code>errCode: Either 0 or ERROR_IO_PENDING.</code>
+                    </h2>
+
+                  </div>
+
+                  <div>
+                    <ul class="post-copyright">
+                      <li class="post-copyright-author">
+                        <strong>本文作者：</strong>
+                        十曰立
+                      </li>
+                      <li class="post-copyright-link">
+                        <strong>本文链接：</strong>
+                        <a href="http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/三、《Python Programming on Win32》关于Win32file摘要及思考/"
+                                                                                                        title="三、《Python Programming on Win32》关于Win32file摘要及思考">http://www.jianshu.com/u/a08f88f9ed9d/2018/03/28/python总结/三、《Python
+                          Programming on Win32》关于Win32file摘要及思考/</a>
+                      </li>
+                      <li class="post-copyright-license">
+                        <strong>版权声明： </strong>
+                        本博客所有文章除特别声明外，均采用
+                        <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/"
+                                                                                                        rel="external nofollow" target="_blank">CC BY-NC-SA 3.0</a> 许可协议。转载请注明出处！
+                      </li>
+                    </ul>
+
+                  </div>
+
+                  <div>
+
+                    <div>
+
+                      <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束
+                        <i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+
+                    </div>
+
+                  </div>
+                  <footer class="post-footer">
+
+                    <div class="post-nav">
+                      <div class="post-nav-next post-nav-item">
+
+                        <a href="/2018/03/28/python总结/二、pyserial1.0---win32file/" rel="next" title="二、pyserial1.0---win32file">
+                          <i class="fa fa-chevron-left"></i> 二、pyserial1.0---win32file
+                        </a>
+
+                      </div>
+
+                      <span class="post-nav-divider"></span>
+
+                      <div class="post-nav-prev post-nav-item">
+
+                        <a href="/2018/03/28/python总结/五、pyserial1.x---serialutil演进/" rel="prev" title="五、pyserial1.x---serialutil演进">
+                          五、pyserial1.x---serialutil演进
+                          <i class="fa fa-chevron-right"></i>
+                        </a>
+
+                      </div>
+                    </div>
+
+                  </footer>
+                </div>
+
+              </article>
+
+              <div class="post-spread">
+
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+        <div class="sidebar-toggle">
+          <div class="sidebar-toggle-line-wrap">
+            <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+            <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+          </div>
+        </div>
+
+        <aside id="sidebar" class="sidebar">
+
+          <div class="sidebar-inner">
+
+            <ul class="sidebar-nav motion-element">
+              <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+                文章目录
+              </li>
+              <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+                站点概览
+              </li>
+            </ul>
+
+            <section class="site-overview-wrap sidebar-panel">
+              <div class="site-overview">
+                <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+
+                  <img class="site-author-image" itemprop="image" src="/images/avatar.png" alt="十曰立"
+                  />
+
+                  <p class="site-author-name" itemprop="name">十曰立</p>
+                  <p class="site-description motion-element" itemprop="description">处在人工智能的洪流之中...</p>
+                </div>
+
+                <nav class="site-state motion-element">
+
+                  <div class="site-state-item site-state-posts">
+
+                    <a href="/archives">
+
+                      <span class="site-state-item-count">43</span>
+                      <span class="site-state-item-name">日志</span>
+                    </a>
+                  </div>
+
+                  <div class="site-state-item site-state-categories">
+                    <a href="/categories/index.html">
+                      <span class="site-state-item-count">5</span>
+                      <span class="site-state-item-name">分类</span>
+                    </a>
+                  </div>
+
+                </nav>
+
+                <div class="links-of-author motion-element">
+
+                </div>
+
+              </div>
+            </section>
+
+            <!--noindex-->
+            <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+              <div class="post-toc">
+
+                <div class="post-toc-content">
+                  <ol class="nav">
+                    <li class="nav-item nav-level-1">
+                      <a class="nav-link" href="#Win32file-Module概述">
+                        <span class="nav-number">1.</span>
+                        <span class="nav-text">
+                          Win32file Module概述</span>
+                      </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#gt-这里的中层哲学是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的-ERROR-IO-PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR-IO-PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供高效率的接口-和-高精度的搜查（可选），这想必就是严谨的做事态度吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现共赢。">
+                            <span class="nav-number">1.1.</span>
+                            <span class="nav-text">
+                              >这里的 中层哲学 是：不要想管太多（比如，我会很“贪心”地想返回值可以返回异常状态，也许是有的，因为毕竟只描述了0是成功，其他字段并没有描述，这部分得看源码），这只care成功，其他的除了异步态下的
+                              ERROR_IO_PENDING就都是异常了，你开发商只要知道0代表成功了，其他的（除去ERROR_IO_PENDING）都是异常就好了，具体的，你精力旺盛想知道是什么异常也可以去查的，反正我作为一个包工头对上（开发商）是提供
+                              高效率的接口 和 高精度的搜查（可选），这想必就是严谨的 做事态度吧！！！对下（铁柱），合理安排策略使得底层利益最大化，实现
+                              共赢。
+                            </span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#errCode-Either-0-or-ERROR-IO-PENDING">
+                            <span class="nav-number">1.2.</span>
+                            <span class="nav-text">
+
+                              errCode: Either 0 or ERROR_IO_PENDING.
+                            </span>
+                          </a>
+                        </li>
+                      </ol>
+                    </li>
+                  </ol>
+                </div>
+
+              </div>
+            </section>
+            <!--/noindex-->
+
+          </div>
+        </aside>
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy;
+          <span itemprop="copyrightYear">2018</span>
+          <span class="with-love">
+            <i class="fa fa-user"></i>
+          </span>
+          <span class="author" itemprop="copyrightHolder">十曰立</span>
+
+          <span class="post-meta-divider">|</span>
+          <span class="post-meta-item-icon">
+            <i class="fa fa-area-chart"></i>
+          </span>
+
+          <span class="post-meta-item-text">Site words total count&#58;</span>
+
+          <span title="Site words total count">109.6k</span>
+
+        </div>
+
+        <!-- <div class="powered-by">footer.powered</div>
+-->
+
+        <span class="post-meta-divider">|</span>
+
+        <div class="theme-info">footer.theme &mdash;
+          <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Pisces</a> v5.1.3</div>
+
+        | 本页点击
+        <span id="busuanzi_value_page_pv"></span> 次 | 本站总点击
+        <span id="busuanzi_value_site_pv"></span> 次 | 您是第
+        <span id="busuanzi_value_site_uv"></span> 位访客
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js">
+
+
+        </script>
+
+      </div>
+    </footer>
+
+    <div class="back-to-top">
+      <i class="fa fa-arrow-up"></i>
+
+    </div>
+
+  </div>
+
+  <script type="text/javascript">
+    if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+      window.Promise = null;
+    }
+
+  </script>
+
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+  <script type="text/javascript" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.3"></script>
+  <script type="text/javascript" src="/js/src/post-details.js?v=5.1.3"></script>
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.3"></script>
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+
+  <script>
+    (function() {
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      } else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+
+  </script>
+
+</body>
+
+</html>
