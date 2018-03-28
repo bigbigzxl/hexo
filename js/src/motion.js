@@ -112,7 +112,7 @@ $(document).ready(function () {
       $(document)
         .on('sidebar.isShowing', function () {
           NexT.utils.isDesktop() && $('body').velocity('stop').velocity({
-              paddingRight: SIDEBAR_WIDTH
+              paddingLeft: SIDEBAR_WIDTH
             },
             SIDEBAR_DISPLAY_DURATION
           );
@@ -175,7 +175,7 @@ $(document).ready(function () {
     },
     hideSidebar: function () {
       NexT.utils.isDesktop() && $('body').velocity('stop').velocity({
-        paddingRight: 0
+        paddingLeft: 0
       });
       this.sidebarEl.find('.motion-element').velocity('stop').css(
         'display', 'none');

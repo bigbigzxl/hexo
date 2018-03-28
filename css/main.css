@@ -1,3 +1,15 @@
+header {
+  width: 90%;
+}
+
+.container .main-inner {
+  width: 90%;
+}
+
+.content-wrap {
+  width: calc(100% - 20px);
+}
+
 /* normalize.css v3.0.2 | MIT License | git.io/normalize */
 
 html {
@@ -2045,7 +2057,7 @@ pre .keyword, pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #e008a6;
+  background: #ff2590;
 }
 
 .links-of-blogroll {
@@ -3430,6 +3442,10 @@ pre .keyword, pre .javascript .function {
   .post-body {
     text-align: justify;
   }
+}
+
+body {
+  background: url("/images/backGround.jpg");
 }
 
 .post {
