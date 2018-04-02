@@ -30,17 +30,17 @@
 
   <meta name="keywords" content="Hexo, ZXL" />
 
-  <meta name="description" content="源网址[英文]        github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁">
+  <meta name="description" content="源网址[英文]     github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁应阅读本文 本文">
   <meta property="og:type" content="article">
   <meta property="og:title" content="0x08 内存对齐讨论[修正]">
   <meta property="og:url" content="http://www.jianshu.com/u/a08f88f9ed9d/2018/04/02/汇编NEON/内存对齐讨论[修正]/index.html">
   <meta property="og:site_name" content="十曰立">
-  <meta property="og:description" content="源网址[英文]        github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁">
+  <meta property="og:description" content="源网址[英文]     github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁应阅读本文 本文">
   <meta property="og:locale" content="zh-Hans">
-  <meta property="og:updated_time" content="2018-04-02T09:38:49.182Z">
+  <meta property="og:updated_time" content="2018-04-02T12:54:50.797Z">
   <meta name="twitter:card" content="summary">
   <meta name="twitter:title" content="0x08 内存对齐讨论[修正]">
-  <meta name="twitter:description" content="源网址[英文]        github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁">
+  <meta name="twitter:description" content="源网址[英文]     github上有     大神翻译了一篇内存对齐的英文文献，我复现了一下过程；     发现其中有个地方有出入（strcut foo6{}），因此特地查了下文献，做了下修正，记录如下。     1、原文 作者：Eric S. Raymond 原文链接：   http://www.catb.org/esr/structure-packing/     谁应阅读本文 本文">
 
   <script type="text/javascript" id="hexo.configurations">
     var NexT = window.NexT || {};
@@ -275,7 +275,7 @@
                         <span class="post-meta-item-text">字数统计&#58;</span>
 
                         <span title="字数统计">
-                          6,444
+                          7,215
                         </span>
 
                         <span class="post-meta-divider">|</span>
@@ -287,7 +287,7 @@
                         <span class="post-meta-item-text">阅读时长 &asymp;</span>
 
                         <span title="阅读时长">
-                          26
+                          29
                         </span>
 
                       </div>
@@ -298,9 +298,7 @@
                   <div class="post-body" itemprop="articleBody">
 
                     <p>
-                      <a href="http://www.catb.org/esr/structure-packing/packtest.c" target="_blank" rel="external">
-                        <strong>源网址[英文]</strong>
-                      </a>
+                      <a href="http://www.catb.org/esr/structure-packing/packtest.c" target="_blank" rel="external">源网址[英文]</a>
                     </p>
                     <p>
                       <strong>github上有
@@ -818,6 +816,19 @@
                         </table>
                       </figure>
                     </p>
+                    <p>输出：</p>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">char</span> *)        = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">long</span>)          = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">int</span>)           = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">short</span>)         = <span class="number">2</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">char</span>)          = <span class="number">1</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">float</span>)         = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">double</span>)        = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo1)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo2)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo3)   = <span class="number">16</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo4)   = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo5)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo6)   = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo7)   = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo8)   = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo9)   = <span class="number">12</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo10)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo11)   = <span class="number">16</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo12)   = <span class="number">24</span></span><br><span class="line">sandbox&gt; exited with status <span class="number">0</span></span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
                     <p>The thing to know about bitfields is that they are implemented
                       with word- and byte-level mask and rotate instructions operating
                       on machine words, and
@@ -850,18 +861,123 @@
                     </p>
                     <p>实测却是8byte。</p>
                     <p>为什么这里最后的7bit要重开一个word呢？为什么直接2byte就好了（因为最大的就是short=2byte而已嘛），答案在上面英文字里面的加粗部分说明了，也就是我们补充的时候，它不能跨越word，之前的bit1+bit4+pad3=1byte刚好踩到1word的边界了，于是剩下的就必须按重开一个word，并按word对齐了。</p>
+                    <h2 id="对比验证实验1">
+                      <a href="#对比验证实验1" class="headerlink" title="对比验证实验1"></a>对比验证实验1</h2>
+                    <p>之前认为是刚好踩着word的边界了，所以值填充了4byte，那么我们把char c给去掉，也就是说前面只有2byte，那么生下来的12bit完全在2byte之内就可解决，从而总体少于4byte，因此没有1word越界，就不需要word扩展，因此这里的结果因该是4byte。
+                      <br>
+                      <figure class="highlight cpp">
+                        <table>
+                          <tr>
+                            <td class="gutter">
+                              <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+                            </td>
+                            <td class="code">
+                              <pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">foo6</span> &#123;</span></span><br><span class="line">    <span class="keyword">short</span> s;       <span class="comment">/* 2 bytes */</span></span><br><span class="line">    <span class="comment">//char c;        /* 1 byte */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> flip:<span class="number">1</span>;    <span class="comment">/* total 1 bit */</span></span><br><span class="line">    <span class="keyword">int</span> nybble:<span class="number">4</span>;  <span class="comment">/* total 5 bits */</span></span><br><span class="line">   <span class="comment">// int pad1:3;    /* pad to an 8-bit boundary */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> septet:<span class="number">7</span>;  <span class="comment">/* 7 bits */</span></span><br><span class="line">   <span class="comment">// char pad2:25;     /* pad to 32 bits */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(struct foo6)   = %zu\n"</span>, <span class="keyword">sizeof</span>(struct foo6));</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre>
+                            </td>
+                          </tr>
+                        </table>
+                      </figure>
+                    </p>
+                    <p>结果：</p>
                     <figure class="highlight cpp">
                       <table>
                         <tr>
                           <td class="gutter">
-                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre>
+                            <pre><span class="line">1</span><br></pre>
                           </td>
                           <td class="code">
-                            <pre><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">char</span> *)        = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">long</span>)          = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">int</span>)           = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">short</span>)         = <span class="number">2</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">char</span>)          = <span class="number">1</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">float</span>)         = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(<span class="keyword">double</span>)        = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo1)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo2)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo3)   = <span class="number">16</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo4)   = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo5)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo6)   = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo7)   = <span class="number">4</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo8)   = <span class="number">8</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo9)   = <span class="number">12</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo10)   = <span class="number">24</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo11)   = <span class="number">16</span></span><br><span class="line"><span class="keyword">sizeof</span>(struct foo12)   = <span class="number">24</span></span><br><span class="line">sandbox&gt; exited with status <span class="number">0</span></span><br></pre>
+                            <pre><span class="line"><span class="keyword">sizeof</span>(struct foo6) = <span class="number">4</span></span><br></pre>
                           </td>
                         </tr>
                       </table>
                     </figure>
+                    <p>
+                      <strong>完美！</strong>
+                    </p>
+                    <h2 id="对比实验2">
+                      <a href="#对比实验2" class="headerlink" title="对比实验2"></a>对比实验2</h2>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">foo6</span> &#123;</span></span><br><span class="line">    <span class="comment">//short s;       /* 2 bytes */</span></span><br><span class="line">    <span class="keyword">char</span> c;        <span class="comment">/* 1 byte */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> flip:<span class="number">1</span>;    <span class="comment">/* total 1 bit */</span></span><br><span class="line">    <span class="keyword">int</span> nybble:<span class="number">4</span>;  <span class="comment">/* total 5 bits */</span></span><br><span class="line">   <span class="comment">// int pad1:3;    /* pad to an 8-bit boundary */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> septet:<span class="number">7</span>;  <span class="comment">/* 7 bits */</span></span><br><span class="line">   <span class="comment">// char pad2:25;     /* pad to 32 bits */</span></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span> <span class="params">()</span> </span>&#123;</span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">"sizeof(struct foo6)   = %zu\n"</span>, <span class="keyword">sizeof</span>(struct foo6));</span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>输出：</p>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="keyword">sizeof</span>(struct foo6) = <span class="number">4</span></span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>
+                      <strong>这里为什么不是3呢？</strong>
+                    </p>
+                    <p>因为对比实验1里面开始的是short s，长度是2byte，因此后面的位域就向这个长度对齐；</p>
+                    <p>而这里最长的就是char了，也就是1byte，因此位域向1byte对齐，因此最终就是4byte。</p>
+                    <blockquote>
+                      <p>问题：这里最后的那个位septet假如不是7bit（&lt; 1byte）,而是大于1byte呢？这个该怎么对齐？</p>
+                    </blockquote>
+                    <h2 id="对照实验3">
+                      <a href="#对照实验3" class="headerlink" title="对照实验3"></a>对照实验3</h2>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">foo6</span> &#123;</span></span><br><span class="line">    <span class="comment">//short s;       /* 2 bytes */</span></span><br><span class="line">    <span class="keyword">char</span> c;        <span class="comment">/* 1 byte */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> flip:<span class="number">1</span>;    <span class="comment">/* total 1 bit */</span></span><br><span class="line">    <span class="keyword">int</span> nybble:<span class="number">4</span>;  <span class="comment">/* total 5 bits */</span></span><br><span class="line">   <span class="comment">// int pad1:3;    /* pad to an 8-bit boundary */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> septet:<span class="number">20</span>;  <span class="comment">/* 7 bits */</span></span><br><span class="line">   <span class="comment">// char pad2:25;     /* pad to 32 bits */</span></span><br><span class="line">&#125;;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>最后的septet小于20bit，则占用空间是4byte，因为编译器把超出1byte的bit往前面的两个byte里面挤压，使得空间尽量充满，此时刚好24bit=3byte；</p>
+                    <p>但是一旦septet=20bit，此时位域已经超了1bit，同时是跨word了，因此后面得填充4byte，因此最终的空间占用就是8byte。</p>
+                    <h2 id="对照实验4">
+                      <a href="#对照实验4" class="headerlink" title="对照实验4"></a>对照实验4</h2>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">foo6</span> &#123;</span></span><br><span class="line">    <span class="comment">//short s;       /* 2 bytes */</span></span><br><span class="line">    <span class="keyword">char</span> c;        <span class="comment">/* 1 byte */</span></span><br><span class="line">    </span><br><span class="line">    <span class="keyword">int</span> flip:<span class="number">1</span>;    <span class="comment">/* total 1 bit */</span></span><br><span class="line">   <span class="comment">// int nybble:4;  /* total 5 bits */</span></span><br><span class="line">   <span class="comment">// int pad1:3;    /* pad to an 8-bit boundary */</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//int septet:20;  /* 7 bits */</span></span><br><span class="line">   <span class="comment">// char pad2:25;     /* pad to 32 bits */</span></span><br><span class="line">&#125;;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>假如里面的bit域全部屏蔽掉，留下一个char c，那么空间占用就是1；
+                      <br>只要加入了bit位域，比如flip=1，应该结构听总共2byte就足够了，
+                      <strong>但是实际占用的字节是4byte，也就是说位域的最小单位是4byte。</strong>
+                    </p>
+                    <h2 id="对照实验5">
+                      <a href="#对照实验5" class="headerlink" title="对照实验5"></a>对照实验5</h2>
+                    <figure class="highlight cpp">
+                      <table>
+                        <tr>
+                          <td class="gutter">
+                            <pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre>
+                          </td>
+                          <td class="code">
+                            <pre><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">foo6</span> &#123;</span></span><br><span class="line">    <span class="keyword">short</span> s;       <span class="comment">/* 2 bytes */</span></span><br><span class="line">    <span class="keyword">char</span> c;        <span class="comment">/* 1 byte */</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//int flip:1;    /* total 1 bit */</span></span><br><span class="line">   <span class="comment">// int nybble:4;  /* total 5 bits */</span></span><br><span class="line">   <span class="comment">// int pad1:3;    /* pad to an 8-bit boundary */</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">//int septet:20;  /* 7 bits */</span></span><br><span class="line">   <span class="comment">// char pad2:25;     /* pad to 32 bits */</span></span><br><span class="line">&#125;;</span><br></pre>
+                          </td>
+                        </tr>
+                      </table>
+                    </figure>
+                    <p>只留下一个short（2byte）跟一个char（1byte），**由于这个结构体内成员最大的长度是2byte，因此总的长度必须能被2整除，现在总长度只有3，因此肯定得补齐咯。</p>
 
                   </div>
 
@@ -1084,6 +1200,43 @@
                         <span class="nav-text">
                           2、争议分析</span>
                       </a>
+                      <ol class="nav-child">
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#对比验证实验1">
+                            <span class="nav-number">2.1.</span>
+                            <span class="nav-text">
+                              对比验证实验1</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#对比实验2">
+                            <span class="nav-number">2.2.</span>
+                            <span class="nav-text">
+                              对比实验2</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#对照实验3">
+                            <span class="nav-number">2.3.</span>
+                            <span class="nav-text">
+                              对照实验3</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#对照实验4">
+                            <span class="nav-number">2.4.</span>
+                            <span class="nav-text">
+                              对照实验4</span>
+                          </a>
+                        </li>
+                        <li class="nav-item nav-level-2">
+                          <a class="nav-link" href="#对照实验5">
+                            <span class="nav-number">2.5.</span>
+                            <span class="nav-text">
+                              对照实验5</span>
+                          </a>
+                        </li>
+                      </ol>
                     </li>
                   </ol>
                 </div>
@@ -1114,7 +1267,7 @@
 
           <span class="post-meta-item-text">Site words total count&#58;</span>
 
-          <span title="Site words total count">116.0k</span>
+          <span title="Site words total count">116.8k</span>
 
         </div>
 
