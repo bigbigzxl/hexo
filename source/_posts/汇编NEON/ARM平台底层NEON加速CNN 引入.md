@@ -1,6 +1,6 @@
 ﻿---
 title: ARM平台底层NEON加速CNN 引入
-categories: CNN  # 配置
+categories: 汇编NEON  # 配置
 ---
 
 > **add 研究方向(2017.11.30)**

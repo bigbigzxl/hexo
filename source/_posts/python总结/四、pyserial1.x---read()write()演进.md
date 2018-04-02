@@ -1,6 +1,6 @@
 ﻿---
 title: 四、pyserial1.x---read()/write()演进
-categories: python开源库分析
+categories: python总结
 ---
 
 ![](https://www.etlhive.com/wp-content/uploads/2016/10/19-PYTHON-The-Most-Popular-Coding-Language.jpg)

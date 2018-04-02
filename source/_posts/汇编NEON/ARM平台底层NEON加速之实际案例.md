@@ -1,7 +1,7 @@
-
+﻿
 ---
 title: ARM平台底层NEON加速之实际案例
-categories: CNN  # 配置
+categories: 汇编NEON # 配置
 ---
 
 # 0x01 前言

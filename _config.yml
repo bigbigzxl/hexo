@@ -75,7 +75,8 @@ pagination_dir: page
 ## Themes: https://hexo.io/themes/
 theme: next
 live2d:
-  model: Gantzert_Felixander
+  model: hijiki
+  #Gantzert_Felixander
   #z16
   #haruto 
 #Gantzert_Felixander
